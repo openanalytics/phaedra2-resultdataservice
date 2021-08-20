@@ -1,0 +1,21 @@
+version: '3.5'
+
+services:
+  resultdataservice_db:
+    image: postgres:13-alpine
+    networks:
+      - private
+    environment:
+      - POSTGRES_DB=phaedra2
+      - POSTGRES_USER=phaedra_usr
+      - POSTGRES_PASSWORD=phaedra_usr
+    ports:
+      - "6009:5432"
+
+networks:
+  private:
+    name: private
+    external: false
+  phaedra2:
+    external:
+      name: phaedra2

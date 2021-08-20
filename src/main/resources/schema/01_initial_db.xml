@@ -1,0 +1,57 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="01_initial_db" author="Tobia">
+        <createTable tableName="result_set">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="protocol_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="measurement_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="execution_start_datetime" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="execution_end_datetime" type="timestamp">
+                <constraints nullable="true"/>
+            </column>
+            <column name="outcome" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <sql>CREATE TYPE status_code AS ENUM ('SUCCESS', 'WORKER_INTERNAL_ERROR', 'SCRIPT_ERROR');</sql>
+        <sql>CREATE CAST (CHARACTER VARYING AS status_code) WITH INOUT AS IMPLICIT;</sql>
+
+        <createTable tableName="result_data">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="result_set_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="result_id_fk" references="result_set(id)"/>
+            </column>
+            <column name="feature_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="values" type="float[]">
+                <constraints nullable="true"/>
+            </column>
+            <column name="status_code" type="status_code">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status_message" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="exit_code" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

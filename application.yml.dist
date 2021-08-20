@@ -1,0 +1,15 @@
+phaedra2:
+  result-data-service:
+    db:
+      url: jdbc:postgresql://localhost:6009/phaedra2
+      username: phaedra_usr
+      password: phaedra_usr
+      schema: resultdataservice
+
+logging:
+  level:
+    eu:
+      openanalytics: DEBUG
+
+server:
+  port: 3009
