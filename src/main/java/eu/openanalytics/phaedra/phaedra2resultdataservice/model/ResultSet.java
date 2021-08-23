@@ -4,7 +4,7 @@ import lombok.Value;
 import lombok.With;
 import org.springframework.data.annotation.Id;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Value
 @With
@@ -19,9 +19,9 @@ public class ResultSet {
 
     Long measId;
 
-    LocalDate executionStartTimeStamp;
+    LocalDateTime executionStartTimeStamp;
 
-    LocalDate executionEndTimeStamp;
+    LocalDateTime executionEndTimeStamp;
 
     String outcome;
 

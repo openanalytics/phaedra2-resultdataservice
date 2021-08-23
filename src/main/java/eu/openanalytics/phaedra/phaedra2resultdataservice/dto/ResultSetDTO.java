@@ -4,13 +4,16 @@ import eu.openanalytics.phaedra.phaedra2resultdataservice.dto.validation.OnCreat
 import eu.openanalytics.phaedra.phaedra2resultdataservice.dto.validation.OnUpdate;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class ResultSetDTO {
 
     @Null(groups = OnCreate.class, message = "Id must be null when creating a formula")
@@ -31,14 +34,15 @@ public class ResultSetDTO {
 
     @Null(message = "ExecutionStartTimeStamp must be null when creating a formula", groups = {OnCreate.class, OnUpdate.class})
     @Null(message = "ExecutionStartTimeStamp cannot be changed", groups = {OnUpdate.class})
-    private LocalDate executionStartTimeStamp;
+    private LocalDateTime executionStartTimeStamp;
 
     @Null(message = "ExecutionEndTimeStamp must be null when creating a formula", groups = {OnCreate.class, OnUpdate.class})
     @Null(message = "ExecutionEndTimeStamp cannot be changed", groups = {OnUpdate.class})
-    private LocalDate executionEndTimeStamp;
+    private LocalDateTime executionEndTimeStamp;
 
     @Null(groups = OnCreate.class, message = "Outcome must be null when creating a formula")
     @NotNull(groups = OnUpdate.class, message = "Outcome is mandatory when updating a formula")
+    @Length(groups = OnUpdate.class, max = 255, message = "Outcome may only contain 255 characters")
     private String outcome;
 
 }

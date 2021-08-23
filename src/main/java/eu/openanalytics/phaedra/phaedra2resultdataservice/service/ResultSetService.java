@@ -10,7 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 
@@ -29,7 +29,7 @@ public class ResultSetService {
             resultSetDTO.getProtocolId(),
             resultSetDTO.getPlateId(),
             resultSetDTO.getMeasId(),
-            LocalDate.now(),
+            LocalDateTime.now(),
             null,
             null);
 
@@ -46,7 +46,7 @@ public class ResultSetService {
         }
         var resultSet = existingResultSet.get()
             .withOutcome(resultSetDTO.getOutcome())
-            .withExecutionEndTimeStamp(LocalDate.now());
+            .withExecutionEndTimeStamp(LocalDateTime.now());
         return save(resultSet);
     }
 
