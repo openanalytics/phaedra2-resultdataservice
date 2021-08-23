@@ -89,7 +89,11 @@ public class Phaedra2ResultDataServiceApplication {
     }
 
     private static Properties getDefaultProperties() {
-        return new Properties();
+        var properties = new Properties();
+
+        properties.put("server.servlet.context-path", "/phaedra/resultdata-service");
+
+        return properties;
     }
 
 }

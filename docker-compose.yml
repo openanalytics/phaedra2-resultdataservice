@@ -3,8 +3,10 @@ version: '3.5'
 services:
   resultdataservice_db:
     image: postgres:13-alpine
+    restart: on-failure
     networks:
       - private
+    command: ["postgres", "-c", "log_statement=all"]
     environment:
       - POSTGRES_DB=phaedra2
       - POSTGRES_USER=phaedra_usr
