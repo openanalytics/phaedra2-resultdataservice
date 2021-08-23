@@ -15,6 +15,7 @@ import org.springframework.core.env.Environment;
 
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
+import java.time.Clock;
 import java.util.Properties;
 
 @SpringBootApplication
@@ -86,6 +87,11 @@ public class Phaedra2ResultDataServiceApplication {
 
         liquibase.setDataSource(dataSource());
         return liquibase;
+    }
+
+    @Bean
+    public Clock clock() {
+        return Clock.systemDefaultZone();
     }
 
     private static Properties getDefaultProperties() {

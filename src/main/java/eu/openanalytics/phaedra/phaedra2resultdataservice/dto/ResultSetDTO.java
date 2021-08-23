@@ -36,7 +36,7 @@ public class ResultSetDTO {
     @Null(message = "ExecutionStartTimeStamp cannot be changed", groups = {OnUpdate.class})
     private LocalDateTime executionStartTimeStamp;
 
-    @Null(message = "ExecutionEndTimeStamp must be null when creating a ResultSet", groups = {OnCreate.class })
+    @Null(message = "ExecutionEndTimeStamp must be null when creating a ResultSet", groups = {OnCreate.class})
     @Null(message = "ExecutionEndTimeStamp cannot be changed", groups = {OnUpdate.class})
     private LocalDateTime executionEndTimeStamp;
 

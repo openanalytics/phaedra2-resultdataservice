@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -18,9 +19,11 @@ import java.util.Optional;
 public class ResultSetService {
 
     private final ResultSetRepository resultSetRepository;
+    private final Clock clock;
 
-    public ResultSetService(ResultSetRepository resultSetRepository) {
+    public ResultSetService(ResultSetRepository resultSetRepository, Clock clock) {
         this.resultSetRepository = resultSetRepository;
+        this.clock = clock;
     }
 
     public ResultSetDTO create(ResultSetDTO resultSetDTO) {
@@ -29,7 +32,7 @@ public class ResultSetService {
             resultSetDTO.getProtocolId(),
             resultSetDTO.getPlateId(),
             resultSetDTO.getMeasId(),
-            LocalDateTime.now(),
+            LocalDateTime.now(clock),
             null,
             null);
 
@@ -46,7 +49,7 @@ public class ResultSetService {
         }
         var resultSet = existingResultSet.get()
             .withOutcome(resultSetDTO.getOutcome())
-            .withExecutionEndTimeStamp(LocalDateTime.now());
+            .withExecutionEndTimeStamp(LocalDateTime.now(clock));
         return save(resultSet);
     }
 

@@ -2,17 +2,19 @@ package eu.openanalytics.phaedra.phaedra2resultdataservice;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import eu.openanalytics.phaedra.phaedra2resultdataservice.dto.ResultSetDTO;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -26,27 +28,34 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-@SuppressWarnings("rawtypes")
 @Testcontainers
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = Phaedra2ResultDataServiceApplication.class)
+@ContextConfiguration(classes = {Phaedra2ResultDataServiceApplication.class, ResultSetIntegrationTest.IntegrationTestConfiguration.class})
 @WebAppConfiguration
 @AutoConfigureMockMvc
 public class ResultSetIntegrationTest {
 
     @Container
-    public static final PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer<>("postgres:13-alpine");
+    public static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:13-alpine");
 
     private final ObjectMapper om;
 
     @Autowired
     private MockMvc mockMvc;
+
 
     @DynamicPropertySource
     static void registerPgProperties(DynamicPropertyRegistry registry) {
@@ -62,6 +71,25 @@ public class ResultSetIntegrationTest {
         om.setSerializationInclusion(JsonInclude.Include.NON_NULL); // ensure we don't send null values to the API (e.g. when doing updates)
         om.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
         om.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
+    }
+
+    @Autowired
+    private DataSource dataSource;
+
+    /**
+     * Clean tables and sequences before every test (this is aster than restarting the container and Spring context).
+     */
+    @BeforeEach
+    public void initEach() throws SQLException {
+        try (Connection con = dataSource.getConnection()) {
+            try (PreparedStatement stmt = con.prepareStatement("TRUNCATE result_data RESTART IDENTITY CASCADE ;")) {
+                stmt.executeUpdate();
+            }
+            try (PreparedStatement stmt = con.prepareStatement("TRUNCATE result_set RESTART IDENTITY CASCADE;")) {
+                stmt.executeUpdate();
+            }
+            con.commit();
+        }
     }
 
     private <T> T performRequest(RequestBuilder requestBuilder, HttpStatus responseStatusCode, Class<T> resultType) throws Exception {
@@ -227,7 +255,12 @@ public class ResultSetIntegrationTest {
         input1.setOutcome("MyOutcome!");
         var res1 = performRequest(put("/resultset/4", input1), HttpStatus.NOT_FOUND);
         Assertions.assertEquals("{\"error\":\"ResultDataSet with id 4 not found!\",\"status\":\"error\"}", res1);
+    }
 
+    @Test
+    public void deleteNotExistingResultSet() throws Exception {
+        var res1 = performRequest(delete("/resultset/4"), HttpStatus.NOT_FOUND);
+        Assertions.assertEquals("{\"error\":\"ResultDataSet with id 4 not found!\",\"status\":\"error\"}", res1);
     }
 
 
@@ -253,4 +286,86 @@ public class ResultSetIntegrationTest {
         Assertions.assertEquals("{\"error\":\"ResultDataSet already contains a complete message or end timestamp.\",\"status\":\"error\"}", res3);
     }
 
+    @Test
+    public void testPagedQueries() throws Exception {
+        // 1. create 35 ResultSets
+        for (int i = 1; i <= 35; i++) {
+            var input = new ResultSetDTO();
+            input.setProtocolId((long) i);
+            input.setPlateId((long) i);
+            input.setMeasId((long) i);
+            performRequest(post("/resultset", input), HttpStatus.CREATED, ResultSetDTO.class);
+        }
+
+        // 2. query first page
+        var res2 = performRequest(get("/resultset"), HttpStatus.OK);
+        Assertions.assertEquals("{\"data\":[" +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":1,\"measId\":1,\"plateId\":1,\"protocolId\":1}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":2,\"measId\":2,\"plateId\":2,\"protocolId\":2}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":3,\"measId\":3,\"plateId\":3,\"protocolId\":3}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":4,\"measId\":4,\"plateId\":4,\"protocolId\":4}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":5,\"measId\":5,\"plateId\":5,\"protocolId\":5}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":6,\"measId\":6,\"plateId\":6,\"protocolId\":6}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":7,\"measId\":7,\"plateId\":7,\"protocolId\":7}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":8,\"measId\":8,\"plateId\":8,\"protocolId\":8}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":9,\"measId\":9,\"plateId\":9,\"protocolId\":9}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":10,\"measId\":10,\"plateId\":10,\"protocolId\":10}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":11,\"measId\":11,\"plateId\":11,\"protocolId\":11}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":12,\"measId\":12,\"plateId\":12,\"protocolId\":12}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":13,\"measId\":13,\"plateId\":13,\"protocolId\":13}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":14,\"measId\":14,\"plateId\":14,\"protocolId\":14}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":15,\"measId\":15,\"plateId\":15,\"protocolId\":15}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":16,\"measId\":16,\"plateId\":16,\"protocolId\":16}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":17,\"measId\":17,\"plateId\":17,\"protocolId\":17}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":18,\"measId\":18,\"plateId\":18,\"protocolId\":18}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":19,\"measId\":19,\"plateId\":19,\"protocolId\":19}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":20,\"measId\":20,\"plateId\":20,\"protocolId\":20}" +
+            "],\"status\":{\"first\":true,\"last\":false,\"totalElements\":35,\"totalPages\":2}}", res2);
+
+
+        // 3. query second page
+        var res3 = performRequest(get("/resultset?page=1"), HttpStatus.OK);
+        Assertions.assertEquals("{\"data\":[" +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":21,\"measId\":21,\"plateId\":21,\"protocolId\":21}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":22,\"measId\":22,\"plateId\":22,\"protocolId\":22}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":23,\"measId\":23,\"plateId\":23,\"protocolId\":23}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":24,\"measId\":24,\"plateId\":24,\"protocolId\":24}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":25,\"measId\":25,\"plateId\":25,\"protocolId\":25}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":26,\"measId\":26,\"plateId\":26,\"protocolId\":26}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":27,\"measId\":27,\"plateId\":27,\"protocolId\":27}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":28,\"measId\":28,\"plateId\":28,\"protocolId\":28}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":29,\"measId\":29,\"plateId\":29,\"protocolId\":29}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":30,\"measId\":30,\"plateId\":30,\"protocolId\":30}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":31,\"measId\":31,\"plateId\":31,\"protocolId\":31}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":32,\"measId\":32,\"plateId\":32,\"protocolId\":32}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":33,\"measId\":33,\"plateId\":33,\"protocolId\":33}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":34,\"measId\":34,\"plateId\":34,\"protocolId\":34}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":35,\"measId\":35,\"plateId\":35,\"protocolId\":35}]," +
+            "\"status\":{\"first\":false,\"last\":true,\"totalElements\":35,\"totalPages\":2}}", res3);
+
+        // 4. query random page
+        var res4 = performRequest(get("/resultset?page=50"), HttpStatus.OK);
+        Assertions.assertEquals("{\"data\":[],\"status\":{\"first\":false,\"last\":true,\"totalElements\":35,\"totalPages\":2}}", res4);
+    }
+
+    @Test
+    public void invalidJsonTest() throws Exception {
+        var res1 = performRequest(
+            MockMvcRequestBuilders.post("/resultset")
+                .contentType("application/json")
+                .content("{\"test"),
+            HttpStatus.BAD_REQUEST);
+
+        Assertions.assertEquals("{\"error\":\"Validation error\",\"status\":\"error\"}", res1);
+    }
+
+    @Configuration
+    public static class IntegrationTestConfiguration {
+
+        @Bean
+        public Clock clock() {
+            return Clock.fixed(Instant.parse("2042-12-31T23:59:59.00Z"), ZoneId.of("UTC"));
+        }
+
+    }
 }
