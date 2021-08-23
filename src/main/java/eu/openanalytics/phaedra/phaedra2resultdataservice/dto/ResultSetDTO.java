@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ResultSetDTO {
 
-    @Null(groups = OnCreate.class, message = "Id must be null when creating a formula")
+    @Null(groups = OnCreate.class, message = "Id must be null when creating a ResultSet")
     @Null(groups = OnUpdate.class, message = "Id must be specified in URL and not repeated in body")
     private Long id;
 
@@ -32,16 +32,16 @@ public class ResultSetDTO {
     @Null(message = "MeasId cannot be changed", groups = {OnUpdate.class})
     private Long measId;
 
-    @Null(message = "ExecutionStartTimeStamp must be null when creating a formula", groups = {OnCreate.class, OnUpdate.class})
+    @Null(message = "ExecutionStartTimeStamp must be null when creating a ResultSet", groups = {OnCreate.class})
     @Null(message = "ExecutionStartTimeStamp cannot be changed", groups = {OnUpdate.class})
     private LocalDateTime executionStartTimeStamp;
 
-    @Null(message = "ExecutionEndTimeStamp must be null when creating a formula", groups = {OnCreate.class, OnUpdate.class})
+    @Null(message = "ExecutionEndTimeStamp must be null when creating a ResultSet", groups = {OnCreate.class })
     @Null(message = "ExecutionEndTimeStamp cannot be changed", groups = {OnUpdate.class})
     private LocalDateTime executionEndTimeStamp;
 
-    @Null(groups = OnCreate.class, message = "Outcome must be null when creating a formula")
-    @NotNull(groups = OnUpdate.class, message = "Outcome is mandatory when updating a formula")
+    @Null(groups = OnCreate.class, message = "Outcome must be null when creating a ResultSet")
+    @NotNull(groups = OnUpdate.class, message = "Outcome is mandatory when updating a ResultSet")
     @Length(groups = OnUpdate.class, max = 255, message = "Outcome may only contain 255 characters")
     private String outcome;
 

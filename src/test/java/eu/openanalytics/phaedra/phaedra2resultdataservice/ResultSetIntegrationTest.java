@@ -2,7 +2,10 @@ package eu.openanalytics.phaedra.phaedra2resultdataservice;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import eu.openanalytics.phaedra.phaedra2resultdataservice.dto.ResultSetDTO;
 import org.junit.jupiter.api.Assertions;
@@ -23,6 +26,9 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
@@ -32,7 +38,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @ContextConfiguration(classes = Phaedra2ResultDataServiceApplication.class)
 @WebAppConfiguration
 @AutoConfigureMockMvc
-//@TestPropertySource(locations = "classpath:application-integration-test.properties")
 public class ResultSetIntegrationTest {
 
     @Container
@@ -50,17 +55,13 @@ public class ResultSetIntegrationTest {
         registry.add("phaedra2.result-data-service.db.password", postgreSQLContainer::getPassword);
     }
 
-//    @Autowired
-//    private ResultSetController resultSetController;
-
-//    @Autowired
-//    private ObjectMapper om;
-//
-
     public ResultSetIntegrationTest() {
         om = new ObjectMapper();
         om.registerModule(new JavaTimeModule());
+        om.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         om.setSerializationInclusion(JsonInclude.Include.NON_NULL); // ensure we don't send null values to the API (e.g. when doing updates)
+        om.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
+        om.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
     }
 
     private <T> T performRequest(RequestBuilder requestBuilder, HttpStatus responseStatusCode, Class<T> resultType) throws Exception {
@@ -79,7 +80,13 @@ public class ResultSetIntegrationTest {
         var mvcResult = mockMvc.perform(requestBuilder).andReturn();
 
         Assertions.assertEquals(responseStatusCode.value(), mvcResult.getResponse().getStatus());
-        return mvcResult.getResponse().getContentAsString();
+        if (!mvcResult.getResponse().getContentAsString().equals("")) {
+            Assertions.assertEquals("application/json", mvcResult.getResponse().getContentType());
+            // de-serialize and serialize responses in order to have a consistent response
+            Object parsedConfig = om.readValue(mvcResult.getResponse().getContentAsString(), Object.class);
+            return om.writeValueAsString(parsedConfig);
+        }
+        return null;
     }
 
     private RequestBuilder post(String url, Object input) throws JsonProcessingException {
@@ -96,7 +103,6 @@ public class ResultSetIntegrationTest {
 
     @Test
     public void simpleCreateAndGetTest() throws Exception {
-
         // 1. create simple ResultSet
         var input1 = new ResultSetDTO();
         input1.setProtocolId(1L);
@@ -149,5 +155,102 @@ public class ResultSetIntegrationTest {
         Assertions.assertEquals("{\"error\":\"ResultDataSet with id 1 not found!\",\"status\":\"error\"}", res5);
     }
 
+    @Test
+    public void testCreationValidationTest() throws Exception {
+        // 1. missing fields
+        var input1 = new ResultSetDTO();
+        var res1 = performRequest(post("/resultset", input1), HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{" +
+            "\"measId\":\"MeasId is mandatory\"," +
+            "\"plateId\":\"PlateId is mandatory\"," +
+            "\"protocolId\":\"ProtocolId is mandatory\"},\"status\":\"error\"}", res1);
+
+        // 2. too many fields
+        var input2 = new ResultSetDTO();
+        input2.setPlateId(1L);
+        input2.setProtocolId(2L);
+        input2.setMeasId(3L);
+        input2.setId(1L);
+        input2.setOutcome("my outcome");
+        input2.setExecutionStartTimeStamp(LocalDateTime.now());
+        input2.setExecutionEndTimeStamp(LocalDateTime.now());
+        var res2 = performRequest(post("/resultset", input2), HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{" +
+            "\"executionEndTimeStamp\":\"ExecutionEndTimeStamp must be null when creating a ResultSet\"," +
+            "\"executionStartTimeStamp\":\"ExecutionStartTimeStamp must be null when creating a ResultSet\"," +
+            "\"id\":\"Id must be null when creating a ResultSet\"," +
+            "\"outcome\":\"Outcome must be null when creating a ResultSet\"},\"status\":\"error\"}", res2);
+
+        // 3. invalid data
+        var input3 = new HashMap<String, String>() {{
+            put("protocolId", "ABC");
+        }};
+        var res3 = performRequest(post("/resultset", input3), HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"protocolId\":\"Invalid value provided\"},\"status\":\"error\"}", res3);
+    }
+
+    @Test
+    public void testUpdatingValidationTest() throws Exception {
+        // 1. missing fields
+        var input1 = new ResultSetDTO();
+        var res1 = performRequest(put("/resultset/1", input1), HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"outcome\":\"Outcome is mandatory when updating a ResultSet\"},\"status\":\"error\"}", res1);
+
+        // 2. too long outcome
+        var input2 = new ResultSetDTO();
+        input2.setOutcome("a".repeat(260));
+        var res2 = performRequest(put("/resultset/1", input2), HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"outcome\":\"Outcome may only contain 255 characters\"},\"status\":\"error\"}", res2);
+
+        // 3. too many fields
+        var input3 = new ResultSetDTO();
+        input3.setId(1L);
+        input3.setPlateId(1L);
+        input3.setProtocolId(1L);
+        input3.setMeasId(1L);
+        input3.setExecutionStartTimeStamp(LocalDateTime.now());
+        input3.setExecutionEndTimeStamp(LocalDateTime.now());
+        var res3 = performRequest(put("/resultset/1", input3), HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{" +
+            "\"executionEndTimeStamp\":\"ExecutionEndTimeStamp cannot be changed\"," +
+            "\"executionStartTimeStamp\":\"ExecutionStartTimeStamp cannot be changed\"," +
+            "\"id\":\"Id must be specified in URL and not repeated in body\"," +
+            "\"measId\":\"MeasId cannot be changed\"," +
+            "\"outcome\":\"Outcome is mandatory when updating a ResultSet\"," +
+            "\"plateId\":\"PlateId cannot be changed\"," +
+            "\"protocolId\":\"ProtocolId cannot be changed\"},\"status\":\"error\"}", res3);
+    }
+
+    @Test
+    public void updateNotExistingResultSet() throws Exception {
+        var input1 = new ResultSetDTO();
+        input1.setOutcome("MyOutcome!");
+        var res1 = performRequest(put("/resultset/4", input1), HttpStatus.NOT_FOUND);
+        Assertions.assertEquals("{\"error\":\"ResultDataSet with id 4 not found!\",\"status\":\"error\"}", res1);
+
+    }
+
+
+    @Test
+    public void testDataSetAlreadyCompleted() throws Exception {
+        // 1. create simple ResultSet
+        var input1 = new ResultSetDTO();
+        input1.setProtocolId(1L);
+        input1.setPlateId(2L);
+        input1.setMeasId(3L);
+
+        performRequest(post("/resultset", input1), HttpStatus.CREATED, ResultSetDTO.class);
+
+        // 2. update outcome
+        var input2 = new ResultSetDTO();
+        input2.setOutcome("MyOutcome!");
+        performRequest(put("/resultset/1", input2), HttpStatus.OK, ResultSetDTO.class);
+
+        // 3. update outcome again
+        var input3 = new ResultSetDTO();
+        input3.setOutcome("MyOutcome33!");
+        var res3 = performRequest(put("/resultset/1", input3), HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals("{\"error\":\"ResultDataSet already contains a complete message or end timestamp.\",\"status\":\"error\"}", res3);
+    }
 
 }
