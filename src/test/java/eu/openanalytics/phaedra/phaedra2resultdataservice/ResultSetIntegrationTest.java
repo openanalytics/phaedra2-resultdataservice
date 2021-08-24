@@ -88,7 +88,6 @@ public class ResultSetIntegrationTest {
             try (PreparedStatement stmt = con.prepareStatement("TRUNCATE result_set RESTART IDENTITY CASCADE;")) {
                 stmt.executeUpdate();
             }
-            con.commit();
         }
     }
 
@@ -180,7 +179,7 @@ public class ResultSetIntegrationTest {
 
         // 6. get resultSet again
         var res5 = performRequest(get("/resultset/1"), HttpStatus.NOT_FOUND);
-        Assertions.assertEquals("{\"error\":\"ResultDataSet with id 1 not found!\",\"status\":\"error\"}", res5);
+        Assertions.assertEquals("{\"error\":\"ResultSet with id 1 not found!\",\"status\":\"error\"}", res5);
     }
 
     @Test
@@ -254,13 +253,13 @@ public class ResultSetIntegrationTest {
         var input1 = new ResultSetDTO();
         input1.setOutcome("MyOutcome!");
         var res1 = performRequest(put("/resultset/4", input1), HttpStatus.NOT_FOUND);
-        Assertions.assertEquals("{\"error\":\"ResultDataSet with id 4 not found!\",\"status\":\"error\"}", res1);
+        Assertions.assertEquals("{\"error\":\"ResultSet with id 4 not found!\",\"status\":\"error\"}", res1);
     }
 
     @Test
     public void deleteNotExistingResultSet() throws Exception {
         var res1 = performRequest(delete("/resultset/4"), HttpStatus.NOT_FOUND);
-        Assertions.assertEquals("{\"error\":\"ResultDataSet with id 4 not found!\",\"status\":\"error\"}", res1);
+        Assertions.assertEquals("{\"error\":\"ResultSet with id 4 not found!\",\"status\":\"error\"}", res1);
     }
 
 
