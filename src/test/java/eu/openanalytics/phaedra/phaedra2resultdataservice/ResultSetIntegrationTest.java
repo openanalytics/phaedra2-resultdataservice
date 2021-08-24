@@ -1,132 +1,18 @@
 package eu.openanalytics.phaedra.phaedra2resultdataservice;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import eu.openanalytics.phaedra.phaedra2resultdataservice.dto.ResultSetDTO;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.HashMap;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-@Testcontainers
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {Phaedra2ResultDataServiceApplication.class, ResultSetIntegrationTest.IntegrationTestConfiguration.class})
-@WebAppConfiguration
-@AutoConfigureMockMvc
-public class ResultSetIntegrationTest {
-
-    @Container
-    public static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:13-alpine");
-
-    private final ObjectMapper om;
-
-    @Autowired
-    private MockMvc mockMvc;
-
-
-    @DynamicPropertySource
-    static void registerPgProperties(DynamicPropertyRegistry registry) {
-        registry.add("phaedra2.result-data-service.db.url", postgreSQLContainer::getJdbcUrl);
-        registry.add("phaedra2.result-data-service.db.username", postgreSQLContainer::getUsername);
-        registry.add("phaedra2.result-data-service.db.password", postgreSQLContainer::getPassword);
-    }
-
-    public ResultSetIntegrationTest() {
-        om = new ObjectMapper();
-        om.registerModule(new JavaTimeModule());
-        om.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        om.setSerializationInclusion(JsonInclude.Include.NON_NULL); // ensure we don't send null values to the API (e.g. when doing updates)
-        om.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
-        om.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
-    }
-
-    @Autowired
-    private DataSource dataSource;
-
-    /**
-     * Clean tables and sequences before every test (this is aster than restarting the container and Spring context).
-     */
-    @BeforeEach
-    public void initEach() throws SQLException {
-        try (Connection con = dataSource.getConnection()) {
-            try (PreparedStatement stmt = con.prepareStatement("TRUNCATE result_data RESTART IDENTITY CASCADE ;")) {
-                stmt.executeUpdate();
-            }
-            try (PreparedStatement stmt = con.prepareStatement("TRUNCATE result_set RESTART IDENTITY CASCADE;")) {
-                stmt.executeUpdate();
-            }
-        }
-    }
-
-    private <T> T performRequest(RequestBuilder requestBuilder, HttpStatus responseStatusCode, Class<T> resultType) throws Exception {
-        var mvcResult = mockMvc.perform(requestBuilder).andReturn();
-
-        Assertions.assertEquals("application/json", mvcResult.getResponse().getContentType());
-        Assertions.assertEquals(responseStatusCode.value(), mvcResult.getResponse().getStatus());
-
-        Assertions.assertNotNull(mvcResult.getResponse().getContentAsString());
-        var res = om.readValue(mvcResult.getResponse().getContentAsString(), resultType);
-        Assertions.assertNotNull(res);
-        return res;
-    }
-
-    private String performRequest(RequestBuilder requestBuilder, HttpStatus responseStatusCode) throws Exception {
-        var mvcResult = mockMvc.perform(requestBuilder).andReturn();
-
-        Assertions.assertEquals(responseStatusCode.value(), mvcResult.getResponse().getStatus());
-        if (!mvcResult.getResponse().getContentAsString().equals("")) {
-            Assertions.assertEquals("application/json", mvcResult.getResponse().getContentType());
-            // de-serialize and serialize responses in order to have a consistent response
-            Object parsedConfig = om.readValue(mvcResult.getResponse().getContentAsString(), Object.class);
-            return om.writeValueAsString(parsedConfig);
-        }
-        return null;
-    }
-
-    private RequestBuilder post(String url, Object input) throws JsonProcessingException {
-        return MockMvcRequestBuilders.post(url)
-            .contentType("application/json")
-            .content(om.writeValueAsString(input));
-    }
-
-    private RequestBuilder put(String url, Object input) throws JsonProcessingException {
-        return MockMvcRequestBuilders.put(url)
-            .contentType("application/json")
-            .content(om.writeValueAsString(input));
-    }
+public class ResultSetIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void simpleCreateAndGetTest() throws Exception {
@@ -358,13 +244,4 @@ public class ResultSetIntegrationTest {
         Assertions.assertEquals("{\"error\":\"Validation error\",\"status\":\"error\"}", res1);
     }
 
-    @Configuration
-    public static class IntegrationTestConfiguration {
-
-        @Bean
-        public Clock clock() {
-            return Clock.fixed(Instant.parse("2042-12-31T23:59:59.00Z"), ZoneId.of("UTC"));
-        }
-
-    }
 }
