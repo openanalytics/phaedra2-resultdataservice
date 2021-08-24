@@ -55,6 +55,9 @@
             <column name="exit_code" type="int">
                 <constraints nullable="false"/>
             </column>
+            <column name="created_timestamp" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 

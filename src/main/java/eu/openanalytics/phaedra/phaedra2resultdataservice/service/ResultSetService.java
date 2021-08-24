@@ -1,8 +1,8 @@
 package eu.openanalytics.phaedra.phaedra2resultdataservice.service;
 
 import eu.openanalytics.phaedra.phaedra2resultdataservice.dto.ResultSetDTO;
-import eu.openanalytics.phaedra.phaedra2resultdataservice.exception.ResultDataSetAlreadyCompletedException;
-import eu.openanalytics.phaedra.phaedra2resultdataservice.exception.ResultDataSetNotFoundException;
+import eu.openanalytics.phaedra.phaedra2resultdataservice.exception.ResultSetAlreadyCompletedException;
+import eu.openanalytics.phaedra.phaedra2resultdataservice.exception.ResultSetNotFoundException;
 import eu.openanalytics.phaedra.phaedra2resultdataservice.model.ResultSet;
 import eu.openanalytics.phaedra.phaedra2resultdataservice.repository.ResultSetRepository;
 import org.springframework.data.domain.Page;
@@ -28,7 +28,7 @@ public class ResultSetService {
 
     public ResultSetDTO create(ResultSetDTO resultSetDTO) {
         var resultSet = new ResultSet(
-            resultSetDTO.getId(),
+            null,
             resultSetDTO.getProtocolId(),
             resultSetDTO.getPlateId(),
             resultSetDTO.getMeasId(),
@@ -39,13 +39,13 @@ public class ResultSetService {
         return save(resultSet);
     }
 
-    public ResultSetDTO updateOutcome(ResultSetDTO resultSetDTO) throws ResultDataSetAlreadyCompletedException, ResultDataSetNotFoundException {
+    public ResultSetDTO updateOutcome(ResultSetDTO resultSetDTO) throws ResultSetAlreadyCompletedException, ResultSetNotFoundException {
         Optional<ResultSet> existingResultSet = resultSetRepository.findById(resultSetDTO.getId());
         if (existingResultSet.isEmpty()) {
-            throw new ResultDataSetNotFoundException(resultSetDTO.getId());
+            throw new ResultSetNotFoundException(resultSetDTO.getId());
         }
         if (existingResultSet.get().getOutcome() != null || existingResultSet.get().getExecutionEndTimeStamp() != null) {
-            throw new ResultDataSetAlreadyCompletedException();
+            throw new ResultSetAlreadyCompletedException();
         }
         var resultSet = existingResultSet.get()
             .withOutcome(resultSetDTO.getOutcome())
@@ -53,18 +53,18 @@ public class ResultSetService {
         return save(resultSet);
     }
 
-    public void delete(Long id) throws ResultDataSetNotFoundException {
+    public void delete(Long id) throws ResultSetNotFoundException {
         Optional<ResultSet> existingResultSet = resultSetRepository.findById(id);
         if (existingResultSet.isEmpty()) {
-            throw new ResultDataSetNotFoundException(id);
+            throw new ResultSetNotFoundException(id);
         }
         resultSetRepository.deleteById(id);
     }
 
-    public ResultSetDTO getResultSetById(Long id) throws ResultDataSetNotFoundException {
+    public ResultSetDTO getResultSetById(Long id) throws ResultSetNotFoundException {
         Optional<ResultSet> existingResultSet = resultSetRepository.findById(id);
         if (existingResultSet.isEmpty()) {
-            throw new ResultDataSetNotFoundException(id);
+            throw new ResultSetNotFoundException(id);
         }
         return map(existingResultSet.get());
     }
@@ -72,6 +72,10 @@ public class ResultSetService {
     public Page<ResultSetDTO> getPagedResultSets(int pageNumber) {
         var res = resultSetRepository.findAll(PageRequest.of(pageNumber, 20, Sort.Direction.ASC, "id"));
         return res.map(this::map);
+    }
+
+    public boolean exists(long resultSetId) {
+        return resultSetRepository.existsById(resultSetId);
     }
 
     /**

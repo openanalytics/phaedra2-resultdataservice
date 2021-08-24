@@ -60,6 +60,7 @@ public class Phaedra2ResultDataServiceApplication {
         config.setDriverClassName(driverClassName);
         config.setUsername(environment.getProperty(PROP_DB_USERNAME));
         config.setPassword(environment.getProperty(PROP_DB_PASSWORD));
+        config.setAutoCommit(true);
 
         String schema = environment.getProperty(PROP_DB_SCHEMA);
         if (!StringUtils.isEmpty(schema)) {
