@@ -43,7 +43,7 @@
             <column name="feature_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
-            <column name="values" type="float[]">
+            <column name="values" type="float4[]">
                 <constraints nullable="true"/>
             </column>
             <column name="status_code" type="status_code">

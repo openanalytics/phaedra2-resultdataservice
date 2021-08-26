@@ -33,7 +33,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         input2.setStatusCode(StatusCode.SUCCESS);
         input2.setStatusMessage("Ok");
         input2.setFeatureId(42L);
-        input2.setValues(new double[]{1.0, 2.0, 3.0, 5.0, 8.0});
+        input2.setValues(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F});
 
         var res2 = performRequest(post("/resultset/1/resultdata", input2), HttpStatus.CREATED, ResultDataDTO.class);
         Assertions.assertEquals(1, res2.getId());
@@ -41,7 +41,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         Assertions.assertEquals(StatusCode.SUCCESS, res2.getStatusCode());
         Assertions.assertEquals("Ok", res2.getStatusMessage());
         Assertions.assertEquals(42L, res2.getFeatureId());
-        Assertions.assertArrayEquals(new double[]{1.0, 2.0, 3.0, 5.0, 8.0}, res2.getValues());
+        Assertions.assertArrayEquals(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F}, res2.getValues());
 
         // 3. get specific ResultData
         var res3 = performRequest(get("/resultset/1/resultdata/1"), HttpStatus.OK, ResultDataDTO.class);
@@ -50,7 +50,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         Assertions.assertEquals(StatusCode.SUCCESS, res3.getStatusCode());
         Assertions.assertEquals("Ok", res3.getStatusMessage());
         Assertions.assertEquals(42L, res3.getFeatureId());
-        Assertions.assertArrayEquals(new double[]{1.0, 2.0, 3.0, 5.0, 8.0}, res3.getValues());
+        Assertions.assertArrayEquals(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F}, res3.getValues());
 
         // 4. Delete resultData
         performRequest(delete("/resultset/1/resultdata/1"), HttpStatus.NO_CONTENT);
@@ -83,7 +83,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         input3.setStatusCode(StatusCode.SUCCESS);
         input3.setStatusMessage("Ok");
         input3.setFeatureId(42L);
-        input3.setValues(new double[]{1.0, 2.0, 3.0, 5.0, 8.0});
+        input3.setValues(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F});
 
         var res3 = performRequest(post("/resultset/1/resultdata", input3), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"ResultSet is already completed, cannot add new ResultData to this set.\",\"status\":\"error\"}", res3);
@@ -107,7 +107,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         input2.setStatusCode(StatusCode.SUCCESS);
         input2.setStatusMessage("Ok");
         input2.setFeatureId(42L);
-        input2.setValues(new double[]{1.0, 2.0, 3.0, 5.0, 8.0});
+        input2.setValues(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F});
 
         performRequest(post("/resultset/1/resultdata", input2), HttpStatus.CREATED);
 
@@ -139,7 +139,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         input2.setStatusCode(StatusCode.SUCCESS);
         input2.setStatusMessage("Ok");
         input2.setFeatureId(42L);
-        input2.setValues(new double[]{1.0, 2.0, 3.0, 5.0, 8.0});
+        input2.setValues(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F});
 
         performRequest(post("/resultset/1/resultdata", input2), HttpStatus.CREATED);
 
@@ -166,7 +166,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
             input.setStatusCode(StatusCode.SUCCESS);
             input.setStatusMessage("Ok");
             input.setFeatureId(42L);
-            input.setValues(new double[]{1.0, 2.0, 3.0, 5.0, 8.0});
+            input.setValues(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F});
             performRequest(post("/resultset/1/resultdata", input), HttpStatus.CREATED);
         }
 
@@ -177,7 +177,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
             input.setStatusCode(StatusCode.SUCCESS);
             input.setStatusMessage("Ok");
             input.setFeatureId(32L);
-            input.setValues(new double[]{1.0, 2.0, 3.0, 5.0, 8.0});
+            input.setValues(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F});
             performRequest(post("/resultset/2/resultdata", input), HttpStatus.CREATED);
         }
 
@@ -300,7 +300,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
             input2.setStatusCode(StatusCode.SUCCESS);
             input2.setStatusMessage("Ok");
             input2.setFeatureId(42L);
-            input2.setValues(new double[]{1.0, 2.0, 3.0, 5.0, 8.0});
+            input2.setValues(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F});
             performRequest(post("/resultset/" + i + "/resultdata", input2), HttpStatus.CREATED);
         }
 
@@ -366,7 +366,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         input3.setStatusCode(StatusCode.SUCCESS);
         input3.setStatusMessage("Ok");
         input3.setFeatureId(42L);
-        input3.setValues(new double[]{1.0, 2.0, 3.0, 5.0, 8.0});
+        input3.setValues(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F});
         var res3 = performRequest(post("/resultset/1/resultdata", input3), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{" +
             "\"createdTimestamp\":\"CreatedTimestamp must be null when creating ResultData\"," +
@@ -380,7 +380,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         input4.setStatusCode(StatusCode.SUCCESS);
         input4.setStatusMessage("Ok");
         input4.setFeatureId(42L);
-        input4.setValues(new double[]{1.0, 2.0, 3.0, 5.0, 8.0});
+        input4.setValues(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F});
         var res4 = performRequest(post("/resultset/1/resultdata", input4), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"exitCode\":\"ExitCode must be in the range [0-255]\"},\"status\":\"error\"}", res4);
 
@@ -390,7 +390,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         input5.setStatusCode(StatusCode.SUCCESS);
         input5.setStatusMessage("a".repeat(260));
         input5.setFeatureId(42L);
-        input5.setValues(new double[]{1.0, 2.0, 3.0, 5.0, 8.0});
+        input5.setValues(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F});
         var res5 = performRequest(post("/resultset/1/resultdata", input5), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"statusMessage\":\"StatusMessage may only contain 255 characters\"},\"status\":\"error\"}", res5);
     }

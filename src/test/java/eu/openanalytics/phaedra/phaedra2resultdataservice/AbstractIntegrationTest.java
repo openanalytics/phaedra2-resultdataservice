@@ -22,8 +22,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import javax.sql.DataSource;
@@ -64,7 +62,7 @@ abstract public class AbstractIntegrationTest {
     @Autowired
     private DataSource dataSource;
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * Clean tables and sequences before every test (this is aster than restarting the container and Spring context).
@@ -81,7 +79,7 @@ abstract public class AbstractIntegrationTest {
         }
     }
 
-    protected  <T> T performRequest(RequestBuilder requestBuilder, HttpStatus responseStatusCode, Class<T> resultType) throws Exception {
+    protected <T> T performRequest(RequestBuilder requestBuilder, HttpStatus responseStatusCode, Class<T> resultType) throws Exception {
         var mvcResult = mockMvc.perform(requestBuilder).andReturn();
 
         Assertions.assertEquals("application/json", mvcResult.getResponse().getContentType());

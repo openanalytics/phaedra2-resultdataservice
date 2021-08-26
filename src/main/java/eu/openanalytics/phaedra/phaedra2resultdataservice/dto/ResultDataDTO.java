@@ -1,7 +1,6 @@
 package eu.openanalytics.phaedra.phaedra2resultdataservice.dto;
 
 import eu.openanalytics.phaedra.phaedra2resultdataservice.dto.validation.OnCreate;
-import eu.openanalytics.phaedra.phaedra2resultdataservice.dto.validation.OnUpdate;
 import eu.openanalytics.phaedra.phaedra2resultdataservice.model.StatusCode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,7 +28,7 @@ public class ResultDataDTO {
     private Long featureId;
 
     @NotNull(message = "Values is mandatory", groups = {OnCreate.class})
-    private double[] values;
+    private float[] values;
 
     @NotNull(message = "StatusCode is mandatory", groups = {OnCreate.class})
     private StatusCode statusCode;

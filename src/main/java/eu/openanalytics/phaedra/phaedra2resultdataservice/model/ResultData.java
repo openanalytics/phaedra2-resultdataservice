@@ -17,7 +17,7 @@ public class ResultData {
 
     Long featureId;
 
-    double[] values;
+    float[] values;
 
     StatusCode statusCode;
 
