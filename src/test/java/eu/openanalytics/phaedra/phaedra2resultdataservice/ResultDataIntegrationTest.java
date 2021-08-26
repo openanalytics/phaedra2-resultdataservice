@@ -18,10 +18,11 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void simpleCreateAndGetTest() throws Exception {
         // 1. create simple ResultSet
-        var input1 = new ResultSetDTO();
-        input1.setProtocolId(1L);
-        input1.setPlateId(2L);
-        input1.setMeasId(3L);
+        var input1 = ResultSetDTO.builder()
+            .protocolId(1L)
+            .plateId(2L)
+            .measId(3L)
+            .build();
 
         var res1 = performRequest(post("/resultset", input1), HttpStatus.CREATED, ResultSetDTO.class);
 
@@ -63,18 +64,20 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void addDataToCompletedSet() throws Exception {
         // 1. create simple ResultSet
-        var input1 = new ResultSetDTO();
-        input1.setProtocolId(1L);
-        input1.setPlateId(2L);
-        input1.setMeasId(3L);
+        var input1 = ResultSetDTO.builder()
+            .protocolId(1L)
+            .plateId(2L)
+            .measId(3L)
+            .build();
 
         var res1 = performRequest(post("/resultset", input1), HttpStatus.CREATED, ResultSetDTO.class);
 
         Assertions.assertEquals(1, res1.getId());
 
         // 2. complete the ResultSet
-        var input2 = new ResultSetDTO();
-        input2.setOutcome("MyOutcome!");
+        var input2 = ResultSetDTO.builder()
+            .outcome("MyOutcome!")
+            .build();
         performRequest(put("/resultset/1", input2), HttpStatus.OK, ResultSetDTO.class);
 
         // 3. create simple ResultData
@@ -92,10 +95,11 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void removeDataFromCompletedSet() throws Exception {
         // 1. create simple ResultSet
-        var input1 = new ResultSetDTO();
-        input1.setProtocolId(1L);
-        input1.setPlateId(2L);
-        input1.setMeasId(3L);
+        var input1 = ResultSetDTO.builder()
+            .protocolId(1L)
+            .plateId(2L)
+            .measId(3L)
+            .build();
 
         var res1 = performRequest(post("/resultset", input1), HttpStatus.CREATED, ResultSetDTO.class);
 
@@ -112,8 +116,9 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         performRequest(post("/resultset/1/resultdata", input2), HttpStatus.CREATED);
 
         // 3. complete the ResultSet
-        var input3 = new ResultSetDTO();
-        input3.setOutcome("MyOutcome!");
+        var input3 = ResultSetDTO.builder()
+            .outcome("MyOutcome!")
+            .build();
         performRequest(put("/resultset/1", input3), HttpStatus.OK, ResultSetDTO.class);
 
         // 4. delete ResultData
@@ -124,10 +129,11 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void updateDataSet() throws Exception {
         // 1. create simple ResultSet
-        var input1 = new ResultSetDTO();
-        input1.setProtocolId(1L);
-        input1.setPlateId(2L);
-        input1.setMeasId(3L);
+        var input1 = ResultSetDTO.builder()
+            .protocolId(1L)
+            .plateId(2L)
+            .measId(3L)
+            .build();
 
         var res1 = performRequest(post("/resultset", input1), HttpStatus.CREATED, ResultSetDTO.class);
 
@@ -151,11 +157,12 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void testPagedQueries() throws Exception {
         // 1. create two ResultSets
-        for (int i = 1; i <= 2; i++) {
-            var input = new ResultSetDTO();
-            input.setProtocolId((long) i);
-            input.setPlateId((long) i);
-            input.setMeasId((long) i);
+        for (long i = 1; i <= 2; i++) {
+            var input = ResultSetDTO.builder()
+                .protocolId(i)
+                .plateId(i)
+                .measId(i)
+                .build();
             performRequest(post("/resultset", input), HttpStatus.CREATED, ResultSetDTO.class);
         }
 
@@ -252,10 +259,12 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         Assertions.assertEquals("{\"error\":\"ResultSet with id 42 not found!\",\"status\":\"error\"}", res2);
 
         // 3. create ResultSet
-        var input1 = new ResultSetDTO();
-        input1.setProtocolId(1L);
-        input1.setPlateId(2L);
-        input1.setMeasId(3L);
+        var input1 = ResultSetDTO.builder()
+            .protocolId(1L)
+            .plateId(2L)
+            .measId(3L)
+            .build();
+
         performRequest(post("/resultset", input1), HttpStatus.CREATED, ResultSetDTO.class);
 
         // 4. query using paginated endpoint -> just 200 but without results
@@ -274,10 +283,12 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         Assertions.assertEquals("{\"error\":\"ResultSet with id 1 not found!\",\"status\":\"error\"}", res1);
 
         // 2. create ResultSet
-        var input1 = new ResultSetDTO();
-        input1.setProtocolId(1L);
-        input1.setPlateId(2L);
-        input1.setMeasId(3L);
+        var input1 = ResultSetDTO.builder()
+            .protocolId(1L)
+            .plateId(2L)
+            .measId(3L)
+            .build();
+
         performRequest(post("/resultset", input1), HttpStatus.CREATED, ResultSetDTO.class);
 
         // 3. delete non-existing
@@ -288,11 +299,13 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void testDeleteSetNotOwnerOfData() throws Exception {
         // 1. create two ResultSets which each contain one ResultData
-        for (int i = 1; i <= 2; i++) {
-            var input = new ResultSetDTO();
-            input.setProtocolId((long) i);
-            input.setPlateId((long) i);
-            input.setMeasId((long) i);
+        for (long i = 1; i <= 2; i++) {
+            var input = ResultSetDTO.builder()
+                .protocolId(i)
+                .plateId(i)
+                .measId(i)
+                .build();
+
             performRequest(post("/resultset", input), HttpStatus.CREATED, ResultSetDTO.class);
 
             var input2 = new ResultDataDTO();
@@ -312,10 +325,12 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void testDeleteNonExistingData() throws Exception {
         // 1. create ResultSet
-        var input = new ResultSetDTO();
-        input.setProtocolId(1L);
-        input.setPlateId(2L);
-        input.setMeasId(3L);
+        var input = ResultSetDTO.builder()
+            .protocolId(1L)
+            .plateId(2L)
+            .measId(3L)
+            .build();
+
         performRequest(post("/resultset", input), HttpStatus.CREATED, ResultSetDTO.class);
 
         // 2. delete Dataset of this ResultSet (which does not exsits)
@@ -337,10 +352,11 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void testCreationValidationTest() throws Exception {
         // 1. create simple ResultSet
-        var input1 = new ResultSetDTO();
-        input1.setProtocolId(1L);
-        input1.setPlateId(2L);
-        input1.setMeasId(3L);
+        var input1 = ResultSetDTO.builder()
+            .protocolId(1L)
+            .plateId(2L)
+            .measId(3L)
+            .build();
 
         var res1 = performRequest(post("/resultset", input1), HttpStatus.CREATED, ResultSetDTO.class);
 

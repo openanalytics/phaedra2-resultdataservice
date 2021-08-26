@@ -17,10 +17,11 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void simpleCreateAndGetTest() throws Exception {
         // 1. create simple ResultSet
-        var input1 = new ResultSetDTO();
-        input1.setProtocolId(1L);
-        input1.setPlateId(2L);
-        input1.setMeasId(3L);
+        var input1 = ResultSetDTO.builder()
+            .protocolId(1L)
+            .plateId(2L)
+            .measId(3L)
+            .build();
 
         var res1 = performRequest(post("/resultset", input1), HttpStatus.CREATED, ResultSetDTO.class);
         Assertions.assertEquals(1L, res1.getId());
@@ -40,8 +41,9 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
         Assertions.assertNull(res2.getExecutionEndTimeStamp());
 
         // 3. update outcome
-        var input2 = new ResultSetDTO();
-        input2.setOutcome("MyOutcome!");
+        var input2 = ResultSetDTO.builder()
+            .outcome("MyOutcome!")
+            .build();
         var res3 = performRequest(put("/resultset/1", input2), HttpStatus.OK, ResultSetDTO.class);
         Assertions.assertEquals(1L, res3.getId());
         Assertions.assertEquals(2L, res3.getPlateId());
@@ -71,7 +73,7 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void testCreationValidationTest() throws Exception {
         // 1. missing fields
-        var input1 = new ResultSetDTO();
+        var input1 = ResultSetDTO.builder().build();
         var res1 = performRequest(post("/resultset", input1), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{" +
             "\"measId\":\"MeasId is mandatory\"," +
@@ -79,14 +81,16 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
             "\"protocolId\":\"ProtocolId is mandatory\"},\"status\":\"error\"}", res1);
 
         // 2. too many fields
-        var input2 = new ResultSetDTO();
-        input2.setPlateId(1L);
-        input2.setProtocolId(2L);
-        input2.setMeasId(3L);
-        input2.setId(1L);
-        input2.setOutcome("my outcome");
-        input2.setExecutionStartTimeStamp(LocalDateTime.now());
-        input2.setExecutionEndTimeStamp(LocalDateTime.now());
+        var input2 = ResultSetDTO.builder()
+            .plateId(1L)
+            .protocolId(2L)
+            .measId(3L)
+            .id(1L)
+            .outcome("my outcome")
+            .executionStartTimeStamp(LocalDateTime.now())
+            .executionEndTimeStamp(LocalDateTime.now())
+            .build();
+
         var res2 = performRequest(post("/resultset", input2), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{" +
             "\"executionEndTimeStamp\":\"ExecutionEndTimeStamp must be null when creating a ResultSet\"," +
@@ -105,24 +109,27 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void testUpdatingValidationTest() throws Exception {
         // 1. missing fields
-        var input1 = new ResultSetDTO();
+        var input1 = ResultSetDTO.builder().build();
         var res1 = performRequest(put("/resultset/1", input1), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"outcome\":\"Outcome is mandatory when updating a ResultSet\"},\"status\":\"error\"}", res1);
 
         // 2. too long outcome
-        var input2 = new ResultSetDTO();
-        input2.setOutcome("a".repeat(260));
+        var input2 = ResultSetDTO.builder()
+            .outcome("a".repeat(260))
+            .build();
         var res2 = performRequest(put("/resultset/1", input2), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"outcome\":\"Outcome may only contain 255 characters\"},\"status\":\"error\"}", res2);
 
         // 3. too many fields
-        var input3 = new ResultSetDTO();
-        input3.setId(1L);
-        input3.setPlateId(1L);
-        input3.setProtocolId(1L);
-        input3.setMeasId(1L);
-        input3.setExecutionStartTimeStamp(LocalDateTime.now());
-        input3.setExecutionEndTimeStamp(LocalDateTime.now());
+        var input3 = ResultSetDTO.builder()
+            .id(1L)
+            .plateId(1L)
+            .protocolId(1L)
+            .measId(1L)
+            .executionStartTimeStamp(LocalDateTime.now())
+            .executionEndTimeStamp(LocalDateTime.now())
+            .build();
+
         var res3 = performRequest(put("/resultset/1", input3), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{" +
             "\"executionEndTimeStamp\":\"ExecutionEndTimeStamp cannot be changed\"," +
@@ -136,8 +143,9 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void updateNotExistingResultSet() throws Exception {
-        var input1 = new ResultSetDTO();
-        input1.setOutcome("MyOutcome!");
+        var input1 = ResultSetDTO.builder()
+            .outcome("MyOutcome!")
+            .build();
         var res1 = performRequest(put("/resultset/4", input1), HttpStatus.NOT_FOUND);
         Assertions.assertEquals("{\"error\":\"ResultSet with id 4 not found!\",\"status\":\"error\"}", res1);
     }
@@ -152,21 +160,24 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void testDataSetAlreadyCompleted() throws Exception {
         // 1. create simple ResultSet
-        var input1 = new ResultSetDTO();
-        input1.setProtocolId(1L);
-        input1.setPlateId(2L);
-        input1.setMeasId(3L);
+        var input1 = ResultSetDTO.builder()
+            .protocolId(1L)
+            .plateId(2L)
+            .measId(3L)
+            .build();
 
         performRequest(post("/resultset", input1), HttpStatus.CREATED, ResultSetDTO.class);
 
         // 2. update outcome
-        var input2 = new ResultSetDTO();
-        input2.setOutcome("MyOutcome!");
+        var input2 = ResultSetDTO.builder()
+            .outcome("MyOutcome!")
+            .build();
         performRequest(put("/resultset/1", input2), HttpStatus.OK, ResultSetDTO.class);
 
         // 3. update outcome again
-        var input3 = new ResultSetDTO();
-        input3.setOutcome("MyOutcome33!");
+        var input3 = ResultSetDTO.builder()
+            .outcome("MyOutcome33!")
+            .build();
         var res3 = performRequest(put("/resultset/1", input3), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"ResultDataSet already contains a complete message or end timestamp.\",\"status\":\"error\"}", res3);
     }
@@ -174,11 +185,13 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void testPagedQueries() throws Exception {
         // 1. create 35 ResultSets
-        for (int i = 1; i <= 35; i++) {
-            var input = new ResultSetDTO();
-            input.setProtocolId((long) i);
-            input.setPlateId((long) i);
-            input.setMeasId((long) i);
+        for (long i = 1; i <= 35; i++) {
+            var input = ResultSetDTO.builder()
+                .protocolId(i)
+                .plateId(i)
+                .measId(i)
+                .build();
+
             performRequest(post("/resultset", input), HttpStatus.CREATED, ResultSetDTO.class);
         }
 

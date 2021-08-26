@@ -41,8 +41,7 @@ public class ResultSetController extends BaseController {
     @ResponseBody
     @PutMapping(path = "/resultset/{id}", produces = {"application/json"}, consumes = {"application/json"})
     public ResultSetDTO updateResultSet(@Validated(OnUpdate.class) @RequestBody ResultSetDTO resultSetDTO, @PathVariable Long id) throws ResultSetAlreadyCompletedException, ResultSetNotFoundException {
-        resultSetDTO.setId(id);
-        return resultSetService.updateOutcome(resultSetDTO);
+        return resultSetService.updateOutcome(resultSetDTO.withId(id));
     }
 
     @DeleteMapping("/resultset/{id}")
