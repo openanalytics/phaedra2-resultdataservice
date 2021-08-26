@@ -29,12 +29,13 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         Assertions.assertEquals(1, res1.getId());
 
         // 2. create simple ResultData
-        var input2 = new ResultDataDTO();
-        input2.setExitCode(0);
-        input2.setStatusCode(StatusCode.SUCCESS);
-        input2.setStatusMessage("Ok");
-        input2.setFeatureId(42L);
-        input2.setValues(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F});
+        var input2 = ResultDataDTO.builder()
+            .exitCode(0)
+            .statusCode(StatusCode.SUCCESS)
+            .statusMessage("Ok")
+            .featureId(42L)
+            .values(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F})
+            .build();
 
         var res2 = performRequest(post("/resultset/1/resultdata", input2), HttpStatus.CREATED, ResultDataDTO.class);
         Assertions.assertEquals(1, res2.getId());
@@ -81,12 +82,13 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         performRequest(put("/resultset/1", input2), HttpStatus.OK, ResultSetDTO.class);
 
         // 3. create simple ResultData
-        var input3 = new ResultDataDTO();
-        input3.setExitCode(0);
-        input3.setStatusCode(StatusCode.SUCCESS);
-        input3.setStatusMessage("Ok");
-        input3.setFeatureId(42L);
-        input3.setValues(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F});
+        var input3 = ResultDataDTO.builder()
+            .exitCode(0)
+            .statusCode(StatusCode.SUCCESS)
+            .statusMessage("Ok")
+            .featureId(42L)
+            .values(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F})
+            .build();
 
         var res3 = performRequest(post("/resultset/1/resultdata", input3), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"ResultSet is already completed, cannot add new ResultData to this set.\",\"status\":\"error\"}", res3);
@@ -106,12 +108,13 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         Assertions.assertEquals(1, res1.getId());
 
         // 2. create simple ResultData
-        var input2 = new ResultDataDTO();
-        input2.setExitCode(0);
-        input2.setStatusCode(StatusCode.SUCCESS);
-        input2.setStatusMessage("Ok");
-        input2.setFeatureId(42L);
-        input2.setValues(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F});
+        var input2 = ResultDataDTO.builder()
+            .exitCode(0)
+            .statusCode(StatusCode.SUCCESS)
+            .statusMessage("Ok")
+            .featureId(42L)
+            .values(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F})
+            .build();
 
         performRequest(post("/resultset/1/resultdata", input2), HttpStatus.CREATED);
 
@@ -140,12 +143,13 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         Assertions.assertEquals(1, res1.getId());
 
         // 2. create simple ResultData
-        var input2 = new ResultDataDTO();
-        input2.setExitCode(0);
-        input2.setStatusCode(StatusCode.SUCCESS);
-        input2.setStatusMessage("Ok");
-        input2.setFeatureId(42L);
-        input2.setValues(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F});
+        var input2 = ResultDataDTO.builder()
+            .exitCode(0)
+            .statusCode(StatusCode.SUCCESS)
+            .statusMessage("Ok")
+            .featureId(42L)
+            .values(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F})
+            .build();
 
         performRequest(post("/resultset/1/resultdata", input2), HttpStatus.CREATED);
 
@@ -168,23 +172,25 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
 
         // 2. create 25 ResultDatas for ResultSet 1
         for (int i = 1; i <= 25; i++) {
-            var input = new ResultDataDTO();
-            input.setExitCode(0);
-            input.setStatusCode(StatusCode.SUCCESS);
-            input.setStatusMessage("Ok");
-            input.setFeatureId(42L);
-            input.setValues(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F});
+            var input = ResultDataDTO.builder()
+                .exitCode(0)
+                .statusCode(StatusCode.SUCCESS)
+                .statusMessage("Ok")
+                .featureId(42L)
+                .values(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F})
+                .build();
             performRequest(post("/resultset/1/resultdata", input), HttpStatus.CREATED);
         }
 
         // 3. create 15 ResultDatas for ResultSet 2
         for (int i = 1; i <= 15; i++) {
-            var input = new ResultDataDTO();
-            input.setExitCode(0);
-            input.setStatusCode(StatusCode.SUCCESS);
-            input.setStatusMessage("Ok");
-            input.setFeatureId(32L);
-            input.setValues(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F});
+            var input = ResultDataDTO.builder()
+                .exitCode(0)
+                .statusCode(StatusCode.SUCCESS)
+                .statusMessage("Ok")
+                .featureId(32L)
+                .values(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F})
+                .build();
             performRequest(post("/resultset/2/resultdata", input), HttpStatus.CREATED);
         }
 
@@ -308,12 +314,14 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
 
             performRequest(post("/resultset", input), HttpStatus.CREATED, ResultSetDTO.class);
 
-            var input2 = new ResultDataDTO();
-            input2.setExitCode(0);
-            input2.setStatusCode(StatusCode.SUCCESS);
-            input2.setStatusMessage("Ok");
-            input2.setFeatureId(42L);
-            input2.setValues(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F});
+            var input2 = ResultDataDTO.builder()
+                .exitCode(0)
+                .statusCode(StatusCode.SUCCESS)
+                .statusMessage("Ok")
+                .featureId(42L)
+                .values(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F})
+                .build();
+
             performRequest(post("/resultset/" + i + "/resultdata", input2), HttpStatus.CREATED);
         }
 
@@ -363,7 +371,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         Assertions.assertEquals(1, res1.getId());
 
         // 2. test missing fields
-        var input2 = new ResultDataDTO();
+        var input2 = ResultDataDTO.builder().build();
         var res2 = performRequest(post("/resultset/1/resultdata", input2), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{" +
             "\"exitCode\":\"ExitCode is mandatory\"," +
@@ -374,15 +382,17 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
             "},\"status\":\"error\"}", res2);
 
         // 3. too many fields
-        var input3 = new ResultDataDTO();
-        input3.setResultSetId(1L);
-        input3.setId(10L);
-        input3.setCreatedTimestamp(LocalDateTime.now());
-        input3.setExitCode(0);
-        input3.setStatusCode(StatusCode.SUCCESS);
-        input3.setStatusMessage("Ok");
-        input3.setFeatureId(42L);
-        input3.setValues(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F});
+        var input3 = ResultDataDTO.builder()
+            .resultSetId(1L)
+            .id(10L)
+            .createdTimestamp(LocalDateTime.now())
+            .exitCode(0)
+            .statusCode(StatusCode.SUCCESS)
+            .statusMessage("Ok")
+            .featureId(42L)
+            .values(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F})
+            .build();
+
         var res3 = performRequest(post("/resultset/1/resultdata", input3), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{" +
             "\"createdTimestamp\":\"CreatedTimestamp must be null when creating ResultData\"," +
@@ -391,24 +401,29 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
             "},\"status\":\"error\"}", res3);
 
         // 4. validate exitcode
-        var input4 = new ResultDataDTO();
-        input4.setExitCode(260);
-        input4.setStatusCode(StatusCode.SUCCESS);
-        input4.setStatusMessage("Ok");
-        input4.setFeatureId(42L);
-        input4.setValues(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F});
+        var input4 = ResultDataDTO.builder()
+            .exitCode(260)
+            .statusCode(StatusCode.SUCCESS)
+            .statusMessage("Ok")
+            .featureId(42L)
+            .values(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F})
+            .build();
         var res4 = performRequest(post("/resultset/1/resultdata", input4), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"exitCode\":\"ExitCode must be in the range [0-255]\"},\"status\":\"error\"}", res4);
 
         // 5. too long status message
-        var input5 = new ResultDataDTO();
-        input5.setExitCode(255);
-        input5.setStatusCode(StatusCode.SUCCESS);
-        input5.setStatusMessage("a".repeat(260));
-        input5.setFeatureId(42L);
-        input5.setValues(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F});
+        var input5 = ResultDataDTO.builder()
+            .exitCode(255)
+            .statusCode(StatusCode.SUCCESS)
+            .statusMessage("a".repeat(260))
+            .featureId(42L)
+            .values(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F})
+            .build();
+
         var res5 = performRequest(post("/resultset/1/resultdata", input5), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"statusMessage\":\"StatusMessage may only contain 255 characters\"},\"status\":\"error\"}", res5);
+
+        // 6. invalid status message
     }
 
 }
