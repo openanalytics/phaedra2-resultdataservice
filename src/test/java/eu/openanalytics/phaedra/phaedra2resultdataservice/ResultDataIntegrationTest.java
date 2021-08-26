@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -424,6 +425,14 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"statusMessage\":\"StatusMessage may only contain 255 characters\"},\"status\":\"error\"}", res5);
 
         // 6. invalid status message
+        var res6 = performRequest(post("/resultset/1/resultdata", new HashMap<>() {{
+            put("exitCode", 10);
+            put("statusCode", "INVALID_STATUSCODE");
+            put("statusMesage", "test");
+            put("featureId", 42L);
+            put("values", new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F});
+        }}), HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"statusCode\":\"Invalid value provided\"},\"status\":\"error\"}", res6);
     }
 
 }
