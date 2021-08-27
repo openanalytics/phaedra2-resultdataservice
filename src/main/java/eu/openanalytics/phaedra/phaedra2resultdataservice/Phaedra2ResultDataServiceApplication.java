@@ -9,17 +9,18 @@ import liquibase.integration.spring.SpringLiquibase;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 import java.time.Clock;
-import java.util.Properties;
 
 @SpringBootApplication
-@EnableEurekaClient
+@EnableDiscoveryClient
+@EnableScheduling
 public class Phaedra2ResultDataServiceApplication {
 
     private final Environment environment;
@@ -37,7 +38,6 @@ public class Phaedra2ResultDataServiceApplication {
 
     public static void main(String[] args) {
         var app = new SpringApplication(Phaedra2ResultDataServiceApplication.class);
-        app.setDefaultProperties(getDefaultProperties());
         app.run(args);
     }
 
@@ -93,14 +93,6 @@ public class Phaedra2ResultDataServiceApplication {
     @Bean
     public Clock clock() {
         return Clock.systemDefaultZone();
-    }
-
-    private static Properties getDefaultProperties() {
-        var properties = new Properties();
-
-        properties.put("server.servlet.context-path", "/phaedra/resultdata-service");
-
-        return properties;
     }
 
 }
