@@ -75,6 +75,14 @@ public class ResultDataService {
         return map(res.get());
     }
 
+    public Page<ResultDataDTO> getPagedResultDataByFeatureId(long resultSetId, Integer featureId, Integer page) throws ResultSetNotFoundException {
+        if (!resultSetService.exists(resultSetId)) {
+            throw new ResultSetNotFoundException(resultSetId);
+        }
+        var res = resultDataRepository.findAllByResultSetIdAndFeatureId(PageRequest.of(page, 20, Sort.Direction.ASC, "id"), resultSetId, featureId);
+        return res.map(this::map);
+    }
+
     public void delete(long resultSetId, long resultDataId) throws ResultSetNotFoundException, ResultDataNotFoundException, InvalidResultSetIdException, ResultSetAlreadyCompletedException {
         var resultSet = resultSetService.getResultSetById(resultSetId);
         if (resultSet.getOutcome() != null) {

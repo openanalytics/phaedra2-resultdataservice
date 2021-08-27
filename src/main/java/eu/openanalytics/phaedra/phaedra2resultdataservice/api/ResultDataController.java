@@ -8,6 +8,7 @@ import eu.openanalytics.phaedra.phaedra2resultdataservice.exception.ResultDataNo
 import eu.openanalytics.phaedra.phaedra2resultdataservice.exception.ResultSetAlreadyCompletedException;
 import eu.openanalytics.phaedra.phaedra2resultdataservice.exception.ResultSetNotFoundException;
 import eu.openanalytics.phaedra.phaedra2resultdataservice.service.ResultDataService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,8 +43,15 @@ public class ResultDataController extends BaseController {
 
     @ResponseBody
     @GetMapping(path = "/resultset/{resultSetId}/resultdata", produces = {"application/json"})
-    public PageDTO<ResultDataDTO> getResultData(@PathVariable long resultSetId, @RequestParam(name = "page", required = false, defaultValue = "0") Integer page) throws ResultSetNotFoundException {
-        var pages = resultDataService.getPagedResultData(resultSetId, page);
+    public PageDTO<ResultDataDTO> getResultData(@PathVariable long resultSetId,
+                                                @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+                                                @RequestParam(name = "featureId", required = false) Integer featureId) throws ResultSetNotFoundException {
+        Page<ResultDataDTO> pages;
+        if (featureId == null) {
+            pages = resultDataService.getPagedResultData(resultSetId, page);
+        } else {
+            pages = resultDataService.getPagedResultDataByFeatureId(resultSetId, featureId, page);
+        }
         return PageDTO.map(pages);
     }
 

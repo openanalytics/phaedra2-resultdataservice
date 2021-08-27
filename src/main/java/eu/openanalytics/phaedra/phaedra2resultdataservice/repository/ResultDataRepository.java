@@ -9,5 +9,7 @@ public interface ResultDataRepository extends PagingAndSortingRepository<ResultD
 
     Page<ResultData> findAllByResultSetId(Pageable pageable, long resultSetId);
 
+    Page<ResultData> findAllByResultSetIdAndFeatureId(Pageable pageable, long resultSetId, long featureId);
+
 }
 
