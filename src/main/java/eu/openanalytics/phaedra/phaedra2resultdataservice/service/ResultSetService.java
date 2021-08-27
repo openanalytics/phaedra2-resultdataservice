@@ -34,6 +34,8 @@ public class ResultSetService {
             resultSetDTO.getMeasId(),
             LocalDateTime.now(clock),
             null,
+            null,
+            null,
             null);
 
         return save(resultSet);
@@ -48,6 +50,8 @@ public class ResultSetService {
             throw new ResultSetAlreadyCompletedException();
         }
         var resultSet = existingResultSet.get()
+            .withErrors(new ResultSet.ErrorHolder(resultSetDTO.getErrors()))
+            .withErrorsText(resultSetDTO.getErrorsText())
             .withOutcome(resultSetDTO.getOutcome())
             .withExecutionEndTimeStamp(LocalDateTime.now(clock));
         return save(resultSet);
@@ -89,7 +93,9 @@ public class ResultSetService {
             resultSet.getMeasId(),
             resultSet.getExecutionStartTimeStamp(),
             resultSet.getExecutionEndTimeStamp(),
-            resultSet.getOutcome()
+            resultSet.getOutcome(),
+            resultSet.getErrors().getErrors(),
+            resultSet.getErrorsText()
         );
     }
 

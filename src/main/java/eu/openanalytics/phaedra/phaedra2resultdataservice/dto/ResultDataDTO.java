@@ -5,7 +5,6 @@ import eu.openanalytics.phaedra.phaedra2resultdataservice.model.StatusCode;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 import lombok.With;

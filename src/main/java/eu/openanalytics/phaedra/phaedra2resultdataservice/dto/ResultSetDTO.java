@@ -13,6 +13,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Value
 @Builder
@@ -50,4 +51,11 @@ public class ResultSetDTO {
     @Length(groups = OnUpdate.class, max = 255, message = "Outcome may only contain 255 characters")
     String outcome;
 
+    @Null(groups = OnCreate.class, message = "Errors must be null when creating a ResultSet")
+    @NotNull(groups = OnUpdate.class, message = "Errors is mandatory when updating a ResultSet")
+    List<ErrorDTO> errors;
+
+    @Null(groups = OnCreate.class, message = "ErrorsText must be null when creating a ResultSet")
+    @NotNull(groups = OnUpdate.class, message = "ErrorsText is mandatory when updating a ResultSet")
+    String errorsText;
 }

@@ -27,6 +27,12 @@
             <column name="outcome" type="varchar(255)">
                 <constraints nullable="true"/>
             </column>
+            <column name="errors" type="jsonb">
+                <constraints nullable="true"/>
+            </column>
+            <column name="errors_text" type="text">
+                <constraints nullable="true"/>
+            </column>
         </createTable>
 
         <sql>CREATE TYPE status_code AS ENUM ('SUCCESS', 'WORKER_INTERNAL_ERROR', 'SCRIPT_ERROR');</sql>
