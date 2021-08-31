@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.openanalytics.phaedra.phaedra2resultdataservice.dto.ErrorDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.With;
@@ -79,7 +78,6 @@ public class ResultSet {
     }
 
     @Data
-    @NoArgsConstructor
     @AllArgsConstructor
     public static class ErrorHolder {
         List<ErrorDTO> errors;

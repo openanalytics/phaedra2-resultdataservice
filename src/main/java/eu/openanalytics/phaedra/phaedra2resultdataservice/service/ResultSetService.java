@@ -94,7 +94,7 @@ public class ResultSetService {
             resultSet.getExecutionStartTimeStamp(),
             resultSet.getExecutionEndTimeStamp(),
             resultSet.getOutcome(),
-            resultSet.getErrors().getErrors(),
+            resultSet.getErrors() != null  ? resultSet.getErrors().getErrors() : null,
             resultSet.getErrorsText()
         );
     }

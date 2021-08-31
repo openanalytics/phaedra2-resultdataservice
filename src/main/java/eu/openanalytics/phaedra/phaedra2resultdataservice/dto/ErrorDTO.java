@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 public class ErrorDTO {
     LocalDateTime timestamp;
     String exceptionClassName;
+    String exceptionMessage;
     String description;
     Long featureId;
     String featureName;
