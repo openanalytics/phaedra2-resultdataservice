@@ -15,7 +15,8 @@ pipeline {
         stage('Checkout phaedra2-parent') {
             steps {
                 dir('../phaedra2-parent') {
-                    git url: 'https://scm.openanalytics.eu/git/phaedra2-parent', credentialsId: 'oa-jenkins'
+//                    git url: 'https://scm.openanalytics.eu/git/phaedra2-parent', credentialsId: 'oa-jenkins'
+                    checkout([$class: 'GitSCM', branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[credentialsId: 'oa-jenkins', url: 'https://scm.openanalytics.eu/git/phaedra2-parent']]])
                 }
             }
         }
