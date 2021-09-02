@@ -110,7 +110,7 @@ pipeline {
             steps {
                 container('builder') {
                     sh  """
-                        aws --region 'eu-west-1' s3 cp /home/jenkins/maven-repository s3://oa-phaedra2-jenkins-maven-cache/
+                        aws --region 'eu-west-1' s3 cp --recursive /home/jenkins/maven-repository s3://oa-phaedra2-jenkins-maven-cache/
                         """
                 }
             }
