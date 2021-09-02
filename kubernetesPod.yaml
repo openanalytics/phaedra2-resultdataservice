@@ -10,18 +10,18 @@ spec:
      image: 196229073436.dkr.ecr.eu-west-1.amazonaws.com/openanalytics/phaedra2-build-container:latest
      securityContext:
         privileged: true
-     volumeMounts:
-      - mountPath: /home/jenkins/maven-repository
-        name: ci-phaedra2-maven-repository
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: "ci-phaedra2-maven-repository"
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 20Gi
+     #volumeMounts:
+      #- mountPath: /home/jenkins/maven-repository
+        #name: ci-phaedra2-maven-repository
+#---
+#apiVersion: v1
+#kind: PersistentVolumeClaim
+#metadata:
+  #name: "ci-phaedra2-maven-repository"
+#spec:
+  #accessModes:
+    #- ReadWriteMany
+  #resources:
+    #requests:
+      #storage: 20Gi
 
