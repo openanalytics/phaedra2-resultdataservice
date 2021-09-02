@@ -34,6 +34,17 @@ pipeline {
             }
         }
 
+        stage('Load maven cache repository from S3') {
+            steps {
+                container('builder') {
+                    sh  """
+                        aws --region 'eu-west-1' s3 cp --recursive s3://oa-phaedra2-jenkins-maven-cache/  /home/jenkins/maven-repository
+                        ls -1  /home/jenkins/maven-repository
+                        """
+                }
+            }
+        }
+
         stage('Build Phaedra2 commons') {
             steps {
                 dir('../phaedra2-commons') {
@@ -56,7 +67,7 @@ pipeline {
 
                     configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
 
-                        sh 'mvn -s $MAVEN_SETTINGS_RSB -U clean package -DskipTests -Ddockerfile.skip -Dmaven.repo.local=/home/jenkins/maven-repository'
+                        sh 'mvn -s $MAVEN_SETTINGS_RSB -U clean install -DskipTests -Ddockerfile.skip -Dmaven.repo.local=/home/jenkins/maven-repository'
 
                     }
 
