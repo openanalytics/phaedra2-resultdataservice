@@ -40,7 +40,7 @@ pipeline {
 
                         configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
 
-                            sh 'mvn -s $MAVEN_SETTINGS_RSB -U clean install'
+                            sh 'mvn -s $MAVEN_SETTINGS_RSB -U clean install -Dmaven.repo.local=/home/jenkins/maven-repository'
 
                         }
 
@@ -55,7 +55,7 @@ pipeline {
 
                     configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
 
-                        sh 'mvn -s $MAVEN_SETTINGS_RSB -U clean package -DskipTests'
+                        sh 'mvn -s $MAVEN_SETTINGS_RSB -U clean package -DskipTests -Dmaven.repo.local=/home/jenkins/maven-repository'
 
                     }
 
@@ -69,7 +69,7 @@ pipeline {
 
                     configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
 
-                        sh 'mvn -s $MAVEN_SETTINGS_RSB test'
+                        sh 'mvn -s $MAVEN_SETTINGS_RSB test -Dmaven.repo.local=/home/jenkins/maven-repository'
 
                     }
 
@@ -83,7 +83,7 @@ pipeline {
 
                     configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
 
-                        sh 'mvn -s $MAVEN_SETTINGS_RSB mvn dockerfile:build -Ddocker.repoPrefix=${env.REPO_PREFIX}'
+                        sh 'mvn -s $MAVEN_SETTINGS_RSB mvn dockerfile:build -Ddocker.repoPrefix=${env.REPO_PREFIX} -Dmaven.repo.local=/home/jenkins/maven-repository'
 
                     }
 
@@ -91,7 +91,7 @@ pipeline {
             }
         }
 
-        stage('push to OA registry') {
+        stage('Push to OA registry') {
             steps {
                 container('builder') {
                     sh  """
@@ -101,12 +101,21 @@ pipeline {
                         url          : "",
                         credentialsId: "openanalytics-dockerhub"]) {
 
-                        sh 'mvn -s $MAVEN_SETTINGS_RSB mvn dockerfile:push -Ddocker.repoPrefix=${${env.REPO_PREFIX}}'
+                        sh 'mvn -s $MAVEN_SETTINGS_RSB mvn dockerfile:push -Ddocker.repoPrefix=${env.REPO_PREFIX} -Dmaven.repo.local=/home/jenkins/maven-repository'
                     }
                 }
             }
         }
 
+        stage('Cache maven repository to S3') {
+            steps {
+                container('builder') {
+                    sh  """
+                        aws --region 'eu-west-1' s3 cp /home/jenkins/maven-repository s3://oa-phaedra2-jenkins-maven-cache/
+                        """
+                }
+            }
+        }
 
     }
 
