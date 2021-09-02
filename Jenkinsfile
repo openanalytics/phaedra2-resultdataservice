@@ -39,7 +39,6 @@ pipeline {
                 container('builder') {
                     sh  """
                         aws --region 'eu-west-1' s3 sync s3://oa-phaedra2-jenkins-maven-cache/  /home/jenkins/maven-repository --quiet
-                        ls -1  /home/jenkins/maven-repository
                         """
                 }
             }
@@ -52,7 +51,7 @@ pipeline {
 
                         configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
 
-                            sh 'mvn -s $MAVEN_SETTINGS_RSB -U clean install -Dmaven.repo.local=/home/jenkins/maven-repository'
+                            sh 'mvn -s $MAVEN_SETTINGS_RSB -U clean install -Dmaven.repo.local=/home/jenkins/maven-repository -DskipTests'
 
                         }
 
