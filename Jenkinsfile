@@ -15,8 +15,26 @@ pipeline {
         stage('Checkout phaedra2-parent') {
             steps {
                 dir('../phaedra2-parent') {
-//                    git url: 'https://scm.openanalytics.eu/git/phaedra2-parent', credentialsId: 'oa-jenkins'
                     checkout([$class: 'GitSCM', branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[credentialsId: 'oa-jenkins', url: 'https://scm.openanalytics.eu/git/phaedra2-parent']]])
+                }
+                dir('../phaedra2-commons') {
+                    checkout([$class: 'GitSCM', branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[credentialsId: 'oa-jenkins', url: 'https://scm.openanalytics.eu/git/phaedra2-commons']]])
+                }
+            }
+        }
+
+        stage('Build Phaedra2 commons') {
+            steps {
+                dir('../phaedra2-commons') {
+                    container('builder') {
+
+                        configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
+
+                            sh 'mvn -s $MAVEN_SETTINGS_RSB -U clean install'
+
+                        }
+
+                    }
                 }
             }
         }
