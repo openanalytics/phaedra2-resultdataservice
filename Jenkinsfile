@@ -83,7 +83,7 @@ pipeline {
 
                     configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
 
-                        sh 'mvn -s $MAVEN_SETTINGS_RSB mvn dockerfile:build -Ddocker.repoPrefix=${env.REPO_PREFIX} -Dmaven.repo.local=/home/jenkins/maven-repository'
+                        sh "mvn -s $MAVEN_SETTINGS_RSB mvn dockerfile:build -Ddocker.repoPrefix=${env.REPO_PREFIX} -Dmaven.repo.local=/home/jenkins/maven-repository"
 
                     }
 
@@ -94,12 +94,12 @@ pipeline {
         stage('Push to OA registry') {
             steps {
                 container('builder') {
-                    sh 'aws --region eu-west-1 ecr describe-repositories --repository-names ${env.REPO} || aws --region eu-west-1 ecr create-repository --repository-name ${env.REPO}'
+                    sh "aws --region eu-west-1 ecr describe-repositories --repository-names ${env.REPO} || aws --region eu-west-1 ecr create-repository --repository-name ${env.REPO}"
                     withDockerRegistry([
                         url          : "",
                         credentialsId: "openanalytics-dockerhub"]) {
 
-                        sh 'mvn -s $MAVEN_SETTINGS_RSB mvn dockerfile:push -Ddocker.repoPrefix=${env.REPO_PREFIX} -Dmaven.repo.local=/home/jenkins/maven-repository'
+                        sh "mvn -s $MAVEN_SETTINGS_RSB mvn dockerfile:push -Ddocker.repoPrefix=${env.REPO_PREFIX} -Dmaven.repo.local=/home/jenkins/maven-repository"
                     }
                 }
             }
