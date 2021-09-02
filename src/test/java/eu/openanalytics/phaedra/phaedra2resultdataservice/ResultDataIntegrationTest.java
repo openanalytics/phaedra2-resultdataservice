@@ -5,10 +5,15 @@ import eu.openanalytics.phaedra.phaedra2resultdataservice.dto.ResultSetDTO;
 import eu.openanalytics.phaedra.phaedra2resultdataservice.model.StatusCode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -79,6 +84,8 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         // 2. complete the ResultSet
         var input2 = ResultSetDTO.builder()
             .outcome("MyOutcome!")
+            .errors(Collections.emptyList())
+            .errorsText("")
             .build();
         performRequest(put("/resultset/1", input2), HttpStatus.OK, ResultSetDTO.class);
 
@@ -122,6 +129,8 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         // 3. complete the ResultSet
         var input3 = ResultSetDTO.builder()
             .outcome("MyOutcome!")
+            .errors(Collections.emptyList())
+            .errorsText("")
             .build();
         performRequest(put("/resultset/1", input3), HttpStatus.OK, ResultSetDTO.class);
 

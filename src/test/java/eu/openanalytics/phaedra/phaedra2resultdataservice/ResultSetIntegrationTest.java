@@ -3,10 +3,15 @@ package eu.openanalytics.phaedra.phaedra2resultdataservice;
 import eu.openanalytics.phaedra.phaedra2resultdataservice.dto.ResultSetDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -43,6 +48,8 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
         // 3. update outcome
         var input2 = ResultSetDTO.builder()
             .outcome("MyOutcome!")
+            .errors(Collections.emptyList())
+            .errorsText("")
             .build();
         var res3 = performRequest(put("/resultset/1", input2), HttpStatus.OK, ResultSetDTO.class);
         Assertions.assertEquals(1L, res3.getId());
@@ -111,17 +118,21 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
         // 1. missing fields
         var input1 = ResultSetDTO.builder().build();
         var res1 = performRequest(put("/resultset/1", input1), HttpStatus.BAD_REQUEST);
-        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"outcome\":\"Outcome is mandatory when updating a ResultSet\"},\"status\":\"error\"}", res1);
+        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"errors\":\"Errors is mandatory when updating a ResultSet\",\"errorsText\":\"ErrorsText is mandatory when updating a ResultSet\",\"outcome\":\"Outcome is mandatory when updating a ResultSet\"},\"status\":\"error\"}", res1);
 
         // 2. too long outcome
         var input2 = ResultSetDTO.builder()
             .outcome("a".repeat(260))
+            .errors(Collections.emptyList())
+            .errorsText("")
             .build();
         var res2 = performRequest(put("/resultset/1", input2), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"outcome\":\"Outcome may only contain 255 characters\"},\"status\":\"error\"}", res2);
 
         // 3. too many fields
         var input3 = ResultSetDTO.builder()
+            .errors(Collections.emptyList())
+            .errorsText("")
             .id(1L)
             .plateId(1L)
             .protocolId(1L)
@@ -145,6 +156,8 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
     public void updateNotExistingResultSet() throws Exception {
         var input1 = ResultSetDTO.builder()
             .outcome("MyOutcome!")
+            .errors(Collections.emptyList())
+            .errorsText("")
             .build();
         var res1 = performRequest(put("/resultset/4", input1), HttpStatus.NOT_FOUND);
         Assertions.assertEquals("{\"error\":\"ResultSet with id 4 not found!\",\"status\":\"error\"}", res1);
@@ -171,12 +184,16 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
         // 2. update outcome
         var input2 = ResultSetDTO.builder()
             .outcome("MyOutcome!")
+            .errors(Collections.emptyList())
+            .errorsText("")
             .build();
         performRequest(put("/resultset/1", input2), HttpStatus.OK, ResultSetDTO.class);
 
         // 3. update outcome again
         var input3 = ResultSetDTO.builder()
             .outcome("MyOutcome33!")
+            .errors(Collections.emptyList())
+            .errorsText("")
             .build();
         var res3 = performRequest(put("/resultset/1", input3), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"ResultDataSet already contains a complete message or end timestamp.\",\"status\":\"error\"}", res3);

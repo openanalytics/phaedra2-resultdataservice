@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -35,6 +36,7 @@ import java.sql.SQLException;
 @ContextConfiguration(classes = {Phaedra2ResultDataServiceApplication.class, IntegrationTestConfiguration.class})
 @WebAppConfiguration
 @AutoConfigureMockMvc
+@TestPropertySource(locations = "classpath:application-test.properties")
 abstract public class AbstractIntegrationTest {
 
 
