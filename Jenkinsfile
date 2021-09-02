@@ -20,7 +20,7 @@ pipeline {
             }
         }
 
-        stage('Checkout phaedra2-parent') {
+        stage('Checkout phaedra2-commons') {
             steps {
                 dir('../phaedra2-commons') {
                     checkout([$class: 'GitSCM', branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[credentialsId: 'oa-jenkins', url: 'https://scm.openanalytics.eu/git/phaedra2-commons']]])
@@ -53,7 +53,7 @@ pipeline {
                         sh 'mvn -s $MAVEN_SETTINGS_RSB -U clean package -DskipTests'
 
                     }
-                    
+
                 }
             }
         }
