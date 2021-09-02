@@ -17,6 +17,11 @@ pipeline {
                 dir('../phaedra2-parent') {
                     checkout([$class: 'GitSCM', branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[credentialsId: 'oa-jenkins', url: 'https://scm.openanalytics.eu/git/phaedra2-parent']]])
                 }
+            }
+        }
+
+        stage('Checkout phaedra2-parent') {
+            steps {
                 dir('../phaedra2-commons') {
                     checkout([$class: 'GitSCM', branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[credentialsId: 'oa-jenkins', url: 'https://scm.openanalytics.eu/git/phaedra2-commons']]])
                 }
@@ -40,9 +45,7 @@ pipeline {
         }
 
         stage('Build') {
-
             steps {
-
                 container('builder') {
 
                     configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
@@ -50,14 +53,13 @@ pipeline {
                         sh 'mvn -s $MAVEN_SETTINGS_RSB -U clean package -DskipTests'
 
                     }
+                    
                 }
             }
         }
 
         stage('Test') {
-
             steps {
-
                 container('builder') {
 
                     configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
@@ -65,14 +67,13 @@ pipeline {
                         sh 'mvn -s $MAVEN_SETTINGS_RSB test'
 
                     }
+
                 }
             }
         }
 
         stage('Build Docker image') {
-
             steps {
-
                 container('builder') {
 
                     configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
@@ -80,6 +81,7 @@ pipeline {
                         sh 'mvn -s $MAVEN_SETTINGS_RSB mvn dockerfile:build'
 
                     }
+
                 }
             }
         }
