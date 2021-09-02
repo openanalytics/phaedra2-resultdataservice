@@ -13,8 +13,10 @@ pipeline {
     stages {
 
         stage('Checkout phaedra2-parent') {
-            dir('../phaedra2-parent') {
-                git url: 'https://scm.openanalytics.eu/git/phaedra2-parent'
+            steps {
+                dir('../phaedra2-parent') {
+                    git url: 'https://scm.openanalytics.eu/git/phaedra2-parent'
+                }
             }
         }
 
