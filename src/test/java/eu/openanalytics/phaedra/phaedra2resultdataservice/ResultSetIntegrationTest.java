@@ -1,13 +1,9 @@
 package eu.openanalytics.phaedra.phaedra2resultdataservice;
 
-import eu.openanalytics.phaedra.phaedra2resultdataservice.dto.ResultSetDTO;
+import eu.openanalytics.phaedra.model.v2.dto.ResultSetDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDateTime;

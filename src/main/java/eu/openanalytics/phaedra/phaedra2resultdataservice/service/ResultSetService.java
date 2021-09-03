@@ -1,9 +1,10 @@
 package eu.openanalytics.phaedra.phaedra2resultdataservice.service;
 
-import eu.openanalytics.phaedra.phaedra2resultdataservice.dto.ResultSetDTO;
+import eu.openanalytics.phaedra.model.v2.ModelMapper;
+import eu.openanalytics.phaedra.model.v2.dto.ResultSetDTO;
 import eu.openanalytics.phaedra.phaedra2resultdataservice.exception.ResultSetAlreadyCompletedException;
 import eu.openanalytics.phaedra.phaedra2resultdataservice.exception.ResultSetNotFoundException;
-import eu.openanalytics.phaedra.phaedra2resultdataservice.model.ResultSet;
+import eu.openanalytics.phaedra.model.v2.runtime.ResultSet;
 import eu.openanalytics.phaedra.phaedra2resultdataservice.repository.ResultSetRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,24 +20,19 @@ import java.util.Optional;
 public class ResultSetService {
 
     private final ResultSetRepository resultSetRepository;
+    private final ModelMapper modelMapper;
     private final Clock clock;
 
-    public ResultSetService(ResultSetRepository resultSetRepository, Clock clock) {
+    public ResultSetService(ResultSetRepository resultSetRepository, ModelMapper modelMapper, Clock clock) {
         this.resultSetRepository = resultSetRepository;
+        this.modelMapper = modelMapper;
         this.clock = clock;
     }
 
     public ResultSetDTO create(ResultSetDTO resultSetDTO) {
-        var resultSet = new ResultSet(
-            null,
-            resultSetDTO.getProtocolId(),
-            resultSetDTO.getPlateId(),
-            resultSetDTO.getMeasId(),
-            LocalDateTime.now(clock),
-            null,
-            null,
-            null,
-            null);
+        var resultSet = modelMapper.map(resultSetDTO)
+            .executionStartTimeStamp(LocalDateTime.now(clock))
+            .build();
 
         return save(resultSet);
     }
@@ -49,11 +45,11 @@ public class ResultSetService {
         if (existingResultSet.get().getOutcome() != null || existingResultSet.get().getExecutionEndTimeStamp() != null) {
             throw new ResultSetAlreadyCompletedException();
         }
-        var resultSet = existingResultSet.get()
-            .withErrors(new ResultSet.ErrorHolder(resultSetDTO.getErrors()))
-            .withErrorsText(resultSetDTO.getErrorsText())
-            .withOutcome(resultSetDTO.getOutcome())
-            .withExecutionEndTimeStamp(LocalDateTime.now(clock));
+
+        ResultSet resultSet = modelMapper.map(resultSetDTO, existingResultSet.get())
+            .executionEndTimeStamp(LocalDateTime.now(clock))
+            .build();
+
         return save(resultSet);
     }
 
@@ -70,12 +66,12 @@ public class ResultSetService {
         if (existingResultSet.isEmpty()) {
             throw new ResultSetNotFoundException(id);
         }
-        return map(existingResultSet.get());
+        return modelMapper.map(existingResultSet.get()).build();
     }
 
     public Page<ResultSetDTO> getPagedResultSets(int pageNumber) {
         var res = resultSetRepository.findAll(PageRequest.of(pageNumber, 20, Sort.Direction.ASC, "id"));
-        return res.map(this::map);
+        return res.map((r) -> (modelMapper.map(r).build()));
     }
 
     public boolean exists(long resultSetId) {
@@ -83,28 +79,11 @@ public class ResultSetService {
     }
 
     /**
-     * Convenience-function to convert Entity to DTO.
-     */
-    private ResultSetDTO map(ResultSet resultSet) {
-        return new ResultSetDTO(
-            resultSet.getId(),
-            resultSet.getProtocolId(),
-            resultSet.getPlateId(),
-            resultSet.getMeasId(),
-            resultSet.getExecutionStartTimeStamp(),
-            resultSet.getExecutionEndTimeStamp(),
-            resultSet.getOutcome(),
-            resultSet.getErrors() != null  ? resultSet.getErrors().getErrors() : null,
-            resultSet.getErrorsText()
-        );
-    }
-
-    /**
      * Saves a {@link ResultSet} and returns the resulting corresponding {@link ResultSetDTO}.
      */
     private ResultSetDTO save(ResultSet resultSet) {
         ResultSet newResultSet = resultSetRepository.save(resultSet);
-        return map(newResultSet);
+        return modelMapper.map(newResultSet).build();
     }
 
 }

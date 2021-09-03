@@ -1,15 +1,11 @@
 package eu.openanalytics.phaedra.phaedra2resultdataservice;
 
-import eu.openanalytics.phaedra.phaedra2resultdataservice.dto.ResultDataDTO;
-import eu.openanalytics.phaedra.phaedra2resultdataservice.dto.ResultSetDTO;
-import eu.openanalytics.phaedra.phaedra2resultdataservice.model.StatusCode;
+import eu.openanalytics.phaedra.model.v2.dto.ResultDataDTO;
+import eu.openanalytics.phaedra.model.v2.dto.ResultSetDTO;
+import eu.openanalytics.phaedra.model.v2.enumeration.ResponseStatusCode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDateTime;
@@ -37,7 +33,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         // 2. create simple ResultData
         var input2 = ResultDataDTO.builder()
             .exitCode(0)
-            .statusCode(StatusCode.SUCCESS)
+            .statusCode(ResponseStatusCode.SUCCESS)
             .statusMessage("Ok")
             .featureId(42L)
             .values(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F})
@@ -46,7 +42,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         var res2 = performRequest(post("/resultset/1/resultdata", input2), HttpStatus.CREATED, ResultDataDTO.class);
         Assertions.assertEquals(1, res2.getId());
         Assertions.assertEquals(1, res2.getResultSetId());
-        Assertions.assertEquals(StatusCode.SUCCESS, res2.getStatusCode());
+        Assertions.assertEquals(ResponseStatusCode.SUCCESS, res2.getStatusCode());
         Assertions.assertEquals("Ok", res2.getStatusMessage());
         Assertions.assertEquals(42L, res2.getFeatureId());
         Assertions.assertArrayEquals(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F}, res2.getValues());
@@ -55,7 +51,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         var res3 = performRequest(get("/resultset/1/resultdata/1"), HttpStatus.OK, ResultDataDTO.class);
         Assertions.assertEquals(1, res3.getId());
         Assertions.assertEquals(1, res3.getResultSetId());
-        Assertions.assertEquals(StatusCode.SUCCESS, res3.getStatusCode());
+        Assertions.assertEquals(ResponseStatusCode.SUCCESS, res3.getStatusCode());
         Assertions.assertEquals("Ok", res3.getStatusMessage());
         Assertions.assertEquals(42L, res3.getFeatureId());
         Assertions.assertArrayEquals(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F}, res3.getValues());
@@ -92,7 +88,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         // 3. create simple ResultData
         var input3 = ResultDataDTO.builder()
             .exitCode(0)
-            .statusCode(StatusCode.SUCCESS)
+            .statusCode(ResponseStatusCode.SUCCESS)
             .statusMessage("Ok")
             .featureId(42L)
             .values(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F})
@@ -118,7 +114,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         // 2. create simple ResultData
         var input2 = ResultDataDTO.builder()
             .exitCode(0)
-            .statusCode(StatusCode.SUCCESS)
+            .statusCode(ResponseStatusCode.SUCCESS)
             .statusMessage("Ok")
             .featureId(42L)
             .values(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F})
@@ -155,7 +151,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         // 2. create simple ResultData
         var input2 = ResultDataDTO.builder()
             .exitCode(0)
-            .statusCode(StatusCode.SUCCESS)
+            .statusCode(ResponseStatusCode.SUCCESS)
             .statusMessage("Ok")
             .featureId(42L)
             .values(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F})
@@ -184,7 +180,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         for (int i = 1; i <= 25; i++) {
             var input = ResultDataDTO.builder()
                 .exitCode(0)
-                .statusCode(StatusCode.SUCCESS)
+                .statusCode(ResponseStatusCode.SUCCESS)
                 .statusMessage("Ok")
                 .featureId(42L)
                 .values(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F})
@@ -196,7 +192,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         for (int i = 1; i <= 15; i++) {
             var input = ResultDataDTO.builder()
                 .exitCode(0)
-                .statusCode(StatusCode.SUCCESS)
+                .statusCode(ResponseStatusCode.SUCCESS)
                 .statusMessage("Ok")
                 .featureId(32L)
                 .values(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F})
@@ -326,7 +322,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
 
             var input2 = ResultDataDTO.builder()
                 .exitCode(0)
-                .statusCode(StatusCode.SUCCESS)
+                .statusCode(ResponseStatusCode.SUCCESS)
                 .statusMessage("Ok")
                 .featureId(42L)
                 .values(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F})
@@ -397,7 +393,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
             .id(10L)
             .createdTimestamp(LocalDateTime.now())
             .exitCode(0)
-            .statusCode(StatusCode.SUCCESS)
+            .statusCode(ResponseStatusCode.SUCCESS)
             .statusMessage("Ok")
             .featureId(42L)
             .values(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F})
@@ -413,7 +409,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         // 4. validate exitcode
         var input4 = ResultDataDTO.builder()
             .exitCode(260)
-            .statusCode(StatusCode.SUCCESS)
+            .statusCode(ResponseStatusCode.SUCCESS)
             .statusMessage("Ok")
             .featureId(42L)
             .values(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F})
@@ -424,7 +420,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         // 5. too long status message
         var input5 = ResultDataDTO.builder()
             .exitCode(255)
-            .statusCode(StatusCode.SUCCESS)
+            .statusCode(ResponseStatusCode.SUCCESS)
             .statusMessage("a".repeat(260))
             .featureId(42L)
             .values(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F})

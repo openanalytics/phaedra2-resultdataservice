@@ -2,6 +2,7 @@ package eu.openanalytics.phaedra.phaedra2resultdataservice;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import eu.openanalytics.phaedra.model.v2.ModelMapper;
 import eu.openanalytics.phaedra.util.jdbc.JDBCUtils;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.servers.Server;
@@ -88,6 +89,11 @@ public class Phaedra2ResultDataServiceApplication {
 
         liquibase.setDataSource(dataSource());
         return liquibase;
+    }
+
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
     }
 
     @Bean
