@@ -12,8 +12,12 @@ pipeline {
 
     environment {
         REPO_PREFIX = "196229073436.dkr.ecr.eu-west-1.amazonaws.com/openanalytics/"
-        REPO = "openanalytics/phaedra2-resultdataservice-server"
         ACCOUNTID = "196229073436"
+        GROUP_ID = sh(returnStdout: true, script: "mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.groupId -q -DforceStdout").trim()
+        ARTIFACT_ID = sh(returnStdout: true, script: "mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.artifactId -q -DforceStdout").trim()
+        VERSION = sh(returnStdout: true, script: "mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout").trim()
+        REPO = "openanalytics/${env.ARTIFACT_ID}-server"
+        MVN_ARGS = "-Dmaven.repo.local=/home/jenkins/maven-repository --projects '!${env.GROUP_ID}:${env.ARTIFACT_ID}'"
     }
 
     stages {
@@ -38,7 +42,7 @@ pipeline {
             steps {
                 container('builder') {
                     sh """
-                        aws --region 'eu-west-1' s3 sync s3://oa-phaedra2-jenkins-maven-cache/  /home/jenkins/maven-repository --quiet
+                        aws --region 'eu-west-1' s3 sync s3://oa-phaedra2-jenkins-maven-cache/ /home/jenkins/maven-repository --quiet
                         """
                 }
             }
@@ -51,7 +55,7 @@ pipeline {
 
                         configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
 
-                            sh 'mvn -s $MAVEN_SETTINGS_RSB -U clean install -Dmaven.repo.local=/home/jenkins/maven-repository -DskipTests'
+                            sh "mvn -s \$MAVEN_SETTINGS_RSB -U clean install -DskipTests ${env.MVN_ARGS}"
 
                         }
 
@@ -66,7 +70,7 @@ pipeline {
 
                     configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
 
-                        sh 'mvn -s $MAVEN_SETTINGS_RSB -U clean install -DskipTests -Ddockerfile.skip -Dmaven.repo.local=/home/jenkins/maven-repository'
+                        sh "mvn -s \$MAVEN_SETTINGS_RSB -U clean install -DskipTests -Ddockerfile.skip ${env.MVN_ARGS}"
 
                     }
 
@@ -80,7 +84,7 @@ pipeline {
 
                     configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
 
-                        sh 'mvn -s $MAVEN_SETTINGS_RSB test -Ddockerfile.skip -Dmaven.repo.local=/home/jenkins/maven-repository'
+                        sh "mvn -s \$MAVEN_SETTINGS_RSB test -Ddockerfile.skip ${env.MVN_ARGS}"
 
                     }
 
@@ -94,7 +98,7 @@ pipeline {
 
                     configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
 
-                        sh 'mvn -s $MAVEN_SETTINGS_RSB deploy -DskipTests -Ddockerfile.skip -Dmaven.repo.local=/home/jenkins/maven-repository'
+                        sh "mvn -s \$MAVEN_SETTINGS_RSB deploy -DskipTests -Ddockerfile.skip ${env.MVN_ARGS}"
 
                     }
 
@@ -109,7 +113,7 @@ pipeline {
 
                         configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
 
-                            sh "mvn -s \$MAVEN_SETTINGS_RSB dockerfile:build -Ddocker.repoPrefix=${env.REPO_PREFIX} -Dmaven.repo.local=/home/jenkins/maven-repository"
+                            sh "mvn -s \$MAVEN_SETTINGS_RSB dockerfile:build -Ddocker.repoPrefix=${env.REPO_PREFIX} ${env.MVN_ARGS}"
 
                         }
 
@@ -127,7 +131,7 @@ pipeline {
 
                         configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
 
-                            sh "mvn -s \$MAVEN_SETTINGS_RSB dockerfile:push -Ddocker.repoPrefix=${env.REPO_PREFIX} -Dmaven.repo.local=/home/jenkins/maven-repository"
+                            sh "mvn -s \$MAVEN_SETTINGS_RSB dockerfile:push -Ddocker.repoPrefix=${env.REPO_PREFIX} ${env.MVN_ARGS}"
                         }
                     }
                 }

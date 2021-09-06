@@ -10,7 +10,6 @@
     </parent>
 
     <artifactId>phaedra2-resultdataservice-client</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <name>phaedra2-resultdataservice-client</name>
 
     <properties>

@@ -10,7 +10,6 @@
     </parent>
 
     <artifactId>phaedra2-resultdataservice-dto</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <name>phaedra2-resultdataservice-dto</name>
 
     <properties>
