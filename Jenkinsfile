@@ -34,7 +34,7 @@ pipeline {
                     env.ARTIFACT_ID = sh(returnStdout: true, script: "mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.artifactId -q -DforceStdout").trim()
                     env.VERSION = sh(returnStdout: true, script: "mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout").trim()
                     env.REPO = "openanalytics/${env.ARTIFACT_ID}-server"
-                    env.MVN_ARGS = "-Dmaven.repo.local=/home/jenkins/maven-repository"
+                    env.MVN_ARGS = "-Dmaven.repo.local=/home/jenkins/maven-repository --batch-mode"
                     env.MVN_EXLCUDE_PARENT = "--projects '!${env.GROUP_ID}:${env.ARTIFACT_ID}'"
                 }
             }
