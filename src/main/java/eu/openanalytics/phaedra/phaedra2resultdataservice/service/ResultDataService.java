@@ -1,12 +1,11 @@
 package eu.openanalytics.phaedra.phaedra2resultdataservice.service;
 
-import eu.openanalytics.phaedra.model.v2.ModelMapper;
-import eu.openanalytics.phaedra.model.v2.dto.ResultDataDTO;
+import eu.openanalytics.phaedra.phaedra2resultdataservice.dto.ResultDataDTO;
 import eu.openanalytics.phaedra.phaedra2resultdataservice.exception.InvalidResultSetIdException;
 import eu.openanalytics.phaedra.phaedra2resultdataservice.exception.ResultDataNotFoundException;
 import eu.openanalytics.phaedra.phaedra2resultdataservice.exception.ResultSetAlreadyCompletedException;
 import eu.openanalytics.phaedra.phaedra2resultdataservice.exception.ResultSetNotFoundException;
-import eu.openanalytics.phaedra.model.v2.runtime.ResultData;
+import eu.openanalytics.phaedra.phaedra2resultdataservice.model.ResultData;
 import eu.openanalytics.phaedra.phaedra2resultdataservice.repository.ResultDataRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,14 +25,12 @@ public class ResultDataService {
     private final ResultDataRepository resultDataRepository;
     private final ResultSetService resultSetService;
     private final DataSource dataSource;
-    private final ModelMapper modelMapper;
     private final Clock clock;
 
-    public ResultDataService(ResultDataRepository resultDataRepository, ResultSetService resultSetService, JdbcTemplate jdbcTemplate, DataSource dataSource, ModelMapper modelMapper, Clock clock) {
+    public ResultDataService(ResultDataRepository resultDataRepository, ResultSetService resultSetService, JdbcTemplate jdbcTemplate, DataSource dataSource, Clock clock) {
         this.resultDataRepository = resultDataRepository;
         this.resultSetService = resultSetService;
         this.dataSource = dataSource;
-        this.modelMapper = modelMapper;
         this.clock = clock;
     }
 
@@ -44,11 +41,15 @@ public class ResultDataService {
             throw new ResultSetAlreadyCompletedException("ResultSet is already completed, cannot add new ResultData to this set.");
         }
 
-        ResultData resultData = modelMapper
-            .map(resultDataDTO)
-            .resultSetId(resultSetId)
-            .createdTimestamp(LocalDateTime.now(clock))
-            .build();
+        var resultData = new ResultData(
+            null,
+            resultSetId,
+            resultDataDTO.getFeatureId(),
+            resultDataDTO.getValues(),
+            resultDataDTO.getStatusCode(),
+            resultDataDTO.getStatusMessage(),
+            resultDataDTO.getExitCode(),
+            LocalDateTime.now(clock));
 
         return save(resultData);
     }
@@ -58,7 +59,7 @@ public class ResultDataService {
             throw new ResultSetNotFoundException(resultSetId);
         }
         var res = resultDataRepository.findAllByResultSetId(PageRequest.of(pageNumber, 20, Sort.Direction.ASC, "id"), resultSetId);
-        return res.map((r) -> modelMapper.map(r).build());
+        return res.map(this::map);
     }
 
     public ResultDataDTO getResultData(long resultSetId, long resultDataId) throws ResultSetNotFoundException, ResultDataNotFoundException {
@@ -71,7 +72,7 @@ public class ResultDataService {
             throw new ResultDataNotFoundException(resultDataId);
         }
 
-        return modelMapper.map(res.get()).build();
+        return map(res.get());
     }
 
     public Page<ResultDataDTO> getPagedResultDataByFeatureId(long resultSetId, Integer featureId, Integer page) throws ResultSetNotFoundException {
@@ -79,7 +80,7 @@ public class ResultDataService {
             throw new ResultSetNotFoundException(resultSetId);
         }
         var res = resultDataRepository.findAllByResultSetIdAndFeatureId(PageRequest.of(page, 20, Sort.Direction.ASC, "id"), resultSetId, featureId);
-        return res.map((r) -> modelMapper.map(r).build());
+        return res.map(this::map);
     }
 
     public void delete(long resultSetId, long resultDataId) throws ResultSetNotFoundException, ResultDataNotFoundException, InvalidResultSetIdException, ResultSetAlreadyCompletedException {
@@ -114,7 +115,22 @@ public class ResultDataService {
             put("created_timestamp", resultData.getCreatedTimestamp());
         }});
 
-        return modelMapper.map(resultDataRepository.findById(id.longValue()).get()).build();
+        return map(resultDataRepository.findById(id.longValue()).get());
+    }
+
+    /**
+     * Convenience-function to convert Entity to DTO.
+     */
+    private ResultDataDTO map(ResultData resultData) {
+        return new ResultDataDTO(
+            resultData.getId(),
+            resultData.getResultSetId(),
+            resultData.getFeatureId(),
+            resultData.getValues(),
+            resultData.getStatusCode(),
+            resultData.getStatusMessage(),
+            resultData.getExitCode(),
+            resultData.getCreatedTimestamp());
     }
 
 }

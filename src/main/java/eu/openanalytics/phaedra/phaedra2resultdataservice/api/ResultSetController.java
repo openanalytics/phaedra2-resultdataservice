@@ -1,9 +1,9 @@
 package eu.openanalytics.phaedra.phaedra2resultdataservice.api;
 
-import eu.openanalytics.phaedra.model.v2.dto.PageDTO;
-import eu.openanalytics.phaedra.model.v2.dto.ResultSetDTO;
-import eu.openanalytics.phaedra.model.v2.validation.OnCreate;
-import eu.openanalytics.phaedra.model.v2.validation.OnUpdate;
+import eu.openanalytics.phaedra.phaedra2resultdataservice.dto.PageDTO;
+import eu.openanalytics.phaedra.phaedra2resultdataservice.dto.ResultSetDTO;
+import eu.openanalytics.phaedra.phaedra2resultdataservice.dto.validation.OnCreate;
+import eu.openanalytics.phaedra.phaedra2resultdataservice.dto.validation.OnUpdate;
 import eu.openanalytics.phaedra.phaedra2resultdataservice.exception.ResultSetAlreadyCompletedException;
 import eu.openanalytics.phaedra.phaedra2resultdataservice.exception.ResultSetNotFoundException;
 import eu.openanalytics.phaedra.phaedra2resultdataservice.service.ResultSetService;
