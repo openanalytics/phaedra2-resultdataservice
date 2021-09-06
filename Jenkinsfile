@@ -102,7 +102,6 @@ pipeline {
             }
         }
 
-
         stage('Build Docker image') {
             steps {
                 dir('server') {
@@ -132,18 +131,18 @@ pipeline {
                 }
             }
         }
-    }
 
-    stage('Cache maven repository to S3') {
-        steps {
-            container('builder') {
-                sh """
+        stage('Cache maven repository to S3') {
+            steps {
+                container('builder') {
+                    sh """
                         aws --region 'eu-west-1' s3 sync /home/jenkins/maven-repository s3://oa-phaedra2-jenkins-maven-cache/ --quiet
                         """
+                }
             }
         }
-    }
 
+    }
 //    post {
 //        success {
 //            step([$class: 'JacocoPublisher',
