@@ -144,8 +144,6 @@ pipeline {
         }
     }
 
-}
-
 //    post {
 //        success {
 //            step([$class: 'JacocoPublisher',
