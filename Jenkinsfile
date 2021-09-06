@@ -23,52 +23,22 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Prepare environment') {
 
             environment {
                 REPO_PREFIX = "196229073436.dkr.ecr.eu-west-1.amazonaws.com/openanalytics/"
                 ACCOUNTID = "196229073436"
                 GROUP_ID = sh(returnStdout: true, script: "mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.groupId -q -DforceStdout").trim()
                 ARTIFACT_ID = sh(returnStdout: true, script: "mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.artifactId -q -DforceStdout").trim()
-                VERSION = sh(returnStdout: true, script: "mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout").trim()
+//                VERSION = sh(returnStdout: true, script: "mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout").trim()
+                MVN_ARGS = "-Dmaven.repo.local=/home/jenkins/maven-repository"
+            }
+            environment {
                 REPO = "openanalytics/${env.ARTIFACT_ID}-server"
-                MVN_ARGS = "-Dmaven.repo.local=/home/jenkins/maven-repository --projects '!${env.GROUP_ID}:${env.ARTIFACT_ID}'"
+                MVN_EXLCUDE_PARENT = "--projects '!${env.GROUP_ID}:${env.ARTIFACT_ID}'"
             }
 
             stages {
-
-//        stage('Checkout phaedra2-parent') {
-//            steps {
-//                dir('../phaedra2-parent') {
-//                    checkout([$class: 'GitSCM', branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[credentialsId: 'oa-jenkins', url: 'https://scm.openanalytics.eu/git/phaedra2-parent']]])
-//                }
-//            }
-//        }
-//
-//        stage('Checkout phaedra2-commons') {
-//            steps {
-//                dir('../phaedra2-commons') {
-//                    checkout([$class: 'GitSCM', branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[credentialsId: 'oa-jenkins', url: 'https://scm.openanalytics.eu/git/phaedra2-commons']]])
-//                }
-//            }
-//        }
-
-//
-//                stage('Build Phaedra2 commons') {
-//                    steps {
-//                        dir('../phaedra2-commons') {
-//                            container('builder') {
-//
-//                                configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
-//
-//                                    sh "mvn -s \$MAVEN_SETTINGS_RSB -U clean install -DskipTests ${env.MVN_ARGS}"
-//
-//                                }
-//
-//                            }
-//                        }
-//                    }
-//                }
 
                 stage('Build') {
                     steps {
@@ -76,7 +46,7 @@ pipeline {
 
                             configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
 
-                                sh "mvn -s \$MAVEN_SETTINGS_RSB -U clean install -DskipTests -Ddockerfile.skip ${env.MVN_ARGS}"
+                                sh "mvn -s \$MAVEN_SETTINGS_RSB -U clean install -DskipTests -Ddockerfile.skip ${env.MVN_ARGS} ${env.MVN_EXLCUDE_PARENT}"
 
                             }
 
@@ -90,7 +60,7 @@ pipeline {
 
                             configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
 
-                                sh "mvn -s \$MAVEN_SETTINGS_RSB test -Ddockerfile.skip ${env.MVN_ARGS}"
+                                sh "mvn -s \$MAVEN_SETTINGS_RSB test -Ddockerfile.skip ${env.MVN_ARGS} ${env.MVN_EXLCUDE_PARENT}"
 
                             }
 
@@ -104,7 +74,7 @@ pipeline {
 
                             configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
 
-                                sh "mvn -s \$MAVEN_SETTINGS_RSB deploy -DskipTests -Ddockerfile.skip ${env.MVN_ARGS}"
+                                sh "mvn -s \$MAVEN_SETTINGS_RSB deploy -DskipTests -Ddockerfile.skip ${env.MVN_ARGS} ${env.MVN_EXLCUDE_PARENT}"
 
                             }
 
