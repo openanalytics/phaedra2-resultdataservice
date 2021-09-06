@@ -3,6 +3,7 @@ pipeline {
     agent {
         kubernetes {
             yamlFile 'kubernetesPod.yaml'
+            defaultContainer 'builder'
         }
     }
 
