@@ -11,33 +11,7 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '3'))
     }
 
-    environment {
-        REPO_PREFIX = "196229073436.dkr.ecr.eu-west-1.amazonaws.com/openanalytics/"
-        ACCOUNTID = "196229073436"
-        GROUP_ID = sh(returnStdout: true, script: "mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.groupId -q -DforceStdout").trim()
-        ARTIFACT_ID = sh(returnStdout: true, script: "mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.artifactId -q -DforceStdout").trim()
-        VERSION = sh(returnStdout: true, script: "mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout").trim()
-        REPO = "openanalytics/${env.ARTIFACT_ID}-server"
-        MVN_ARGS = "-Dmaven.repo.local=/home/jenkins/maven-repository --projects '!${env.GROUP_ID}:${env.ARTIFACT_ID}'"
-    }
-
     stages {
-
-        stage('Checkout phaedra2-parent') {
-            steps {
-                dir('../phaedra2-parent') {
-                    checkout([$class: 'GitSCM', branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[credentialsId: 'oa-jenkins', url: 'https://scm.openanalytics.eu/git/phaedra2-parent']]])
-                }
-            }
-        }
-
-        stage('Checkout phaedra2-commons') {
-            steps {
-                dir('../phaedra2-commons') {
-                    checkout([$class: 'GitSCM', branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[credentialsId: 'oa-jenkins', url: 'https://scm.openanalytics.eu/git/phaedra2-commons']]])
-                }
-            }
-        }
 
         stage('Load maven cache repository from S3') {
             steps {
@@ -49,102 +23,135 @@ pipeline {
             }
         }
 
-        stage('Build Phaedra2 commons') {
-            steps {
-                dir('../phaedra2-commons') {
-                    container('builder') {
-
-                        configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
-
-                            sh "mvn -s \$MAVEN_SETTINGS_RSB -U clean install -DskipTests ${env.MVN_ARGS}"
-
-                        }
-
-                    }
-                }
-            }
-        }
-
         stage('Build') {
-            steps {
-                container('builder') {
+            stages {
 
-                    configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
-
-                        sh "mvn -s \$MAVEN_SETTINGS_RSB -U clean install -DskipTests -Ddockerfile.skip ${env.MVN_ARGS}"
-
-                    }
-
+                environment {
+                    REPO_PREFIX = "196229073436.dkr.ecr.eu-west-1.amazonaws.com/openanalytics/"
+                    ACCOUNTID = "196229073436"
+                    GROUP_ID = sh(returnStdout: true, script: "mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.groupId -q -DforceStdout").trim()
+                    ARTIFACT_ID = sh(returnStdout: true, script: "mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.artifactId -q -DforceStdout").trim()
+                    VERSION = sh(returnStdout: true, script: "mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout").trim()
+                    REPO = "openanalytics/${env.ARTIFACT_ID}-server"
+                    MVN_ARGS = "-Dmaven.repo.local=/home/jenkins/maven-repository --projects '!${env.GROUP_ID}:${env.ARTIFACT_ID}'"
                 }
-            }
-        }
 
-        stage('Test') {
-            steps {
-                container('builder') {
 
-                    configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
+//        stage('Checkout phaedra2-parent') {
+//            steps {
+//                dir('../phaedra2-parent') {
+//                    checkout([$class: 'GitSCM', branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[credentialsId: 'oa-jenkins', url: 'https://scm.openanalytics.eu/git/phaedra2-parent']]])
+//                }
+//            }
+//        }
+//
+//        stage('Checkout phaedra2-commons') {
+//            steps {
+//                dir('../phaedra2-commons') {
+//                    checkout([$class: 'GitSCM', branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[credentialsId: 'oa-jenkins', url: 'https://scm.openanalytics.eu/git/phaedra2-commons']]])
+//                }
+//            }
+//        }
 
-                        sh "mvn -s \$MAVEN_SETTINGS_RSB test -Ddockerfile.skip ${env.MVN_ARGS}"
 
-                    }
+                stage('Build Phaedra2 commons') {
+                    steps {
+                        dir('../phaedra2-commons') {
+                            container('builder') {
 
-                }
-            }
-        }
+                                configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
 
-        stage("Deploy to Nexus") {
-            steps {
-                container('builder') {
+                                    sh "mvn -s \$MAVEN_SETTINGS_RSB -U clean install -DskipTests ${env.MVN_ARGS}"
 
-                    configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
+                                }
 
-                        sh "mvn -s \$MAVEN_SETTINGS_RSB deploy -DskipTests -Ddockerfile.skip ${env.MVN_ARGS}"
-
-                    }
-
-                }
-            }
-        }
-
-        stage('Build Docker image') {
-            steps {
-                dir('server') {
-                    container('builder') {
-
-                        configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
-
-                            sh "mvn -s \$MAVEN_SETTINGS_RSB dockerfile:build -Ddocker.repoPrefix=${env.REPO_PREFIX} ${env.MVN_ARGS}"
-
-                        }
-
-                    }
-                }
-            }
-        }
-
-        stage('Push to OA registry') {
-            steps {
-                dir('server') {
-                    container('builder') {
-                        sh "aws --region eu-west-1 ecr describe-repositories --repository-names ${env.REPO} || aws --region eu-west-1 ecr create-repository --repository-name ${env.REPO}"
-                        sh "\$(aws ecr get-login --registry-ids '${env.ACCOUNTID}' --region 'eu-west-1' --no-include-email)"
-
-                        configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
-
-                            sh "mvn -s \$MAVEN_SETTINGS_RSB dockerfile:push -Ddocker.repoPrefix=${env.REPO_PREFIX} ${env.MVN_ARGS}"
+                            }
                         }
                     }
                 }
-            }
-        }
 
-        stage('Cache maven repository to S3') {
-            steps {
-                container('builder') {
-                    sh """
+                stage('Build') {
+                    steps {
+                        container('builder') {
+
+                            configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
+
+                                sh "mvn -s \$MAVEN_SETTINGS_RSB -U clean install -DskipTests -Ddockerfile.skip ${env.MVN_ARGS}"
+
+                            }
+
+                        }
+                    }
+                }
+
+                stage('Test') {
+                    steps {
+                        container('builder') {
+
+                            configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
+
+                                sh "mvn -s \$MAVEN_SETTINGS_RSB test -Ddockerfile.skip ${env.MVN_ARGS}"
+
+                            }
+
+                        }
+                    }
+                }
+
+                stage("Deploy to Nexus") {
+                    steps {
+                        container('builder') {
+
+                            configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
+
+                                sh "mvn -s \$MAVEN_SETTINGS_RSB deploy -DskipTests -Ddockerfile.skip ${env.MVN_ARGS}"
+
+                            }
+
+                        }
+                    }
+                }
+
+                stage('Build Docker image') {
+                    steps {
+                        dir('server') {
+                            container('builder') {
+
+                                configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
+
+                                    sh "mvn -s \$MAVEN_SETTINGS_RSB dockerfile:build -Ddocker.repoPrefix=${env.REPO_PREFIX} ${env.MVN_ARGS}"
+
+                                }
+
+                            }
+                        }
+                    }
+                }
+
+                stage('Push to OA registry') {
+                    steps {
+                        dir('server') {
+                            container('builder') {
+                                sh "aws --region eu-west-1 ecr describe-repositories --repository-names ${env.REPO} || aws --region eu-west-1 ecr create-repository --repository-name ${env.REPO}"
+                                sh "\$(aws ecr get-login --registry-ids '${env.ACCOUNTID}' --region 'eu-west-1' --no-include-email)"
+
+                                configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
+
+                                    sh "mvn -s \$MAVEN_SETTINGS_RSB dockerfile:push -Ddocker.repoPrefix=${env.REPO_PREFIX} ${env.MVN_ARGS}"
+                                }
+                            }
+                        }
+                    }
+                }
+
+                stage('Cache maven repository to S3') {
+                    steps {
+                        container('builder') {
+                            sh """
                         aws --region 'eu-west-1' s3 sync /home/jenkins/maven-repository s3://oa-phaedra2-jenkins-maven-cache/ --quiet
                         """
+                        }
+                    }
                 }
             }
         }
