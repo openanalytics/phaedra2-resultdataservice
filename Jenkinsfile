@@ -35,7 +35,6 @@ pipeline {
                     env.VERSION = sh(returnStdout: true, script: "mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout").trim()
                     env.REPO = "openanalytics/${env.ARTIFACT_ID}-server"
                     env.MVN_ARGS = "-Dmaven.repo.local=/home/jenkins/maven-repository --batch-mode"
-                    env.MVN_EXLCUDE_PARENT = "--projects '!${env.GROUP_ID}:${env.ARTIFACT_ID}'"
                 }
             }
 
@@ -47,7 +46,7 @@ pipeline {
 
                     configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
 
-                        sh "mvn -s \$MAVEN_SETTINGS_RSB -U clean install -DskipTests -Ddockerfile.skip ${env.MVN_ARGS} ${env.MVN_EXLCUDE_PARENT}"
+                        sh "mvn -s \$MAVEN_SETTINGS_RSB -U clean install -DskipTests -Ddockerfile.skip ${env.MVN_ARGS}"
 
                     }
 
@@ -61,7 +60,7 @@ pipeline {
 
                     configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
 
-                        sh "mvn -s \$MAVEN_SETTINGS_RSB test -Ddockerfile.skip ${env.MVN_ARGS} ${env.MVN_EXLCUDE_PARENT}"
+                        sh "mvn -s \$MAVEN_SETTINGS_RSB test -Ddockerfile.skip ${env.MVN_ARGS}"
 
                     }
 
@@ -75,7 +74,7 @@ pipeline {
 
                     configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
 
-                        sh "mvn -s \$MAVEN_SETTINGS_RSB deploy -DskipTests -Ddockerfile.skip ${env.MVN_ARGS} ${env.MVN_EXLCUDE_PARENT}"
+                        sh "mvn -s \$MAVEN_SETTINGS_RSB deploy -DskipTests -Ddockerfile.skip ${env.MVN_ARGS}"
 
                     }
 
