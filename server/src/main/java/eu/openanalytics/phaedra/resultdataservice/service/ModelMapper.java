@@ -1,10 +1,12 @@
 package eu.openanalytics.phaedra.resultdataservice.service;
 
-import eu.openanalytics.phaedra.resultdataservice.model.ResultData;
-import eu.openanalytics.phaedra.resultdataservice.model.ResultSet;
 import eu.openanalytics.phaedra.resultdataservice.dto.ErrorDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultDataDTO;
+import eu.openanalytics.phaedra.resultdataservice.dto.ResultFeatureStatDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
+import eu.openanalytics.phaedra.resultdataservice.model.ResultData;
+import eu.openanalytics.phaedra.resultdataservice.model.ResultFeatureStat;
+import eu.openanalytics.phaedra.resultdataservice.model.ResultSet;
 import org.modelmapper.Conditions;
 import org.modelmapper.Converter;
 import org.modelmapper.config.Configuration;
@@ -40,6 +42,12 @@ public class ModelMapper {
             }).map(ResultSetDTO::getErrors, ResultSet.ResultSetBuilder::errors));
 
         modelMapper.createTypeMap(ResultSet.class, ResultSetDTO.ResultSetDTOBuilder.class, builderConfiguration)
+            .setPropertyCondition(Conditions.isNotNull());
+
+        modelMapper.createTypeMap(ResultFeatureStat.class, ResultFeatureStatDTO.ResultFeatureStatDTOBuilder.class, builderConfiguration)
+            .setPropertyCondition(Conditions.isNotNull());
+
+        modelMapper.createTypeMap(ResultFeatureStatDTO.class, ResultFeatureStat.ResultFeatureStatBuilder.class, builderConfiguration)
             .setPropertyCondition(Conditions.isNotNull());
 
         modelMapper.validate(); // ensure that objects can be mapped
@@ -97,4 +105,11 @@ public class ModelMapper {
         return builder;
     }
 
+    public ResultFeatureStat.ResultFeatureStatBuilder map(ResultFeatureStatDTO resultFeatureStatDTO) {
+        return modelMapper.map(resultFeatureStatDTO, ResultFeatureStat.ResultFeatureStatBuilder.class);
+    }
+
+    public ResultFeatureStatDTO.ResultFeatureStatDTOBuilder map(ResultFeatureStat resultFeatureStat) {
+        return modelMapper.map(resultFeatureStat, ResultFeatureStatDTO.ResultFeatureStatDTOBuilder.class);
+    }
 }

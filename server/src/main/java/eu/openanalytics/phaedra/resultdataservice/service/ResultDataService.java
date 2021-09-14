@@ -28,7 +28,7 @@ public class ResultDataService {
     private final Clock clock;
     private final ModelMapper modelMapper;
 
-    public ResultDataService(ResultDataRepository resultDataRepository, ResultSetService resultSetService, JdbcTemplate jdbcTemplate, DataSource dataSource, Clock clock, ModelMapper modelMapper) {
+    public ResultDataService(ResultDataRepository resultDataRepository, ResultSetService resultSetService, DataSource dataSource, Clock clock, ModelMapper modelMapper) {
         this.resultDataRepository = resultDataRepository;
         this.resultSetService = resultSetService;
         this.dataSource = dataSource;

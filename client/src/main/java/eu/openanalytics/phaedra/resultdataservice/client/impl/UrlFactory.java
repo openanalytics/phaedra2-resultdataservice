@@ -19,4 +19,8 @@ public class UrlFactory {
     public static String resultDataByFeatureId(long resultSetId, long featureId) {
         return String.format("%s/resultset/%s/resultdata?featureId=%s", RESULTDATA_SERVICE, resultSetId, featureId);
     }
+
+    public static String resultFeatureStat(long resultSetId) {
+        return String.format("%s/resultset/%s/resultfeaturestat", RESULTDATA_SERVICE, resultSetId);
+    }
 }

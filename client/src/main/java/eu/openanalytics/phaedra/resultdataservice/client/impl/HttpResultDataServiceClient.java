@@ -2,10 +2,12 @@ package eu.openanalytics.phaedra.resultdataservice.client.impl;
 
 import eu.openanalytics.phaedra.resultdataservice.client.ResultDataServiceClient;
 import eu.openanalytics.phaedra.resultdataservice.client.exception.ResultDataUnresolvableException;
+import eu.openanalytics.phaedra.resultdataservice.client.exception.ResultFeatureStatUnresolvableException;
 import eu.openanalytics.phaedra.resultdataservice.client.exception.ResultSetUnresolvableException;
 import eu.openanalytics.phaedra.resultdataservice.dto.ErrorDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.PageDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultDataDTO;
+import eu.openanalytics.phaedra.resultdataservice.dto.ResultFeatureStatDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
 import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
 import eu.openanalytics.phaedra.util.PhaedraRestTemplate;
@@ -113,6 +115,32 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
             throw new ResultDataUnresolvableException("ResultData not found");
         } catch (HttpClientErrorException ex) {
             throw new ResultDataUnresolvableException("Error while fetching ResultData");
+        }
+    }
+
+    @Override
+    public ResultFeatureStatDTO createResultFeatureStat(long resultSetId, long featureId, long featureStatId, float value, String statisticName, String welltype,
+                                                        StatusCode statusCode, String statusMessage, Integer exitCode) throws ResultFeatureStatUnresolvableException {
+        var resultFeatureStat = ResultFeatureStatDTO.builder()
+            .featureId(featureId)
+            .featureStatId(featureStatId)
+            .value(value)
+            .statisticName(statisticName)
+            .welltype(welltype)
+            .statusCode(statusCode)
+            .statusMessage(statusMessage)
+            .exitCode(exitCode)
+            .build();
+        try {
+            var res = restTemplate.postForObject(UrlFactory.resultFeatureStat(resultSetId), resultFeatureStat, ResultFeatureStatDTO.class);
+            if (res == null) {
+                throw new ResultFeatureStatUnresolvableException("ResultFeatureStat could not be converted");
+            }
+            return res;
+        } catch (HttpClientErrorException ex) {
+            throw new ResultFeatureStatUnresolvableException("Error while creating ResultFeatureStat", ex);
+        } catch (HttpServerErrorException ex) {
+            throw new ResultFeatureStatUnresolvableException("Server Error while creating ResultFeatureStat", ex);
         }
     }
 
