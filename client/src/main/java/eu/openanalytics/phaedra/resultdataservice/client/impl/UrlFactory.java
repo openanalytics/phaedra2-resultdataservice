@@ -23,4 +23,8 @@ public class UrlFactory {
     public static String resultFeatureStat(long resultSetId) {
         return String.format("%s/resultset/%s/resultfeaturestat", RESULTDATA_SERVICE, resultSetId);
     }
+
+    public static String resultFeatureStatByFeatureStatId(long resultSetId, long featureStatId) {
+        return String.format("%s/resultset/%s/resultfeaturestat/%s", RESULTDATA_SERVICE, resultSetId, featureStatId);
+    }
 }

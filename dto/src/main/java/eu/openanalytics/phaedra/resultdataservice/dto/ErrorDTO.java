@@ -31,6 +31,8 @@ public class ErrorDTO {
     String civSource;
     Integer exitCode;
     String statusMessage;
+    Long featureStatId;
+    String featureStatName;
 
     public String toString() {
         StringBuilder description = new StringBuilder();

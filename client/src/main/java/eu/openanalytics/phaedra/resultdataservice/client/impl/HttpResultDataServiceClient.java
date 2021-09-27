@@ -144,4 +144,20 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
         }
     }
 
+    @Override
+    public ResultFeatureStatDTO getResultFeatureStat(long resultSetId, long resultFeatureStatId) throws ResultFeatureStatUnresolvableException {
+        try {
+            var resultFeatureStat = restTemplate.getForObject(UrlFactory.resultFeatureStatByFeatureStatId(resultSetId, resultFeatureStatId), ResultFeatureStatDTO.class);
+
+            if (resultFeatureStat == null) {
+                throw new ResultFeatureStatUnresolvableException("ResultFeatureStat could not be converted");
+            }
+            return resultFeatureStat;
+        } catch (HttpClientErrorException.NotFound ex) {
+            throw new ResultFeatureStatUnresolvableException("ResultFeatureStat not found");
+        } catch (HttpClientErrorException ex) {
+            throw new ResultFeatureStatUnresolvableException("Error while fetching ResultFeatureStat");
+        }
+    }
+
 }
