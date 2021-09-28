@@ -1,16 +1,15 @@
 package eu.openanalytics.phaedra.resultdataservice.service;
 
+import eu.openanalytics.phaedra.resultdataservice.dto.ResultDataDTO;
 import eu.openanalytics.phaedra.resultdataservice.exception.InvalidResultSetIdException;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultDataNotFoundException;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetAlreadyCompletedException;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
 import eu.openanalytics.phaedra.resultdataservice.model.ResultData;
 import eu.openanalytics.phaedra.resultdataservice.repository.ResultDataRepository;
-import eu.openanalytics.phaedra.resultdataservice.dto.ResultDataDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Service;
 
@@ -91,7 +90,7 @@ public class ResultDataService {
             throw new ResultDataNotFoundException(resultDataId);
         }
         if (resultData.get().getResultSetId() != resultSetId) {
-            throw new InvalidResultSetIdException(resultSetId, resultDataId);
+            throw InvalidResultSetIdException.forResultData(resultSetId, resultDataId);
         }
         resultDataRepository.deleteById(resultDataId);
     }

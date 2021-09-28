@@ -89,7 +89,7 @@ public class ResultFeatureStatService {
             throw new ResultFeatureStatNotFoundException(resultFeatureStatId);
         }
         if (resultFeatureStat.get().getResultSetId() != resultSetId) {
-            throw new InvalidResultSetIdException(resultSetId, resultFeatureStatId); // TODO wrong message
+            throw InvalidResultSetIdException.forResultFeatureStat(resultSetId, resultFeatureStatId);
         }
         resultFeatureStatRepository.deleteById(resultFeatureStatId);
     }
