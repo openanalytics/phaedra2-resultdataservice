@@ -435,8 +435,7 @@ public class ResultFeatureStatIntegrationTest extends AbstractIntegrationTest {
             "\"featureStatId\":\"FeatureStatId is mandatory\"," +
             "\"statisticName\":\"StatisticName is mandatory\"," +
             "\"statusCode\":\"StatusCode is mandatory\"," +
-            "\"statusMessage\":\"StatusMessage is mandatory\"," +
-            "\"value\":\"Value is mandatory\"" +
+            "\"statusMessage\":\"StatusMessage is mandatory\"" +
             "},\"status\":\"error\"}", res2);
 
         // 3. too many fields
