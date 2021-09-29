@@ -37,8 +37,7 @@ public class ResultFeatureStatDTO {
     @NotNull(message = "FeatureStatId is mandatory", groups = {OnCreate.class})
     Long featureStatId;
 
-    @NotNull(message = "Value is mandatory", groups = {OnCreate.class})
-    Float value;
+    Float value; // may be null when there is no result computed
 
     @NotNull(message = "StatisticName is mandatory", groups = {OnCreate.class})
     String statisticName;

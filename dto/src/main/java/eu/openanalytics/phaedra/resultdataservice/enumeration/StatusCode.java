@@ -23,5 +23,6 @@ package eu.openanalytics.phaedra.resultdataservice.enumeration;
 public enum StatusCode {
     SUCCESS,
     WORKER_INTERNAL_ERROR,
-    SCRIPT_ERROR
+    SCRIPT_ERROR,
+    BAD_REQUEST,
 }

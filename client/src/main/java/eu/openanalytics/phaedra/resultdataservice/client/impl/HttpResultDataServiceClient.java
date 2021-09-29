@@ -17,6 +17,7 @@ import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class HttpResultDataServiceClient implements ResultDataServiceClient {
 
@@ -119,12 +120,12 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
     }
 
     @Override
-    public ResultFeatureStatDTO createResultFeatureStat(long resultSetId, long featureId, long featureStatId, float value, String statisticName, String welltype,
+    public ResultFeatureStatDTO createResultFeatureStat(long resultSetId, long featureId, long featureStatId, Optional<Float> value, String statisticName, String welltype,
                                                         StatusCode statusCode, String statusMessage, Integer exitCode) throws ResultFeatureStatUnresolvableException {
         var resultFeatureStat = ResultFeatureStatDTO.builder()
             .featureId(featureId)
             .featureStatId(featureStatId)
-            .value(value)
+            .value(value.orElse(null))
             .statisticName(statisticName)
             .welltype(welltype)
             .statusCode(statusCode)

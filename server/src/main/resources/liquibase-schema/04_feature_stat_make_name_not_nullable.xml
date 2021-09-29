@@ -1,0 +1,14 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="04_feature_stat_make_statistic_name_not_nullable" author="tdekoninck">
+        <addNotNullConstraint
+                tableName="result_feature_stat"
+                columnDataType="text"
+                columnName="statistic_name"/>
+    </changeSet>
+
+</databaseChangeLog>

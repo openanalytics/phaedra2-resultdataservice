@@ -11,6 +11,7 @@ import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
 import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ResultDataServiceClient {
 
@@ -22,7 +23,7 @@ public interface ResultDataServiceClient {
 
     ResultDataDTO getResultData(long resultSetId, long featureId) throws ResultDataUnresolvableException;
 
-    ResultFeatureStatDTO createResultFeatureStat(long resultSetId, long featureId, long featureStatId, float value, String statisticName, String welltype,
+    ResultFeatureStatDTO createResultFeatureStat(long resultSetId, long featureId, long featureStatId, Optional<Float> value, String statisticName, String welltype,
                                                  StatusCode statusCode, String statusMessage, Integer exitCode) throws ResultFeatureStatUnresolvableException;
 
     ResultFeatureStatDTO getResultFeatureStat(long resultSetId, long resultFeatureStatId) throws ResultFeatureStatUnresolvableException;

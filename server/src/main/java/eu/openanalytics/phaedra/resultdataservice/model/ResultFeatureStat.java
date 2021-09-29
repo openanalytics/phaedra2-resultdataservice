@@ -26,7 +26,7 @@ public class ResultFeatureStat {
 
     Long featureStatId;
 
-    float value;
+    Float value;
 
     String statisticName;
 
