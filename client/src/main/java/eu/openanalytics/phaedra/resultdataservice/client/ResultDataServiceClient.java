@@ -17,7 +17,7 @@ public interface ResultDataServiceClient {
 
     ResultSetDTO createResultDataSet(long protocolId, long plateId, long measId) throws ResultSetUnresolvableException;
 
-    ResultSetDTO completeResultDataSet(long resultSetId, String outcome, List<ErrorDTO> errors, String errorsText) throws ResultSetUnresolvableException;
+    ResultSetDTO completeResultDataSet(long resultSetId, StatusCode outcome, List<ErrorDTO> errors, String errorsText) throws ResultSetUnresolvableException;
 
     ResultDataDTO addResultData(long resultSetId, long featureId, float[] values, StatusCode statusCode, String statusMessage, Integer exitCode) throws ResultDataUnresolvableException;
 
@@ -28,4 +28,9 @@ public interface ResultDataServiceClient {
 
     ResultFeatureStatDTO getResultFeatureStat(long resultSetId, long resultFeatureStatId) throws ResultFeatureStatUnresolvableException;
 
+    ResultSetDTO getResultSet(long resultSetId) throws ResultSetUnresolvableException;
+
+    List<ResultDataDTO> getResultData(long resultSetId) throws ResultDataUnresolvableException;
+
+    List<ResultFeatureStatDTO> getResultFeatureStat(long resultSetId) throws ResultFeatureStatUnresolvableException;
 }

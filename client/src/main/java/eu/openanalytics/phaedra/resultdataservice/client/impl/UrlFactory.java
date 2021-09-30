@@ -16,6 +16,10 @@ public class UrlFactory {
         return String.format("%s/resultset/%s/resultdata", RESULTDATA_SERVICE, resultSetId);
     }
 
+    public static String resultData(long resultSetId, int page) {
+        return String.format("%s/resultset/%s/resultdata?page=%s", RESULTDATA_SERVICE, resultSetId, page);
+    }
+
     public static String resultDataByFeatureId(long resultSetId, long featureId) {
         return String.format("%s/resultset/%s/resultdata?featureId=%s", RESULTDATA_SERVICE, resultSetId, featureId);
     }
@@ -24,7 +28,12 @@ public class UrlFactory {
         return String.format("%s/resultset/%s/resultfeaturestat", RESULTDATA_SERVICE, resultSetId);
     }
 
+    public static String resultFeatureStat(long resultSetId, int currentPage) {
+        return String.format("%s/resultset/%s/resultfeaturestat?page=%s", RESULTDATA_SERVICE, resultSetId, currentPage);
+    }
+
     public static String resultFeatureStatByFeatureStatId(long resultSetId, long featureStatId) {
         return String.format("%s/resultset/%s/resultfeaturestat/%s", RESULTDATA_SERVICE, resultSetId, featureStatId);
     }
+
 }

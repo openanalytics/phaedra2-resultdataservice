@@ -15,6 +15,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -26,6 +27,9 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
     private final static ParameterizedTypeReference<PageDTO<ResultDataDTO>> PAGED_RESULTDATA_TYPE = new ParameterizedTypeReference<>() {
     };
 
+    private final static ParameterizedTypeReference<PageDTO<ResultFeatureStatDTO>> PAGED_RESULT_FEATURE_STAT_TYPE = new ParameterizedTypeReference<>() {
+    };
+
     public HttpResultDataServiceClient(PhaedraRestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
@@ -33,10 +37,10 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
     @Override
     public ResultSetDTO createResultDataSet(long protocolId, long plateId, long measId) throws ResultSetUnresolvableException {
         var resultSet = ResultSetDTO.builder()
-                .protocolId(protocolId)
-                .plateId(plateId)
-                .measId(measId)
-                .build();
+            .protocolId(protocolId)
+            .plateId(plateId)
+            .measId(measId)
+            .build();
 
         try {
             var res = restTemplate.postForObject(UrlFactory.resultSet(), resultSet, ResultSetDTO.class);
@@ -52,13 +56,13 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
     }
 
     @Override
-    public ResultSetDTO completeResultDataSet(long resultSetId, String outcome, List<ErrorDTO> errors, String errorsText) throws ResultSetUnresolvableException {
+    public ResultSetDTO completeResultDataSet(long resultSetId, StatusCode outcome, List<ErrorDTO> errors, String errorsText) throws ResultSetUnresolvableException {
         Objects.requireNonNull(outcome, "Outcome may not be null");
         var resultSet = ResultSetDTO.builder()
-                .outcome(outcome)
-                .errors(errors)
-                .errorsText(errorsText)
-                .build();
+            .outcome(outcome)
+            .errors(errors)
+            .errorsText(errorsText)
+            .build();
 
         try {
             var res = restTemplate.putForObject(UrlFactory.resultSet(resultSetId), resultSet, ResultSetDTO.class);
@@ -79,12 +83,12 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
         Objects.requireNonNull(exitCode, "ExitCode may not be null");
 
         var resultData = ResultDataDTO.builder()
-                .featureId(featureId)
-                .values(values)
-                .statusCode(statusCode)
-                .statusMessage(statusMessage)
-                .exitCode(exitCode)
-                .build();
+            .featureId(featureId)
+            .values(values)
+            .statusCode(statusCode)
+            .statusMessage(statusMessage)
+            .exitCode(exitCode)
+            .build();
 
         try {
             var res = restTemplate.postForObject(UrlFactory.resultData(resultSetId), resultData, ResultDataDTO.class);
@@ -158,6 +162,71 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
             throw new ResultFeatureStatUnresolvableException("ResultFeatureStat not found");
         } catch (HttpClientErrorException ex) {
             throw new ResultFeatureStatUnresolvableException("Error while fetching ResultFeatureStat");
+        }
+    }
+
+    @Override
+    public ResultSetDTO getResultSet(long resultSetId) throws ResultSetUnresolvableException {
+        try {
+            var resultSet = restTemplate.getForObject(UrlFactory.resultSet(resultSetId), ResultSetDTO.class);
+
+            return resultSet;
+        } catch (HttpClientErrorException.NotFound ex) {
+            throw new ResultSetUnresolvableException("ResultSet not found");
+        } catch (HttpClientErrorException ex) {
+            throw new ResultSetUnresolvableException("Error while fetching ResultSet");
+        }
+    }
+
+    @Override
+    public List<ResultDataDTO> getResultData(long resultSetId) throws ResultDataUnresolvableException {
+        try {
+            var currentPage = 0;
+            var hasNextPage = true;
+            var result = new ArrayList<ResultDataDTO>();
+            do {
+                var resultData = restTemplate.getForObject(UrlFactory.resultData(resultSetId, currentPage), PAGED_RESULTDATA_TYPE);
+
+                if (resultData == null || resultData.getStatus() == null) {
+                    throw new ResultDataUnresolvableException("ResultSet could not be converted");
+                }
+
+                result.addAll(resultData.getData());
+
+                hasNextPage = !resultData.getStatus().isLast();
+                currentPage++;
+            } while (hasNextPage);
+            return result;
+        } catch (HttpClientErrorException.NotFound ex) {
+            throw new ResultDataUnresolvableException("ResultSet not found");
+        } catch (HttpClientErrorException ex) {
+            throw new ResultDataUnresolvableException("Error while fetching ResultSet");
+        }
+    }
+
+    @Override
+    public List<ResultFeatureStatDTO> getResultFeatureStat(long resultSetId) throws ResultFeatureStatUnresolvableException {
+        try {
+            var currentPage = 0;
+            var hasNextPage = true;
+            var result = new ArrayList<ResultFeatureStatDTO>();
+            do {
+                var resultFeatures = restTemplate.getForObject(UrlFactory.resultFeatureStat(resultSetId, currentPage), PAGED_RESULT_FEATURE_STAT_TYPE);
+
+                if (resultFeatures == null || resultFeatures.getStatus() == null) {
+                    throw new ResultFeatureStatUnresolvableException("ResultSet could not be converted");
+                }
+
+                result.addAll(resultFeatures.getData());
+
+                hasNextPage = !resultFeatures.getStatus().isLast();
+                currentPage++;
+            } while (hasNextPage);
+            return result;
+        } catch (HttpClientErrorException.NotFound ex) {
+            throw new ResultFeatureStatUnresolvableException("ResultSet not found");
+        } catch (HttpClientErrorException ex) {
+            throw new ResultFeatureStatUnresolvableException("Error while fetching ResultSet");
         }
     }
 
