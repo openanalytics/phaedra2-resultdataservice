@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 @RestController
 @Validated
@@ -47,12 +48,13 @@ public class ResultFeatureStatController extends BaseController {
     @GetMapping(path = "/resultset/{resultSetId}/resultfeaturestat", produces = {"application/json"})
     public PageDTO<ResultFeatureStatDTO> getResultFeatureStat(@PathVariable long resultSetId,
                                                               @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+                                                              @RequestParam(name = "pageSize", required = false) Optional<Integer> pageSize,
                                                               @RequestParam(name = "featureId", required = false) Integer featureId) throws ResultSetNotFoundException {
         Page<ResultFeatureStatDTO> pages;
         if (featureId == null) {
-            pages = resultFeatureStatService.getPagedResultFeatureStats(resultSetId, page);
+            pages = resultFeatureStatService.getPagedResultFeatureStats(resultSetId, page, pageSize);
         } else {
-            pages = resultFeatureStatService.getPagedResultFeatureStatByFeatureId(resultSetId, featureId, page);
+            pages = resultFeatureStatService.getPagedResultFeatureStatByFeatureId(resultSetId, featureId, page, pageSize);
         }
         return PageDTO.map(pages);
     }

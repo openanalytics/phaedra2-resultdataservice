@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.sql.DataSource;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class ResultFeatureStatService {
@@ -27,6 +28,7 @@ public class ResultFeatureStatService {
     private final ResultSetService resultSetService;
     private final Clock clock;
     private final ModelMapper modelMapper;
+    private static final int DEFAULT_PAGE_SIZE = 20;
 
     public ResultFeatureStatService(ResultFeatureStatRepository resultFeatureStatRepository, ResultSetService resultSetService, DataSource dataSource, Clock clock, ModelMapper modelMapper) {
         this.resultFeatureStatRepository = resultFeatureStatRepository;
@@ -51,11 +53,11 @@ public class ResultFeatureStatService {
         return save(resultFeatureStat);
     }
 
-    public Page<ResultFeatureStatDTO> getPagedResultFeatureStats(long resultSetId, int pageNumber) throws ResultSetNotFoundException {
+    public Page<ResultFeatureStatDTO> getPagedResultFeatureStats(long resultSetId, int pageNumber, Optional<Integer> pageSize) throws ResultSetNotFoundException {
         if (!resultSetService.exists(resultSetId)) {
             throw new ResultSetNotFoundException(resultSetId);
         }
-        var res = resultFeatureStatRepository.findAllByResultSetId(PageRequest.of(pageNumber, 20, Sort.Direction.ASC, "id"), resultSetId);
+        var res = resultFeatureStatRepository.findAllByResultSetId(PageRequest.of(pageNumber, pageSize.orElse(DEFAULT_PAGE_SIZE), Sort.Direction.ASC, "id"), resultSetId);
         return res.map((r) -> modelMapper.map(r).build());
     }
 
@@ -72,11 +74,11 @@ public class ResultFeatureStatService {
         return modelMapper.map(res.get()).build();
     }
 
-    public Page<ResultFeatureStatDTO> getPagedResultFeatureStatByFeatureId(long resultSetId, Integer featureId, Integer page) throws ResultSetNotFoundException {
+    public Page<ResultFeatureStatDTO> getPagedResultFeatureStatByFeatureId(long resultSetId, Integer featureId, Integer page, Optional<Integer> pageSize) throws ResultSetNotFoundException {
         if (!resultSetService.exists(resultSetId)) {
             throw new ResultSetNotFoundException(resultSetId);
         }
-        var res = resultFeatureStatRepository.findAllByResultSetIdAndFeatureId(PageRequest.of(page, 20, Sort.Direction.ASC, "id"), resultSetId, featureId);
+        var res = resultFeatureStatRepository.findAllByResultSetIdAndFeatureId(PageRequest.of(page, pageSize.orElse(DEFAULT_PAGE_SIZE), Sort.Direction.ASC, "id"), resultSetId, featureId);
         return res.map((r) -> modelMapper.map(r).build());
     }
 

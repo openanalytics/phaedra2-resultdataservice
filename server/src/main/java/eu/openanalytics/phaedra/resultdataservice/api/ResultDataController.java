@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 @RestController
 @Validated
@@ -45,12 +46,13 @@ public class ResultDataController extends BaseController {
     @GetMapping(path = "/resultset/{resultSetId}/resultdata", produces = {"application/json"})
     public PageDTO<ResultDataDTO> getResultData(@PathVariable long resultSetId,
                                                 @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+                                                @RequestParam(name = "pageSize", required = false) Optional<Integer> pageSize,
                                                 @RequestParam(name = "featureId", required = false) Integer featureId) throws ResultSetNotFoundException {
         Page<ResultDataDTO> pages;
         if (featureId == null) {
-            pages = resultDataService.getPagedResultData(resultSetId, page);
+            pages = resultDataService.getPagedResultData(resultSetId, page, pageSize);
         } else {
-            pages = resultDataService.getPagedResultDataByFeatureId(resultSetId, featureId, page);
+            pages = resultDataService.getPagedResultDataByFeatureId(resultSetId, featureId, page, pageSize);
         }
         return PageDTO.map(pages);
     }

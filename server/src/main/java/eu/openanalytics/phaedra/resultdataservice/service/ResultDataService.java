@@ -18,6 +18,7 @@ import javax.sql.DataSource;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Optional;
 
 @Service
 public class ResultDataService {
@@ -27,6 +28,7 @@ public class ResultDataService {
     private final DataSource dataSource;
     private final Clock clock;
     private final ModelMapper modelMapper;
+    private static final int DEFAULT_PAGE_SIZE = 20;
 
     public ResultDataService(ResultDataRepository resultDataRepository, ResultSetService resultSetService, DataSource dataSource, Clock clock, ModelMapper modelMapper) {
         this.resultDataRepository = resultDataRepository;
@@ -52,11 +54,11 @@ public class ResultDataService {
         return save(resultData);
     }
 
-    public Page<ResultDataDTO> getPagedResultData(long resultSetId, int pageNumber) throws ResultSetNotFoundException {
+    public Page<ResultDataDTO> getPagedResultData(long resultSetId, int pageNumber, Optional<Integer> pageSize) throws ResultSetNotFoundException {
         if (!resultSetService.exists(resultSetId)) {
             throw new ResultSetNotFoundException(resultSetId);
         }
-        var res = resultDataRepository.findAllByResultSetId(PageRequest.of(pageNumber, 20, Sort.Direction.ASC, "id"), resultSetId);
+        var res = resultDataRepository.findAllByResultSetId(PageRequest.of(pageNumber, pageSize.orElse(DEFAULT_PAGE_SIZE), Sort.Direction.ASC, "id"), resultSetId);
         return res.map((r) -> modelMapper.map(r).build());
     }
 
@@ -73,11 +75,11 @@ public class ResultDataService {
         return modelMapper.map(res.get()).build();
     }
 
-    public Page<ResultDataDTO> getPagedResultDataByFeatureId(long resultSetId, Integer featureId, Integer page) throws ResultSetNotFoundException {
+    public Page<ResultDataDTO> getPagedResultDataByFeatureId(long resultSetId, Integer featureId, Integer page, Optional<Integer> pageSize) throws ResultSetNotFoundException {
         if (!resultSetService.exists(resultSetId)) {
             throw new ResultSetNotFoundException(resultSetId);
         }
-        var res = resultDataRepository.findAllByResultSetIdAndFeatureId(PageRequest.of(page, 20, Sort.Direction.ASC, "id"), resultSetId, featureId);
+        var res = resultDataRepository.findAllByResultSetIdAndFeatureId(PageRequest.of(page, pageSize.orElse(DEFAULT_PAGE_SIZE), Sort.Direction.ASC, "id"), resultSetId, featureId);
         return res.map((r) -> modelMapper.map(r).build());
     }
 
