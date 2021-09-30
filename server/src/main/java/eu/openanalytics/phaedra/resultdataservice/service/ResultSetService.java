@@ -1,10 +1,11 @@
 package eu.openanalytics.phaedra.resultdataservice.service;
 
+import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
+import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetAlreadyCompletedException;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
 import eu.openanalytics.phaedra.resultdataservice.model.ResultSet;
 import eu.openanalytics.phaedra.resultdataservice.repository.ResultSetRepository;
-import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -31,6 +32,7 @@ public class ResultSetService {
     public ResultSetDTO create(ResultSetDTO resultSetDTO) {
         var resultSet = modelMapper.map(resultSetDTO)
             .executionStartTimeStamp(LocalDateTime.now(clock))
+            .outcome(StatusCode.SCHEDULED)
             .build();
 
         return save(resultSet);
@@ -41,7 +43,7 @@ public class ResultSetService {
         if (existingResultSet.isEmpty()) {
             throw new ResultSetNotFoundException(resultSetDTO.getId());
         }
-        if (existingResultSet.get().getOutcome() != null || existingResultSet.get().getExecutionEndTimeStamp() != null) {
+        if (existingResultSet.get().getOutcome() != StatusCode.SCHEDULED || existingResultSet.get().getExecutionEndTimeStamp() != null) {
             throw new ResultSetAlreadyCompletedException();
         }
 

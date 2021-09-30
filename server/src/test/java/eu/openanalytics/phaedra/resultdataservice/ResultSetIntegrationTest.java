@@ -1,6 +1,7 @@
 package eu.openanalytics.phaedra.resultdataservice;
 
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
+import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
 import eu.openanalytics.phaedra.resultdataservice.support.AbstractIntegrationTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
         Assertions.assertEquals(2L, res1.getPlateId());
         Assertions.assertEquals(3L, res1.getMeasId());
         Assertions.assertNotNull(res1.getExecutionStartTimeStamp());
-        Assertions.assertNull(res1.getOutcome());
+        Assertions.assertEquals(StatusCode.SCHEDULED, res1.getOutcome());
         Assertions.assertNull(res1.getExecutionEndTimeStamp());
 
         // 2. get simple resultSet
@@ -39,12 +40,12 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
         Assertions.assertEquals(2L, res2.getPlateId());
         Assertions.assertEquals(3L, res2.getMeasId());
         Assertions.assertNotNull(res2.getExecutionStartTimeStamp());
-        Assertions.assertNull(res2.getOutcome());
+        Assertions.assertEquals(StatusCode.SCHEDULED,res2.getOutcome());
         Assertions.assertNull(res2.getExecutionEndTimeStamp());
 
         // 3. update outcome
         var input2 = ResultSetDTO.builder()
-            .outcome("MyOutcome!")
+            .outcome(StatusCode.SUCCESS)
             .errors(Collections.emptyList())
             .errorsText("")
             .build();
@@ -53,7 +54,7 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
         Assertions.assertEquals(2L, res3.getPlateId());
         Assertions.assertEquals(3L, res3.getMeasId());
         Assertions.assertNotNull(res3.getExecutionStartTimeStamp());
-        Assertions.assertEquals("MyOutcome!", res3.getOutcome());
+        Assertions.assertEquals(StatusCode.SUCCESS, res3.getOutcome());
         Assertions.assertNotNull(res3.getExecutionEndTimeStamp());
 
         // 4. get resultSet again
@@ -62,7 +63,7 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
         Assertions.assertEquals(2L, res4.getPlateId());
         Assertions.assertEquals(3L, res4.getMeasId());
         Assertions.assertNotNull(res4.getExecutionStartTimeStamp());
-        Assertions.assertEquals("MyOutcome!", res4.getOutcome());
+        Assertions.assertEquals(StatusCode.SUCCESS, res4.getOutcome());
         Assertions.assertNotNull(res4.getExecutionEndTimeStamp());
 
 
@@ -90,7 +91,7 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
             .protocolId(2L)
             .measId(3L)
             .id(1L)
-            .outcome("my outcome")
+            .outcome(StatusCode.SUCCESS)
             .executionStartTimeStamp(LocalDateTime.now())
             .executionEndTimeStamp(LocalDateTime.now())
             .build();
@@ -117,14 +118,15 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
         var res1 = performRequest(put("/resultset/1", input1), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"errors\":\"Errors is mandatory when updating a ResultSet\",\"errorsText\":\"ErrorsText is mandatory when updating a ResultSet\",\"outcome\":\"Outcome is mandatory when updating a ResultSet\"},\"status\":\"error\"}", res1);
 
-        // 2. too long outcome
-        var input2 = ResultSetDTO.builder()
-            .outcome("a".repeat(260))
-            .errors(Collections.emptyList())
-            .errorsText("")
-            .build();
+        // 2. wrong outcome
+        var input2 = new HashMap<>() {{
+            put("outcome", "NON_EXISTING_CODE");
+            put("errors", Collections.emptyList());
+            put("errorsText", "");
+        }};
+
         var res2 = performRequest(put("/resultset/1", input2), HttpStatus.BAD_REQUEST);
-        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"outcome\":\"Outcome may only contain 255 characters\"},\"status\":\"error\"}", res2);
+        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"outcome\":\"Invalid value provided\"},\"status\":\"error\"}", res2);
 
         // 3. too many fields
         var input3 = ResultSetDTO.builder()
@@ -152,7 +154,7 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void updateNotExistingResultSet() throws Exception {
         var input1 = ResultSetDTO.builder()
-            .outcome("MyOutcome!")
+            .outcome(StatusCode.SUCCESS)
             .errors(Collections.emptyList())
             .errorsText("")
             .build();
@@ -180,7 +182,7 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
 
         // 2. update outcome
         var input2 = ResultSetDTO.builder()
-            .outcome("MyOutcome!")
+            .outcome(StatusCode.SUCCESS)
             .errors(Collections.emptyList())
             .errorsText("")
             .build();
@@ -188,7 +190,7 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
 
         // 3. update outcome again
         var input3 = ResultSetDTO.builder()
-            .outcome("MyOutcome33!")
+            .outcome(StatusCode.FAILURE)
             .errors(Collections.emptyList())
             .errorsText("")
             .build();
@@ -212,48 +214,48 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
         // 2. query first page
         var res2 = performRequest(get("/resultset"), HttpStatus.OK);
         Assertions.assertEquals("{\"data\":[" +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":1,\"measId\":1,\"plateId\":1,\"protocolId\":1}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":2,\"measId\":2,\"plateId\":2,\"protocolId\":2}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":3,\"measId\":3,\"plateId\":3,\"protocolId\":3}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":4,\"measId\":4,\"plateId\":4,\"protocolId\":4}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":5,\"measId\":5,\"plateId\":5,\"protocolId\":5}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":6,\"measId\":6,\"plateId\":6,\"protocolId\":6}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":7,\"measId\":7,\"plateId\":7,\"protocolId\":7}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":8,\"measId\":8,\"plateId\":8,\"protocolId\":8}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":9,\"measId\":9,\"plateId\":9,\"protocolId\":9}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":10,\"measId\":10,\"plateId\":10,\"protocolId\":10}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":11,\"measId\":11,\"plateId\":11,\"protocolId\":11}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":12,\"measId\":12,\"plateId\":12,\"protocolId\":12}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":13,\"measId\":13,\"plateId\":13,\"protocolId\":13}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":14,\"measId\":14,\"plateId\":14,\"protocolId\":14}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":15,\"measId\":15,\"plateId\":15,\"protocolId\":15}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":16,\"measId\":16,\"plateId\":16,\"protocolId\":16}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":17,\"measId\":17,\"plateId\":17,\"protocolId\":17}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":18,\"measId\":18,\"plateId\":18,\"protocolId\":18}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":19,\"measId\":19,\"plateId\":19,\"protocolId\":19}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":20,\"measId\":20,\"plateId\":20,\"protocolId\":20}" +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":1,\"measId\":1,\"outcome\":\"SCHEDULED\",\"plateId\":1,\"protocolId\":1}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":2,\"measId\":2,\"outcome\":\"SCHEDULED\",\"plateId\":2,\"protocolId\":2}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":3,\"measId\":3,\"outcome\":\"SCHEDULED\",\"plateId\":3,\"protocolId\":3}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":4,\"measId\":4,\"outcome\":\"SCHEDULED\",\"plateId\":4,\"protocolId\":4}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":5,\"measId\":5,\"outcome\":\"SCHEDULED\",\"plateId\":5,\"protocolId\":5}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":6,\"measId\":6,\"outcome\":\"SCHEDULED\",\"plateId\":6,\"protocolId\":6}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":7,\"measId\":7,\"outcome\":\"SCHEDULED\",\"plateId\":7,\"protocolId\":7}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":8,\"measId\":8,\"outcome\":\"SCHEDULED\",\"plateId\":8,\"protocolId\":8}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":9,\"measId\":9,\"outcome\":\"SCHEDULED\",\"plateId\":9,\"protocolId\":9}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":10,\"measId\":10,\"outcome\":\"SCHEDULED\",\"plateId\":10,\"protocolId\":10}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":11,\"measId\":11,\"outcome\":\"SCHEDULED\",\"plateId\":11,\"protocolId\":11}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":12,\"measId\":12,\"outcome\":\"SCHEDULED\",\"plateId\":12,\"protocolId\":12}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":13,\"measId\":13,\"outcome\":\"SCHEDULED\",\"plateId\":13,\"protocolId\":13}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":14,\"measId\":14,\"outcome\":\"SCHEDULED\",\"plateId\":14,\"protocolId\":14}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":15,\"measId\":15,\"outcome\":\"SCHEDULED\",\"plateId\":15,\"protocolId\":15}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":16,\"measId\":16,\"outcome\":\"SCHEDULED\",\"plateId\":16,\"protocolId\":16}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":17,\"measId\":17,\"outcome\":\"SCHEDULED\",\"plateId\":17,\"protocolId\":17}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":18,\"measId\":18,\"outcome\":\"SCHEDULED\",\"plateId\":18,\"protocolId\":18}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":19,\"measId\":19,\"outcome\":\"SCHEDULED\",\"plateId\":19,\"protocolId\":19}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":20,\"measId\":20,\"outcome\":\"SCHEDULED\",\"plateId\":20,\"protocolId\":20}" +
             "],\"status\":{\"first\":true,\"last\":false,\"totalElements\":35,\"totalPages\":2}}", res2);
 
 
         // 3. query second page
         var res3 = performRequest(get("/resultset?page=1"), HttpStatus.OK);
         Assertions.assertEquals("{\"data\":[" +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":21,\"measId\":21,\"plateId\":21,\"protocolId\":21}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":22,\"measId\":22,\"plateId\":22,\"protocolId\":22}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":23,\"measId\":23,\"plateId\":23,\"protocolId\":23}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":24,\"measId\":24,\"plateId\":24,\"protocolId\":24}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":25,\"measId\":25,\"plateId\":25,\"protocolId\":25}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":26,\"measId\":26,\"plateId\":26,\"protocolId\":26}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":27,\"measId\":27,\"plateId\":27,\"protocolId\":27}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":28,\"measId\":28,\"plateId\":28,\"protocolId\":28}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":29,\"measId\":29,\"plateId\":29,\"protocolId\":29}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":30,\"measId\":30,\"plateId\":30,\"protocolId\":30}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":31,\"measId\":31,\"plateId\":31,\"protocolId\":31}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":32,\"measId\":32,\"plateId\":32,\"protocolId\":32}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":33,\"measId\":33,\"plateId\":33,\"protocolId\":33}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":34,\"measId\":34,\"plateId\":34,\"protocolId\":34}," +
-            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":35,\"measId\":35,\"plateId\":35,\"protocolId\":35}]," +
-            "\"status\":{\"first\":false,\"last\":true,\"totalElements\":35,\"totalPages\":2}}", res3);
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":21,\"measId\":21,\"outcome\":\"SCHEDULED\",\"plateId\":21,\"protocolId\":21}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":22,\"measId\":22,\"outcome\":\"SCHEDULED\",\"plateId\":22,\"protocolId\":22}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":23,\"measId\":23,\"outcome\":\"SCHEDULED\",\"plateId\":23,\"protocolId\":23}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":24,\"measId\":24,\"outcome\":\"SCHEDULED\",\"plateId\":24,\"protocolId\":24}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":25,\"measId\":25,\"outcome\":\"SCHEDULED\",\"plateId\":25,\"protocolId\":25}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":26,\"measId\":26,\"outcome\":\"SCHEDULED\",\"plateId\":26,\"protocolId\":26}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":27,\"measId\":27,\"outcome\":\"SCHEDULED\",\"plateId\":27,\"protocolId\":27}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":28,\"measId\":28,\"outcome\":\"SCHEDULED\",\"plateId\":28,\"protocolId\":28}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":29,\"measId\":29,\"outcome\":\"SCHEDULED\",\"plateId\":29,\"protocolId\":29}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":30,\"measId\":30,\"outcome\":\"SCHEDULED\",\"plateId\":30,\"protocolId\":30}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":31,\"measId\":31,\"outcome\":\"SCHEDULED\",\"plateId\":31,\"protocolId\":31}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":32,\"measId\":32,\"outcome\":\"SCHEDULED\",\"plateId\":32,\"protocolId\":32}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":33,\"measId\":33,\"outcome\":\"SCHEDULED\",\"plateId\":33,\"protocolId\":33}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":34,\"measId\":34,\"outcome\":\"SCHEDULED\",\"plateId\":34,\"protocolId\":34}," +
+            "{\"executionStartTimeStamp\":\"2042-12-31T23:59:59\",\"id\":35,\"measId\":35,\"outcome\":\"SCHEDULED\",\"plateId\":35,\"protocolId\":35}" +
+            "],\"status\":{\"first\":false,\"last\":true,\"totalElements\":35,\"totalPages\":2}}", res3);
 
         // 4. query random page
         var res4 = performRequest(get("/resultset?page=50"), HttpStatus.OK);

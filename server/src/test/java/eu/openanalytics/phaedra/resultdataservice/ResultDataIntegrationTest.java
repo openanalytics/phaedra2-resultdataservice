@@ -80,7 +80,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
 
         // 2. complete the ResultSet
         var input2 = ResultSetDTO.builder()
-            .outcome("MyOutcome!")
+            .outcome(StatusCode.SUCCESS)
             .errors(Collections.emptyList())
             .errorsText("")
             .build();
@@ -125,7 +125,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
 
         // 3. complete the ResultSet
         var input3 = ResultSetDTO.builder()
-            .outcome("MyOutcome!")
+            .outcome(StatusCode.SUCCESS)
             .errors(Collections.emptyList())
             .errorsText("")
             .build();

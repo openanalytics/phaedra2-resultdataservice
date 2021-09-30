@@ -2,6 +2,7 @@ package eu.openanalytics.phaedra.resultdataservice.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.openanalytics.phaedra.resultdataservice.dto.ErrorDTO;
+import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -39,7 +40,7 @@ public class ResultSet {
 
     LocalDateTime executionEndTimeStamp;
 
-    String outcome;
+    StatusCode outcome;
 
     ErrorHolder errors;
 

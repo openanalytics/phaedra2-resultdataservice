@@ -1,6 +1,7 @@
 package eu.openanalytics.phaedra.resultdataservice.service;
 
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultFeatureStatDTO;
+import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
 import eu.openanalytics.phaedra.resultdataservice.exception.DuplicateResultFeatureStatException;
 import eu.openanalytics.phaedra.resultdataservice.exception.InvalidResultSetIdException;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultFeatureStatNotFoundException;
@@ -37,7 +38,7 @@ public class ResultFeatureStatService {
     public ResultFeatureStatDTO create(long resultSetId, ResultFeatureStatDTO resultFeatureStatDTO) throws ResultSetNotFoundException, ResultSetAlreadyCompletedException, DuplicateResultFeatureStatException {
         var resultSet = resultSetService.getResultSetById(resultSetId);
 
-        if (resultSet.getOutcome() != null) {
+        if (resultSet.getOutcome() != StatusCode.SCHEDULED) {
             throw new ResultSetAlreadyCompletedException("ResultSet is already completed, cannot add new ResultFeatureStat to this set.");
         }
 
@@ -81,7 +82,7 @@ public class ResultFeatureStatService {
 
     public void delete(long resultSetId, long resultFeatureStatId) throws ResultSetNotFoundException, InvalidResultSetIdException, ResultSetAlreadyCompletedException, ResultFeatureStatNotFoundException {
         var resultSet = resultSetService.getResultSetById(resultSetId);
-        if (resultSet.getOutcome() != null) {
+        if (resultSet.getOutcome() != StatusCode.SCHEDULED) {
             throw new ResultSetAlreadyCompletedException("ResultSet is already completed, cannot delete a ResultFeatureStat from this set.");
         }
         var resultFeatureStat = resultFeatureStatRepository.findById(resultFeatureStatId);
@@ -99,7 +100,7 @@ public class ResultFeatureStatService {
      */
     private ResultFeatureStatDTO save(ResultFeatureStat resultFeatureStat) throws DuplicateResultFeatureStatException {
         try {
-        return modelMapper.map(resultFeatureStatRepository.save(resultFeatureStat)).build();
+            return modelMapper.map(resultFeatureStatRepository.save(resultFeatureStat)).build();
         } catch (DbActionExecutionException ex) {
             if (ex.getCause() instanceof DuplicateKeyException) {
                 throw new DuplicateResultFeatureStatException();

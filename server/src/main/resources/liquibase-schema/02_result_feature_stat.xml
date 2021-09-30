@@ -23,7 +23,7 @@
                 <constraints nullable="true"/>
             </column>
             <column name="statistic_name" type="text">
-                <constraints nullable="true"/>
+                <constraints nullable="false"/>
             </column>
             <column name="welltype" type="text">
                 <constraints nullable="true"/>

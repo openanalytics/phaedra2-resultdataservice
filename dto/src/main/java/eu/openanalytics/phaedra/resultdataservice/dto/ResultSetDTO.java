@@ -2,6 +2,7 @@ package eu.openanalytics.phaedra.resultdataservice.dto;
 
 import eu.openanalytics.phaedra.resultdataservice.dto.validation.OnCreate;
 import eu.openanalytics.phaedra.resultdataservice.dto.validation.OnUpdate;
+import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.Value;
 import lombok.With;
 import lombok.experimental.NonFinal;
-import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
@@ -50,8 +50,7 @@ public class ResultSetDTO {
 
     @Null(groups = OnCreate.class, message = "Outcome must be null when creating a ResultSet")
     @NotNull(groups = OnUpdate.class, message = "Outcome is mandatory when updating a ResultSet")
-    @Length(groups = OnUpdate.class, max = 255, message = "Outcome may only contain 255 characters")
-    String outcome;
+    StatusCode outcome;
 
     @Null(groups = OnCreate.class, message = "Errors must be null when creating a ResultSet")
     @NotNull(groups = OnUpdate.class, message = "Errors is mandatory when updating a ResultSet")

@@ -1,12 +1,12 @@
 package eu.openanalytics.phaedra.resultdataservice.api;
 
-import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetAlreadyCompletedException;
-import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
-import eu.openanalytics.phaedra.resultdataservice.service.ResultSetService;
 import eu.openanalytics.phaedra.resultdataservice.dto.PageDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.validation.OnCreate;
 import eu.openanalytics.phaedra.resultdataservice.dto.validation.OnUpdate;
+import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetAlreadyCompletedException;
+import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
+import eu.openanalytics.phaedra.resultdataservice.service.ResultSetService;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;

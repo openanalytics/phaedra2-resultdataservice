@@ -5,6 +5,8 @@
    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <changeSet id="01_initial_db" author="Tobia">
+        <sql>CREATE TYPE status_code AS ENUM ('SCHEDULED', 'SUCCESS', 'FAILURE');</sql>
+        <sql>CREATE CAST (CHARACTER VARYING AS status_code) WITH INOUT AS IMPLICIT;</sql>
         <createTable tableName="result_set">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints nullable="false" primaryKey="true"/>
@@ -24,8 +26,8 @@
             <column name="execution_end_time_stamp" type="timestamp">
                 <constraints nullable="true"/>
             </column>
-            <column name="outcome" type="varchar(255)">
-                <constraints nullable="true"/>
+            <column name="outcome" type="status_code">
+                <constraints nullable="false"/>
             </column>
             <column name="errors" type="jsonb">
                 <constraints nullable="true"/>
@@ -34,9 +36,6 @@
                 <constraints nullable="true"/>
             </column>
         </createTable>
-
-        <sql>CREATE TYPE status_code AS ENUM ('SUCCESS', 'WORKER_INTERNAL_ERROR', 'SCRIPT_ERROR');</sql>
-        <sql>CREATE CAST (CHARACTER VARYING AS status_code) WITH INOUT AS IMPLICIT;</sql>
 
         <createTable tableName="result_data">
             <column name="id" type="bigint" autoIncrement="true">

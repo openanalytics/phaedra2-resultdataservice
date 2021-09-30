@@ -46,8 +46,8 @@ public class ResultFeatureStatController extends BaseController {
     @ResponseBody
     @GetMapping(path = "/resultset/{resultSetId}/resultfeaturestat", produces = {"application/json"})
     public PageDTO<ResultFeatureStatDTO> getResultFeatureStat(@PathVariable long resultSetId,
-                                                @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-                                                @RequestParam(name = "featureId", required = false) Integer featureId) throws ResultSetNotFoundException {
+                                                              @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+                                                              @RequestParam(name = "featureId", required = false) Integer featureId) throws ResultSetNotFoundException {
         Page<ResultFeatureStatDTO> pages;
         if (featureId == null) {
             pages = resultFeatureStatService.getPagedResultFeatureStats(resultSetId, page);

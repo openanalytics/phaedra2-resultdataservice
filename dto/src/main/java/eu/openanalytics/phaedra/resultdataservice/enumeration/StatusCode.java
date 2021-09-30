@@ -21,8 +21,7 @@
 package eu.openanalytics.phaedra.resultdataservice.enumeration;
 
 public enum StatusCode {
-    SUCCESS,
-    WORKER_INTERNAL_ERROR,
-    SCRIPT_ERROR,
-    BAD_REQUEST,
+    SCHEDULED, // the calculation for this result is scheduled and may already be running. The calculation is not yet completed.
+    SUCCESS, // the calculation succeeded
+    FAILURE // the calculation failed
 }

@@ -1,6 +1,7 @@
 package eu.openanalytics.phaedra.resultdataservice.service;
 
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultDataDTO;
+import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
 import eu.openanalytics.phaedra.resultdataservice.exception.InvalidResultSetIdException;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultDataNotFoundException;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetAlreadyCompletedException;
@@ -38,7 +39,7 @@ public class ResultDataService {
     public ResultDataDTO create(long resultSetId, ResultDataDTO resultDataDTO) throws ResultSetNotFoundException, ResultSetAlreadyCompletedException {
         var resultSet = resultSetService.getResultSetById(resultSetId);
 
-        if (resultSet.getOutcome() != null) {
+        if (resultSet.getOutcome() != StatusCode.SCHEDULED) {
             throw new ResultSetAlreadyCompletedException("ResultSet is already completed, cannot add new ResultData to this set.");
         }
 
@@ -82,7 +83,7 @@ public class ResultDataService {
 
     public void delete(long resultSetId, long resultDataId) throws ResultSetNotFoundException, ResultDataNotFoundException, InvalidResultSetIdException, ResultSetAlreadyCompletedException {
         var resultSet = resultSetService.getResultSetById(resultSetId);
-        if (resultSet.getOutcome() != null) {
+        if (resultSet.getOutcome() != StatusCode.SCHEDULED) {
             throw new ResultSetAlreadyCompletedException("ResultSet is already completed, cannot delete a ResultData from this set.");
         }
         var resultData = resultDataRepository.findById(resultDataId);
