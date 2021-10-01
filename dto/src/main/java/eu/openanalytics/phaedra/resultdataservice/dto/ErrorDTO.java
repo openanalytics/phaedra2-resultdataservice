@@ -53,6 +53,9 @@ public class ErrorDTO {
         if (getStatusMessage() != null) {
             description.append(String.format(", StatusMessage: [%s]", getStatusMessage()));
         }
+        if (getFeatureStatId() != null) {
+            description.append(String.format(", FeatureStat: [%s %s]", getFeatureStatId(), getFeatureStatName()));
+        }
         return description.toString();
     }
 }
