@@ -19,7 +19,10 @@ import org.springframework.stereotype.Service;
 import javax.sql.DataSource;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class ResultFeatureStatService {
@@ -37,21 +40,25 @@ public class ResultFeatureStatService {
         this.modelMapper = modelMapper;
     }
 
-    public ResultFeatureStatDTO create(long resultSetId, ResultFeatureStatDTO resultFeatureStatDTO) throws ResultSetNotFoundException, ResultSetAlreadyCompletedException, DuplicateResultFeatureStatException {
+    public List<ResultFeatureStatDTO> create(long resultSetId, List<ResultFeatureStatDTO> resultFeatureStatDTOs) throws ResultSetNotFoundException, ResultSetAlreadyCompletedException, DuplicateResultFeatureStatException {
         var resultSet = resultSetService.getResultSetById(resultSetId);
 
         if (resultSet.getOutcome() != StatusCode.SCHEDULED) {
             throw new ResultSetAlreadyCompletedException("ResultSet is already completed, cannot add new ResultFeatureStat to this set.");
         }
 
-        var resultFeatureStat = modelMapper
-            .map(resultFeatureStatDTO)
-            .resultSetId(resultSetId)
-            .createdTimestamp(LocalDateTime.now(clock))
-            .build();
+        var resultFeatureStats = resultFeatureStatDTOs
+            .stream()
+            .map(r -> modelMapper
+                .map(r)
+                .resultSetId(resultSetId)
+                .createdTimestamp(LocalDateTime.now(clock))
+                .build()
+            ).collect(Collectors.toList());
 
-        return save(resultFeatureStat);
+        return save(resultFeatureStats);
     }
+
 
     public Page<ResultFeatureStatDTO> getPagedResultFeatureStats(long resultSetId, int pageNumber, Optional<Integer> pageSize) throws ResultSetNotFoundException {
         if (!resultSetService.exists(resultSetId)) {
@@ -109,6 +116,13 @@ public class ResultFeatureStatService {
             }
             throw ex;
         }
+    }
+
+    private List<ResultFeatureStatDTO> save(List<ResultFeatureStat> resultFeatureStats) {
+        var entities = resultFeatureStatRepository.saveAll(resultFeatureStats).spliterator();
+        return StreamSupport.stream(entities, false)
+            .map(f -> modelMapper.map(f).build())
+            .collect(Collectors.toList());
     }
 
 }

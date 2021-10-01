@@ -42,7 +42,10 @@ public class ErrorDTO {
         }
         description.append(String.format(", Description: [%s]", getDescription()));
         if (getFeatureId() != null) {
-            description.append(String.format(", Feature: [%s %s], Sequence: [%s], Formula: [%s %s]", getFeatureId(), getFeatureName(), getSequenceNumber(), getFormulaId(), getFormulaName()));
+            description.append(String.format(", Feature: [%s %s], Sequence: [%s]", getFeatureId(), getFeatureName(), getSequenceNumber()));
+        }
+        if (getFormulaId() != null) {
+            description.append(String.format(", Formula: [%s %s]", getFormulaId(), getFormulaName()));
         }
         if (getCivType() != null) {
             description.append(String.format(", CivType: [%s], CivSource: [%s], CivVariableName: [%s]", getCivType(), getCivSource(), getCivVariableName()));

@@ -26,6 +26,8 @@ public interface ResultDataServiceClient {
     ResultFeatureStatDTO createResultFeatureStat(long resultSetId, long featureId, long featureStatId, Optional<Float> value, String statisticName, String welltype,
                                                  StatusCode statusCode, String statusMessage, Integer exitCode) throws ResultFeatureStatUnresolvableException;
 
+    List<ResultFeatureStatDTO> createResultFeatureStats(long resultSetId, List<ResultFeatureStatDTO> resultFeatureStats) throws ResultFeatureStatUnresolvableException;
+
     ResultFeatureStatDTO getResultFeatureStat(long resultSetId, long resultFeatureStatId) throws ResultFeatureStatUnresolvableException;
 
     ResultSetDTO getResultSet(long resultSetId) throws ResultSetUnresolvableException;

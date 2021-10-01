@@ -18,7 +18,7 @@ import javax.validation.constraints.Null;
 import java.time.LocalDateTime;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 @With
 @AllArgsConstructor
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE) // Jackson deserialize compatibility

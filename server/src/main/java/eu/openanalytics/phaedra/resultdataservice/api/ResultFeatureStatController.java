@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -40,7 +41,7 @@ public class ResultFeatureStatController extends BaseController {
     @ResponseBody
     @PostMapping(path = "/resultset/{resultSetId}/resultfeaturestat", produces = {"application/json"}, consumes = {"application/json"})
     @ResponseStatus(HttpStatus.CREATED)
-    public ResultFeatureStatDTO createResultFeatureStat(@PathVariable long resultSetId, @Validated(OnCreate.class) @RequestBody ResultFeatureStatDTO resultFeatureStatDTO) throws ResultSetNotFoundException, ResultSetAlreadyCompletedException, DuplicateResultFeatureStatException {
+    public List<ResultFeatureStatDTO> createResultFeatureStat(@PathVariable long resultSetId, @Validated(OnCreate.class) @RequestBody List<ResultFeatureStatDTO> resultFeatureStatDTO) throws ResultSetNotFoundException, ResultSetAlreadyCompletedException, DuplicateResultFeatureStatException {
         return resultFeatureStatService.create(resultSetId, resultFeatureStatDTO);
     }
 

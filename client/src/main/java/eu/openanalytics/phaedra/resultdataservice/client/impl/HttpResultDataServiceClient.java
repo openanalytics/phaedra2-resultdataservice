@@ -16,6 +16,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -126,22 +127,29 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
     @Override
     public ResultFeatureStatDTO createResultFeatureStat(long resultSetId, long featureId, long featureStatId, Optional<Float> value, String statisticName, String welltype,
                                                         StatusCode statusCode, String statusMessage, Integer exitCode) throws ResultFeatureStatUnresolvableException {
-        var resultFeatureStat = ResultFeatureStatDTO.builder()
-            .featureId(featureId)
-            .featureStatId(featureStatId)
-            .value(value.orElse(null))
-            .statisticName(statisticName)
-            .welltype(welltype)
-            .statusCode(statusCode)
-            .statusMessage(statusMessage)
-            .exitCode(exitCode)
-            .build();
+        return createResultFeatureStats(resultSetId,
+            List.of(
+                ResultFeatureStatDTO.builder()
+                    .featureId(featureId)
+                    .featureStatId(featureStatId)
+                    .value(value.orElse(null))
+                    .statisticName(statisticName)
+                    .welltype(welltype)
+                    .statusCode(statusCode)
+                    .statusMessage(statusMessage)
+                    .exitCode(exitCode)
+                    .build())
+        ).get(0);
+    }
+
+    @Override
+    public List<ResultFeatureStatDTO> createResultFeatureStats(long resultSetId, List<ResultFeatureStatDTO> resultFeatureStats) throws ResultFeatureStatUnresolvableException {
         try {
-            var res = restTemplate.postForObject(UrlFactory.resultFeatureStat(resultSetId), resultFeatureStat, ResultFeatureStatDTO.class);
+            var res = restTemplate.postForObject(UrlFactory.resultFeatureStat(resultSetId), resultFeatureStats, ResultFeatureStatDTO[].class);
             if (res == null) {
                 throw new ResultFeatureStatUnresolvableException("ResultFeatureStat could not be converted");
             }
-            return res;
+            return Arrays.asList(res);
         } catch (HttpClientErrorException ex) {
             throw new ResultFeatureStatUnresolvableException("Error while creating ResultFeatureStat", ex);
         } catch (HttpServerErrorException ex) {
