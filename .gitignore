@@ -198,7 +198,7 @@ gradle-app.setting
 
 # End of https://www.toptal.com/developers/gitignore/api/gradle
 
-application.yml
+/application.yml
 
 # Eclipse IDE files
 /target/

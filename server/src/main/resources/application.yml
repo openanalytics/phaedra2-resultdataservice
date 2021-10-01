@@ -1,0 +1,17 @@
+server:
+  servlet:
+    context-path: /phaedra/resultdata-service
+  port: 6010
+
+spring:
+  cloud:
+    kubernetes:
+      enabled: false
+  application:
+    name: phaedra-resultdata-service
+
+eureka:
+  client:
+    enabled: true
+
+
