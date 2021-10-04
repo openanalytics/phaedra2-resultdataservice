@@ -2,6 +2,7 @@ package eu.openanalytics.phaedra.resultdataservice.support;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -83,6 +84,18 @@ abstract public class AbstractIntegrationTest {
     }
 
     protected <T> T performRequest(RequestBuilder requestBuilder, HttpStatus responseStatusCode, Class<T> resultType) throws Exception {
+        var mvcResult = mockMvc.perform(requestBuilder).andReturn();
+
+        Assertions.assertEquals("application/json", mvcResult.getResponse().getContentType());
+        Assertions.assertEquals(responseStatusCode.value(), mvcResult.getResponse().getStatus(), "Status code is not expected value, returned body is " + mvcResult.getResponse().getContentAsString());
+
+        Assertions.assertNotNull(mvcResult.getResponse().getContentAsString());
+        var res = om.readValue(mvcResult.getResponse().getContentAsString(), resultType);
+        Assertions.assertNotNull(res);
+        return res;
+    }
+
+    protected <T> T performRequest(RequestBuilder requestBuilder, HttpStatus responseStatusCode, TypeReference<T> resultType) throws Exception {
         var mvcResult = mockMvc.perform(requestBuilder).andReturn();
 
         Assertions.assertEquals("application/json", mvcResult.getResponse().getContentType());

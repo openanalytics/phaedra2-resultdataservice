@@ -53,15 +53,14 @@ public class BaseController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public HashMap<String, Object> handleValidationExceptions(HttpMessageNotReadableException ex) {
-        if (ex.getCause() instanceof InvalidFormatException) {
-            InvalidFormatException cause = (InvalidFormatException) ex.getCause();
-            String fieldName = cause.getPath().get(0).getFieldName();
+        if (ex.getCause() instanceof InvalidFormatException cause) {
+            String fieldName = cause.getPath().get(cause.getPath().size() - 1).getFieldName();
 
             return new HashMap<>() {{
                 put("status", "error");
                 put("error", "Validation error");
                 put("malformed_fields", new HashMap<>() {{
-                    put(fieldName, "Invalid value provided");
+                    put(fieldName, String.format("Invalid value (\"%s\") provided", cause.getValue()));
                 }});
             }};
         }

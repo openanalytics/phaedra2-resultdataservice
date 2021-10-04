@@ -118,11 +118,19 @@ public class ResultFeatureStatService {
         }
     }
 
-    private List<ResultFeatureStatDTO> save(List<ResultFeatureStat> resultFeatureStats) {
-        var entities = resultFeatureStatRepository.saveAll(resultFeatureStats).spliterator();
-        return StreamSupport.stream(entities, false)
-            .map(f -> modelMapper.map(f).build())
-            .collect(Collectors.toList());
+    // TODO test whether everything is rolled-back when error
+    private List<ResultFeatureStatDTO> save(List<ResultFeatureStat> resultFeatureStats) throws DuplicateResultFeatureStatException {
+        try {
+            var entities = resultFeatureStatRepository.saveAll(resultFeatureStats).spliterator();
+            return StreamSupport.stream(entities, false)
+                .map(f -> modelMapper.map(f).build())
+                .collect(Collectors.toList());
+        } catch (DbActionExecutionException ex) {
+            if (ex.getCause() instanceof DuplicateKeyException) {
+                throw new DuplicateResultFeatureStatException();
+            }
+            throw ex;
+        }
     }
 
 }

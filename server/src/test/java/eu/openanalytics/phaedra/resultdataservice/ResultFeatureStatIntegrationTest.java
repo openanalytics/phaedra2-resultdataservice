@@ -1,5 +1,7 @@
 package eu.openanalytics.phaedra.resultdataservice;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import eu.openanalytics.phaedra.resultdataservice.dto.PageDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultFeatureStatDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
 import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
@@ -12,11 +14,14 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 public class ResultFeatureStatIntegrationTest extends AbstractIntegrationTest {
+
+    private final static TypeReference<PageDTO<ResultFeatureStatDTO>> PAGED_RESULT_FEATURE_STAT_TYPE = new TypeReference<>() {};
 
     @Test
     public void simpleCreateAndGetTest() throws Exception {
@@ -28,7 +33,6 @@ public class ResultFeatureStatIntegrationTest extends AbstractIntegrationTest {
             .build();
 
         var res1 = performRequest(post("/resultset", input1), HttpStatus.CREATED, ResultSetDTO.class);
-
         Assertions.assertEquals(1, res1.getId());
 
         // 2. create simple ResultFeatureStat
@@ -43,7 +47,7 @@ public class ResultFeatureStatIntegrationTest extends AbstractIntegrationTest {
             .welltype(null)
             .build();
 
-        var res2 = performRequest(post("/resultset/1/resultfeaturestat", input2), HttpStatus.CREATED, ResultFeatureStatDTO.class);
+        var res2 = performRequest(post("/resultset/1/resultfeaturestat", List.of(input2)), HttpStatus.CREATED, ResultFeatureStatDTO[].class)[0];
         Assertions.assertEquals(1, res2.getId());
         Assertions.assertEquals(1, res2.getResultSetId());
         Assertions.assertEquals(StatusCode.SUCCESS, res2.getStatusCode());
@@ -108,7 +112,7 @@ public class ResultFeatureStatIntegrationTest extends AbstractIntegrationTest {
             .welltype(null)
             .build();
 
-        var res3 = performRequest(post("/resultset/1/resultfeaturestat", input3), HttpStatus.BAD_REQUEST);
+        var res3 = performRequest(post("/resultset/1/resultfeaturestat", List.of(input3)), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"ResultSet is already completed, cannot add new ResultFeatureStat to this set.\",\"status\":\"error\"}", res3);
     }
 
@@ -138,7 +142,7 @@ public class ResultFeatureStatIntegrationTest extends AbstractIntegrationTest {
             .welltype(null)
             .build();
 
-        performRequest(post("/resultset/1/resultfeaturestat", input2), HttpStatus.CREATED);
+        performRequest(post("/resultset/1/resultfeaturestat", List.of(input2)), HttpStatus.CREATED);
 
         // 3. complete the ResultSet
         var input3 = ResultSetDTO.builder()
@@ -178,7 +182,7 @@ public class ResultFeatureStatIntegrationTest extends AbstractIntegrationTest {
             .welltype(null)
             .build();
 
-        performRequest(post("/resultset/1/resultfeaturestat", input2), HttpStatus.CREATED);
+        performRequest(post("/resultset/1/resultfeaturestat", List.of(input2)), HttpStatus.CREATED);
 
         // 3. update ResultFeatureStat
         var res3 = performRequest(put("/resultset/1/resultfeaturestat/1", ""), HttpStatus.BAD_REQUEST);
@@ -211,7 +215,7 @@ public class ResultFeatureStatIntegrationTest extends AbstractIntegrationTest {
                 .welltype(null)
                 .build();
 
-            performRequest(post("/resultset/1/resultfeaturestat", input), HttpStatus.CREATED);
+            performRequest(post("/resultset/1/resultfeaturestat", List.of(input)), HttpStatus.CREATED);
         }
 
         // 3. create 15 ResultFeatureStats for ResultSet 2
@@ -227,7 +231,7 @@ public class ResultFeatureStatIntegrationTest extends AbstractIntegrationTest {
                 .welltype(null)
                 .build();
 
-            performRequest(post("/resultset/2/resultfeaturestat", input), HttpStatus.CREATED);
+            performRequest(post("/resultset/2/resultfeaturestat", List.of(input)), HttpStatus.CREATED);
         }
 
         // 4. query first page of ResultSet 1
@@ -394,7 +398,7 @@ public class ResultFeatureStatIntegrationTest extends AbstractIntegrationTest {
                 .welltype(null)
                 .build();
 
-            performRequest(post("/resultset/" + i + "/resultfeaturestat", input2), HttpStatus.CREATED);
+            performRequest(post("/resultset/" + i + "/resultfeaturestat", List.of(input2)), HttpStatus.CREATED);
         }
 
         // 2. delete Dataset of different ResultSet
@@ -428,14 +432,14 @@ public class ResultFeatureStatIntegrationTest extends AbstractIntegrationTest {
 
         // 2. test missing fields
         var input2 = ResultFeatureStatDTO.builder().build();
-        var res2 = performRequest(post("/resultset/1/resultfeaturestat", input2), HttpStatus.BAD_REQUEST);
+        var res2 = performRequest(post("/resultset/1/resultfeaturestat", List.of(input2)), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{" +
-            "\"exitCode\":\"ExitCode is mandatory\"," +
-            "\"featureId\":\"FeatureId is mandatory\"," +
-            "\"featureStatId\":\"FeatureStatId is mandatory\"," +
-            "\"statisticName\":\"StatisticName is mandatory\"," +
-            "\"statusCode\":\"StatusCode is mandatory\"," +
-            "\"statusMessage\":\"StatusMessage is mandatory\"" +
+            "\"list[0].exitCode\":\"ExitCode is mandatory\"," +
+            "\"list[0].featureId\":\"FeatureId is mandatory\"," +
+            "\"list[0].featureStatId\":\"FeatureStatId is mandatory\"," +
+            "\"list[0].statisticName\":\"StatisticName is mandatory\"," +
+            "\"list[0].statusCode\":\"StatusCode is mandatory\"," +
+            "\"list[0].statusMessage\":\"StatusMessage is mandatory\"" +
             "},\"status\":\"error\"}", res2);
 
         // 3. too many fields
@@ -453,11 +457,11 @@ public class ResultFeatureStatIntegrationTest extends AbstractIntegrationTest {
             .statisticName("count")
             .build();
 
-        var res3 = performRequest(post("/resultset/1/resultfeaturestat", input3), HttpStatus.BAD_REQUEST);
+        var res3 = performRequest(post("/resultset/1/resultfeaturestat", List.of(input3)), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{" +
-            "\"createdTimestamp\":\"CreatedTimestamp must be null when creating ResultFeatureSta\"," +
-            "\"id\":\"Id must be null when creating a ResultFeatureStat\"," +
-            "\"resultSetId\":\"ResultSetId must be specified in URL and not repeated in body\"" +
+            "\"list[0].createdTimestamp\":\"CreatedTimestamp must be null when creating ResultFeatureSta\"," +
+            "\"list[0].id\":\"Id must be null when creating a ResultFeatureStat\"," +
+            "\"list[0].resultSetId\":\"ResultSetId must be specified in URL and not repeated in body\"" +
             "},\"status\":\"error\"}", res3);
 
         // 4. validate exitcode
@@ -472,8 +476,8 @@ public class ResultFeatureStatIntegrationTest extends AbstractIntegrationTest {
             .statisticName("count")
             .exitCode(260)
             .build();
-        var res4 = performRequest(post("/resultset/1/resultfeaturestat", input4), HttpStatus.BAD_REQUEST);
-        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"exitCode\":\"ExitCode must be in the range [0-255]\"},\"status\":\"error\"}", res4);
+        var res4 = performRequest(post("/resultset/1/resultfeaturestat", List.of(input4)), HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"list[0].exitCode\":\"ExitCode must be in the range [0-255]\"},\"status\":\"error\"}", res4);
 
         // 5. too long status message
         var input5 = ResultFeatureStatDTO.builder()
@@ -487,11 +491,11 @@ public class ResultFeatureStatIntegrationTest extends AbstractIntegrationTest {
             .statisticName("count")
             .exitCode(255)
             .build();
-        var res5 = performRequest(post("/resultset/1/resultfeaturestat", input5), HttpStatus.BAD_REQUEST);
-        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"statusMessage\":\"StatusMessage may only contain 255 characters\"},\"status\":\"error\"}", res5);
+        var res5 = performRequest(post("/resultset/1/resultfeaturestat", List.of(input5)), HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"list[0].statusMessage\":\"StatusMessage may only contain 255 characters\"},\"status\":\"error\"}", res5);
 
         // 6. invalid status message
-        var res6 = performRequest(post("/resultset/1/resultfeaturestat", new HashMap<>() {{
+        var res6 = performRequest(post("/resultset/1/resultfeaturestat", List.of(new HashMap<>() {{
             put("exitCode", 10);
             put("statusCode", "INVALID_STATUSCODE");
             put("statusMessage", "test");
@@ -499,8 +503,47 @@ public class ResultFeatureStatIntegrationTest extends AbstractIntegrationTest {
             put("value", 42f);
             put("statisticName", "count");
             put("featureStatId", 45L);
-        }}), HttpStatus.BAD_REQUEST);
-        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"statusCode\":\"Invalid value provided\"},\"status\":\"error\"}", res6);
+        }})), HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"statusCode\":\"Invalid value (\\\"INVALID_STATUSCODE\\\") provided\"},\"status\":\"error\"}", res6);
+    }
+
+    @Test
+    public void testOneValidAndOneInvalidObjectProvided() throws Exception {
+        var input1 = ResultSetDTO.builder()
+            .protocolId(1L)
+            .plateId(2L)
+            .measId(3L)
+            .build();
+
+        var res1 = performRequest(post("/resultset", input1), HttpStatus.CREATED, ResultSetDTO.class);
+        Assertions.assertEquals(1, res1.getId());
+
+        // 1. create invalid input
+        var input2 = ResultFeatureStatDTO.builder().build();
+        // 1. create invalid input
+        var input3 = ResultFeatureStatDTO.builder()
+            .exitCode(0)
+            .statusCode(StatusCode.SUCCESS)
+            .statusMessage("Ok")
+            .featureId(42L)
+            .featureStatId(45L)
+            .statisticName("count")
+            .value(42f)
+            .welltype(null)
+            .build();
+        // send input
+        var res2 = performRequest(post("/resultset/1/resultfeaturestat", List.of(input2, input3)), HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{" +
+            "\"list[0].exitCode\":\"ExitCode is mandatory\"," +
+            "\"list[0].featureId\":\"FeatureId is mandatory\"," +
+            "\"list[0].featureStatId\":\"FeatureStatId is mandatory\"," +
+            "\"list[0].statisticName\":\"StatisticName is mandatory\"," +
+            "\"list[0].statusCode\":\"StatusCode is mandatory\"," +
+            "\"list[0].statusMessage\":\"StatusMessage is mandatory\"" +
+            "},\"status\":\"error\"}", res2);
+        // assert that none of them are created
+        var res3 = performRequest(get("/resultset/1/resultfeaturestat"), HttpStatus.OK, PAGED_RESULT_FEATURE_STAT_TYPE);
+        Assertions.assertEquals(0, res3.getStatus().getTotalElements());
     }
 
     @Test
@@ -528,7 +571,7 @@ public class ResultFeatureStatIntegrationTest extends AbstractIntegrationTest {
             .welltype(null)
             .build();
 
-        var res2 = performRequest(post("/resultset/1/resultfeaturestat", input2), HttpStatus.CREATED, ResultFeatureStatDTO.class);
+        var res2 = performRequest(post("/resultset/1/resultfeaturestat", List.of(input2)), HttpStatus.CREATED, ResultFeatureStatDTO[].class)[0];
         Assertions.assertEquals(1, res2.getId());
         Assertions.assertEquals(1, res2.getResultSetId());
         Assertions.assertEquals(StatusCode.SUCCESS, res2.getStatusCode());
@@ -551,7 +594,7 @@ public class ResultFeatureStatIntegrationTest extends AbstractIntegrationTest {
             .welltype(null)
             .build();
 
-        var res3 = performRequest(post("/resultset/1/resultfeaturestat", input3), HttpStatus.BAD_REQUEST);
+        var res3 = performRequest(post("/resultset/1/resultfeaturestat", List.of(input3)), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"ResultFeatureStat with one of these parameters already exists!\",\"status\":\"error\"}", res3);
     }
 
@@ -580,7 +623,7 @@ public class ResultFeatureStatIntegrationTest extends AbstractIntegrationTest {
             .welltype("SAMPLE")
             .build();
 
-        var res2 = performRequest(post("/resultset/1/resultfeaturestat", input2), HttpStatus.CREATED, ResultFeatureStatDTO.class);
+        var res2 = performRequest(post("/resultset/1/resultfeaturestat", List.of(input2)), HttpStatus.CREATED, ResultFeatureStatDTO[].class)[0];
         Assertions.assertEquals(1, res2.getId());
         Assertions.assertEquals(1, res2.getResultSetId());
         Assertions.assertEquals(StatusCode.SUCCESS, res2.getStatusCode());
@@ -603,10 +646,51 @@ public class ResultFeatureStatIntegrationTest extends AbstractIntegrationTest {
             .welltype("SAMPLE")
             .build();
 
-        var res3 = performRequest(post("/resultset/1/resultfeaturestat", input3), HttpStatus.BAD_REQUEST);
+        var res3 = performRequest(post("/resultset/1/resultfeaturestat", List.of(input3)), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"ResultFeatureStat with one of these parameters already exists!\",\"status\":\"error\"}", res3);
     }
 
+    @Test
+    public void testDuplicatePlateValueInOneRequest() throws Exception {
+        var input1 = ResultSetDTO.builder()
+            .protocolId(1L)
+            .plateId(2L)
+            .measId(3L)
+            .build();
+
+        var res1 = performRequest(post("/resultset", input1), HttpStatus.CREATED, ResultSetDTO.class);
+        Assertions.assertEquals(1, res1.getId());
+
+        // 2. create input 1
+        var input2 = ResultFeatureStatDTO.builder()
+            .exitCode(0)
+            .statusCode(StatusCode.SUCCESS)
+            .statusMessage("Ok")
+            .featureId(42L)
+            .featureStatId(45L)
+            .statisticName("count")
+            .value(42f)
+            .welltype(null)
+            .build();
+
+        // 3. create simple ResultFeatureStat with the same resultSetId, featureStatId (welltype is null -> plate value)
+        var input3 = ResultFeatureStatDTO.builder()
+            .exitCode(0)
+            .statusCode(StatusCode.SUCCESS)
+            .statusMessage("Ok")
+            .featureId(42L)
+            .featureStatId(45L)
+            .statisticName("count")
+            .value(42f)
+            .welltype(null)
+            .build();
+
+        // send input
+        var res2 = performRequest(post("/resultset/1/resultfeaturestat", List.of(input2, input3)), HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals("{\"error\":\"ResultFeatureStat with one of these parameters already exists!\",\"status\":\"error\"}", res2);
+        // assert that none of them are created
+        var res3 = performRequest(get("/resultset/1/resultfeaturestat"), HttpStatus.OK, PAGED_RESULT_FEATURE_STAT_TYPE);Assertions.assertEquals(0, res3.getStatus().getTotalElements());
+    }
 
 
 }

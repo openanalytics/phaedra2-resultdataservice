@@ -471,7 +471,7 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
             put("featureId", 42L);
             put("values", new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F});
         }}), HttpStatus.BAD_REQUEST);
-        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"statusCode\":\"Invalid value provided\"},\"status\":\"error\"}", res6);
+        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"statusCode\":\"Invalid value (\\\"INVALID_STATUSCODE\\\") provided\"},\"status\":\"error\"}", res6);
     }
 
 }

@@ -108,7 +108,7 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
             put("protocolId", "ABC");
         }};
         var res3 = performRequest(post("/resultset", input3), HttpStatus.BAD_REQUEST);
-        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"protocolId\":\"Invalid value provided\"},\"status\":\"error\"}", res3);
+        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"protocolId\":\"Invalid value (\\\"ABC\\\") provided\"},\"status\":\"error\"}", res3);
     }
 
     @Test
@@ -126,7 +126,7 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
         }};
 
         var res2 = performRequest(put("/resultset/1", input2), HttpStatus.BAD_REQUEST);
-        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"outcome\":\"Invalid value provided\"},\"status\":\"error\"}", res2);
+        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"outcome\":\"Invalid value (\\\"NON_EXISTING_CODE\\\") provided\"},\"status\":\"error\"}", res2);
 
         // 3. too many fields
         var input3 = ResultSetDTO.builder()
