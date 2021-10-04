@@ -23,6 +23,11 @@
             <artifactId>phaedra2-resultdataservice-dto</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>3.0.4</version>
+        </dependency>
     </dependencies>
 
 </project>
