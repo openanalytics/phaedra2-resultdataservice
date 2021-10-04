@@ -7,6 +7,9 @@ import eu.openanalytics.phaedra.resultdataservice.dto.validation.OnUpdate;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetAlreadyCompletedException;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
 import eu.openanalytics.phaedra.resultdataservice.service.ResultSetService;
+import eu.openanalytics.phaedra.util.exceptionhandling.HttpMessageNotReadableExceptionHandler;
+import eu.openanalytics.phaedra.util.exceptionhandling.MethodArgumentNotValidExceptionHandler;
+import eu.openanalytics.phaedra.util.exceptionhandling.UserVisibleExceptionHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Validated
-public class ResultSetController extends BaseController {
+public class ResultSetController implements MethodArgumentNotValidExceptionHandler, HttpMessageNotReadableExceptionHandler, UserVisibleExceptionHandler {
 
     private final ResultSetService resultSetService;
 

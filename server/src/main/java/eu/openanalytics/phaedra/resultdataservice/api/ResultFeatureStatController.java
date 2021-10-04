@@ -11,6 +11,9 @@ import eu.openanalytics.phaedra.resultdataservice.exception.ResultFeatureStatNot
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetAlreadyCompletedException;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
 import eu.openanalytics.phaedra.resultdataservice.service.ResultFeatureStatService;
+import eu.openanalytics.phaedra.util.exceptionhandling.HttpMessageNotReadableExceptionHandler;
+import eu.openanalytics.phaedra.util.exceptionhandling.MethodArgumentNotValidExceptionHandler;
+import eu.openanalytics.phaedra.util.exceptionhandling.UserVisibleExceptionHandler;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -34,7 +37,7 @@ import java.util.Optional;
 
 @RestController
 @Validated
-public class ResultFeatureStatController extends BaseController {
+public class ResultFeatureStatController implements MethodArgumentNotValidExceptionHandler, HttpMessageNotReadableExceptionHandler, UserVisibleExceptionHandler {
 
     private final ResultFeatureStatService resultFeatureStatService;
 

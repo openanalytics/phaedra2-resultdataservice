@@ -1,5 +1,7 @@
 package eu.openanalytics.phaedra.resultdataservice.exception;
 
+import eu.openanalytics.phaedra.util.exceptionhandling.UserVisibleException;
+
 public class InvalidResultSetIdException extends UserVisibleException {
 
     private InvalidResultSetIdException(String msg) {
