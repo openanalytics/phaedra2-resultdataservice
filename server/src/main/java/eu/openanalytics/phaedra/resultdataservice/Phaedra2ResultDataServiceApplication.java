@@ -53,7 +53,6 @@ public class Phaedra2ResultDataServiceApplication {
         }
 
         HikariConfig config = new HikariConfig();
-        config.setAutoCommit(false);
         config.setMaximumPoolSize(20);
         config.setConnectionTimeout(60000);
         config.setJdbcUrl(url);

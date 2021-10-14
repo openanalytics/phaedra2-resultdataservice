@@ -70,8 +70,13 @@ public class ResultSetService {
         return modelMapper.map(existingResultSet.get()).build();
     }
 
-    public Page<ResultSetDTO> getPagedResultSets(int pageNumber) {
-        var res = resultSetRepository.findAll(PageRequest.of(pageNumber, 20, Sort.Direction.ASC, "id"));
+    public Page<ResultSetDTO> getPagedResultSets(int pageNumber, StatusCode outcome) {
+        Page<ResultSet> res;
+        if (outcome == null) {
+            res = resultSetRepository.findAll(PageRequest.of(pageNumber, 20, Sort.Direction.ASC, "id"));
+        } else {
+            res = resultSetRepository.findAllByOutcome(PageRequest.of(pageNumber, 20, Sort.Direction.ASC, "id"), outcome);
+        }
         return res.map((r) -> (modelMapper.map(r).build()));
     }
 

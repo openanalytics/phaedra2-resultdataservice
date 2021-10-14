@@ -6,9 +6,11 @@ import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.With;
+import lombok.experimental.Delegate;
 import lombok.experimental.NonFinal;
 import org.postgresql.util.PGobject;
 import org.springframework.core.convert.converter.Converter;
@@ -40,7 +42,24 @@ public class ResultSet {
 
     LocalDateTime executionEndTimeStamp;
 
-    StatusCode outcome;
+    StatusCodeHolder outcome;
+
+    public StatusCode getOutcome() {
+        return outcome.getStatusCode();
+    }
+
+    public static class ResultSetBuilder {
+        public ResultSetBuilder outcome(StatusCode outcome) {
+            this.outcome = new StatusCodeHolder(outcome);
+            return this;
+        }
+
+        // needed for lombok compatibility
+        public ResultSetBuilder outcome(StatusCodeHolder outcome) {
+            this.outcome = outcome;
+            return this;
+        }
+    }
 
     ErrorHolder errors;
 
@@ -86,6 +105,39 @@ public class ResultSet {
     @AllArgsConstructor
     public static class ErrorHolder {
         List<ErrorDTO> errors;
+    }
+
+    /**
+     * Spring Data JDBC does not support using Enums in automatic generated WHERE clauses.
+     * Therefore, we wrap the {@see StatusCode} enum in a custom type. This custom type
+     * is then converted using the {@see StatusCodeReadingConvertor} and {@see StatusCodeWritingConvertor}.
+     */
+    @Data
+    @AllArgsConstructor
+    public static class StatusCodeHolder {
+        @Delegate
+        StatusCode statusCode;
+    }
+
+    @WritingConverter
+    public static class StatusCodeHolderWritingConvertor implements Converter<ResultSet.StatusCodeHolder, PGobject> {
+        @SneakyThrows
+        @Override
+        public PGobject convert(ResultSet.StatusCodeHolder source) {
+            PGobject result = new PGobject();
+            result.setType("status_code");
+            result.setValue(source.name());
+            return result;
+        }
+    }
+
+    @ReadingConverter
+    public static class StatusCodeHolderReadingConvertor implements Converter<String, ResultSet.StatusCodeHolder> {
+        @SneakyThrows
+        @Override
+        public ResultSet.StatusCodeHolder convert(@NonNull String source) {
+            return new ResultSet.StatusCodeHolder(StatusCode.valueOf(source));
+        }
     }
 
 }

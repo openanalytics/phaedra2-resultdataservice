@@ -21,6 +21,8 @@ public class DataJdbcConfiguration extends AbstractJdbcConfiguration {
     public JdbcCustomConversions jdbcCustomConversions() {
         return new JdbcCustomConversions(List.of(
             new ResultSet.ErrorReadingConverter(objectMapper),
-            new ResultSet.ErrorWritingConvertor(objectMapper)));
+            new ResultSet.ErrorWritingConvertor(objectMapper),
+            new ResultSet.StatusCodeHolderWritingConvertor(),
+            new ResultSet.StatusCodeHolderReadingConvertor()));
     }
 }
