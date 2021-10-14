@@ -1,5 +1,7 @@
 package eu.openanalytics.phaedra.resultdataservice.client.impl;
 
+import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
+
 public class UrlFactory {
 
     private static final String RESULTDATA_SERVICE = "http://phaedra-resultdata-service/phaedra/resultdata-service";
@@ -11,6 +13,10 @@ public class UrlFactory {
 
     public static String resultSet(long resultId) {
         return String.format("%s/resultset/%s", RESULTDATA_SERVICE, resultId);
+    }
+
+    public static String resultSet(StatusCode outcome, int page) {
+        return String.format("%s/resultset?outcome=%s&page=%s&pageSize=%s", RESULTDATA_SERVICE, outcome, page, PAGE_SIZE);
     }
 
     public static String resultData(long resultSetId) {

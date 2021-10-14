@@ -25,6 +25,9 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
 
     private final PhaedraRestTemplate restTemplate;
 
+    private final static ParameterizedTypeReference<PageDTO<ResultSetDTO>> PAGED_RESULTSET_TYPE = new ParameterizedTypeReference<>() {
+    };
+
     private final static ParameterizedTypeReference<PageDTO<ResultDataDTO>> PAGED_RESULTDATA_TYPE = new ParameterizedTypeReference<>() {
     };
 
@@ -176,9 +179,33 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
     @Override
     public ResultSetDTO getResultSet(long resultSetId) throws ResultSetUnresolvableException {
         try {
-            var resultSet = restTemplate.getForObject(UrlFactory.resultSet(resultSetId), ResultSetDTO.class);
+            return restTemplate.getForObject(UrlFactory.resultSet(resultSetId), ResultSetDTO.class);
+        } catch (HttpClientErrorException.NotFound ex) {
+            throw new ResultSetUnresolvableException("ResultSet not found");
+        } catch (HttpClientErrorException ex) {
+            throw new ResultSetUnresolvableException("Error while fetching ResultSet");
+        }
+    }
 
-            return resultSet;
+    @Override
+    public List<ResultSetDTO> getResultSet(StatusCode outcome) throws ResultSetUnresolvableException {
+        try {
+            var currentPage = 0;
+            var hasNextPage = true;
+            var result = new ArrayList<ResultSetDTO>();
+            do {
+                var resultSet = restTemplate.getForObject(UrlFactory.resultSet(outcome, currentPage), PAGED_RESULTSET_TYPE);
+
+                if (resultSet == null || resultSet.getStatus() == null) {
+                    throw new ResultSetUnresolvableException("ResultSet could not be converted");
+                }
+
+                result.addAll(resultSet.getData());
+
+                hasNextPage = !resultSet.getStatus().isLast();
+                currentPage++;
+            } while (hasNextPage);
+            return result;
         } catch (HttpClientErrorException.NotFound ex) {
             throw new ResultSetUnresolvableException("ResultSet not found");
         } catch (HttpClientErrorException ex) {
@@ -196,7 +223,7 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
                 var resultData = restTemplate.getForObject(UrlFactory.resultData(resultSetId, currentPage), PAGED_RESULTDATA_TYPE);
 
                 if (resultData == null || resultData.getStatus() == null) {
-                    throw new ResultDataUnresolvableException("ResultSet could not be converted");
+                    throw new ResultDataUnresolvableException("ResultData could not be converted");
                 }
 
                 result.addAll(resultData.getData());
@@ -206,9 +233,9 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
             } while (hasNextPage);
             return result;
         } catch (HttpClientErrorException.NotFound ex) {
-            throw new ResultDataUnresolvableException("ResultSet not found");
+            throw new ResultDataUnresolvableException("ResultData not found");
         } catch (HttpClientErrorException ex) {
-            throw new ResultDataUnresolvableException("Error while fetching ResultSet");
+            throw new ResultDataUnresolvableException("Error while fetching ResultData");
         }
     }
 
@@ -222,7 +249,7 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
                 var resultFeatures = restTemplate.getForObject(UrlFactory.resultFeatureStat(resultSetId, currentPage), PAGED_RESULT_FEATURE_STAT_TYPE);
 
                 if (resultFeatures == null || resultFeatures.getStatus() == null) {
-                    throw new ResultFeatureStatUnresolvableException("ResultSet could not be converted");
+                    throw new ResultFeatureStatUnresolvableException("ResultFeatureStat could not be converted");
                 }
 
                 result.addAll(resultFeatures.getData());
@@ -232,9 +259,9 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
             } while (hasNextPage);
             return result;
         } catch (HttpClientErrorException.NotFound ex) {
-            throw new ResultFeatureStatUnresolvableException("ResultSet not found");
+            throw new ResultFeatureStatUnresolvableException("ResultFeatureStat not found");
         } catch (HttpClientErrorException ex) {
-            throw new ResultFeatureStatUnresolvableException("Error while fetching ResultSet");
+            throw new ResultFeatureStatUnresolvableException("Error while fetching ResultFeatureStat");
         }
     }
 

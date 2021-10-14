@@ -32,6 +32,8 @@ public interface ResultDataServiceClient {
 
     ResultSetDTO getResultSet(long resultSetId) throws ResultSetUnresolvableException;
 
+    List<ResultSetDTO> getResultSet(StatusCode outcome) throws ResultSetUnresolvableException;
+
     List<ResultDataDTO> getResultData(long resultSetId) throws ResultDataUnresolvableException;
 
     List<ResultFeatureStatDTO> getResultFeatureStat(long resultSetId) throws ResultFeatureStatUnresolvableException;

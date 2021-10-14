@@ -92,6 +92,11 @@ public class CachingHttpResultDataServiceClient implements ResultDataServiceClie
         return resultSet;
     }
 
+    @Override
+    public List<ResultSetDTO> getResultSet(StatusCode outcome) throws ResultSetUnresolvableException {
+        return httpResultDataServiceClient.getResultSet(outcome);
+    }
+
     // DELEGATES
 
     @Override

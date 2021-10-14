@@ -22,6 +22,7 @@ public class ResultSetService {
     private final ResultSetRepository resultSetRepository;
     private final Clock clock;
     private final ModelMapper modelMapper;
+    private static final int DEFAULT_PAGE_SIZE = 20;
 
     public ResultSetService(ResultSetRepository resultSetRepository, Clock clock, ModelMapper modelMapper) {
         this.resultSetRepository = resultSetRepository;
@@ -70,12 +71,12 @@ public class ResultSetService {
         return modelMapper.map(existingResultSet.get()).build();
     }
 
-    public Page<ResultSetDTO> getPagedResultSets(int pageNumber, StatusCode outcome) {
+    public Page<ResultSetDTO> getPagedResultSets(int pageNumber, StatusCode outcome, Optional<Integer> pageSize) {
         Page<ResultSet> res;
         if (outcome == null) {
-            res = resultSetRepository.findAll(PageRequest.of(pageNumber, 20, Sort.Direction.ASC, "id"));
+            res = resultSetRepository.findAll(PageRequest.of(pageNumber, pageSize.orElse(DEFAULT_PAGE_SIZE), Sort.Direction.ASC, "id"));
         } else {
-            res = resultSetRepository.findAllByOutcome(PageRequest.of(pageNumber, 20, Sort.Direction.ASC, "id"), outcome);
+            res = resultSetRepository.findAllByOutcome(PageRequest.of(pageNumber, pageSize.orElse(DEFAULT_PAGE_SIZE), Sort.Direction.ASC, "id"), outcome);
         }
         return res.map((r) -> (modelMapper.map(r).build()));
     }

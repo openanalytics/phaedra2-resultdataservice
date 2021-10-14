@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.sql.SQLException;
+import java.util.Optional;
 
 
 @RestController
@@ -67,8 +67,9 @@ public class ResultSetController implements MethodArgumentNotValidExceptionHandl
     @ResponseBody
     @GetMapping(path = "/resultset", produces = {"application/json"})
     public PageDTO<ResultSetDTO> getAllResultSets(@RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-                                                  @RequestParam(name = "outcome", required = false) @Valid StatusCode outcome) {
-        var pages = resultSetService.getPagedResultSets(page, outcome);
+                                                  @RequestParam(name = "outcome", required = false) @Valid StatusCode outcome,
+                                                  @RequestParam(name = "pageSize", required = false) Optional<Integer> pageSize) {
+        var pages = resultSetService.getPagedResultSets(page, outcome, pageSize);
         return PageDTO.map(pages);
     }
 

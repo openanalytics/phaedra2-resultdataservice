@@ -33,6 +33,7 @@ public class ErrorDTO {
     String statusMessage;
     Long featureStatId;
     String featureStatName;
+    Long newResultSetId; // the id of the ResultSet that retries this calculation
 
     public String toString() {
         StringBuilder description = new StringBuilder();
@@ -58,6 +59,9 @@ public class ErrorDTO {
         }
         if (getFeatureStatId() != null) {
             description.append(String.format(", FeatureStat: [%s %s]", getFeatureStatId(), getFeatureStatName()));
+        }
+        if (getNewResultSetId() != null) {
+            description.append(String.format(", Id of new ResultSet: [%s]", getNewResultSetId()));
         }
         return description.toString();
     }
