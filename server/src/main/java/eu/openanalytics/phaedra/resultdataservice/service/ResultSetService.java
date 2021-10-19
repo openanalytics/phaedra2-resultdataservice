@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -69,6 +70,34 @@ public class ResultSetService {
             throw new ResultSetNotFoundException(id);
         }
         return modelMapper.map(existingResultSet.get()).build();
+    }
+
+
+    /**
+     * Gets all ResultSets for a given plate, optionally filtering on a measurement.
+     * @param plateId
+     * @param measId
+     * @return
+     * @throws ResultSetNotFoundException
+     */
+    public List<ResultSetDTO> getResultSetsByPlateId(Long plateId, Optional<Long> measId) throws ResultSetNotFoundException {
+        List<ResultSet> resultSets;
+        if (measId.isEmpty()) {
+            resultSets = resultSetRepository.findAllByPlateId(plateId);
+        } else {
+            resultSets = resultSetRepository.findByPlateIdAndMeasId(plateId, measId.get());
+        }
+        return resultSets.stream().map(it -> modelMapper.map(it).build()).toList();
+    }
+
+    public List<ResultSetDTO> getLatestResultSetsByPlateId(Long plateId, Optional<Long> measId) throws ResultSetNotFoundException {
+        List<ResultSet> resultSets;
+        if (measId.isEmpty()) {
+            resultSets = resultSetRepository.findLatestByPlateId(plateId);
+        } else {
+            resultSets = resultSetRepository.findLatestPlateIdAndMeasId(plateId, measId.get());
+        }
+        return resultSets.stream().map(it -> modelMapper.map(it).build()).toList();
     }
 
     public Page<ResultSetDTO> getPagedResultSets(int pageNumber, StatusCode outcome, Optional<Integer> pageSize) {

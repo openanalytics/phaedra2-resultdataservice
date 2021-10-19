@@ -18,6 +18,7 @@ import javax.sql.DataSource;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -73,6 +74,10 @@ public class ResultDataService {
         }
 
         return modelMapper.map(res.get()).build();
+    }
+
+    public List<ResultData> getResultDataByResultSetIds(List<Long> resultSetIds) throws ResultSetNotFoundException, ResultDataNotFoundException {
+        return resultDataRepository.findByResultSetIdIn(resultSetIds);
     }
 
     public Page<ResultDataDTO> getPagedResultDataByFeatureId(long resultSetId, Integer featureId, Integer page, Optional<Integer> pageSize) throws ResultSetNotFoundException {

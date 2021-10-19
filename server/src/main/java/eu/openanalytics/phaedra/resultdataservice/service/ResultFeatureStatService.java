@@ -81,6 +81,10 @@ public class ResultFeatureStatService {
         return modelMapper.map(res.get()).build();
     }
 
+    public List<ResultFeatureStatDTO> getResultFeatureStatsByResultIds(List<Long> resultIds) {
+        return resultFeatureStatRepository.findAllByResultSetIdIn(resultIds).stream().map(it -> modelMapper.map(it).build()).toList();
+    }
+
     public Page<ResultFeatureStatDTO> getPagedResultFeatureStatByFeatureId(long resultSetId, Integer featureId, Integer page, Optional<Integer> pageSize) throws ResultSetNotFoundException {
         if (!resultSetService.exists(resultSetId)) {
             throw new ResultSetNotFoundException(resultSetId);
