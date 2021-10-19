@@ -16,6 +16,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Value
 @Builder
@@ -51,5 +52,8 @@ public class ResultDataDTO {
 
     @Null(message = "CreatedTimestamp must be null when creating ResultData", groups = {OnCreate.class})
     LocalDateTime createdTimestamp;
+
+    @Null(message = "FeatureStats may not be specified.", groups = {OnCreate.class})
+    List<ResultFeatureStatDTO> resultFeatureStats;
 
 }

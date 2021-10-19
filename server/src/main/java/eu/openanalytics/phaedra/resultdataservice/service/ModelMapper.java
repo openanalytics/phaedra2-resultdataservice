@@ -30,7 +30,8 @@ public class ModelMapper {
             .setPropertyCondition(Conditions.isNotNull());
 
         modelMapper.createTypeMap(ResultData.class, ResultDataDTO.ResultDataDTOBuilder.class, builderConfiguration)
-            .setPropertyCondition(Conditions.isNotNull());
+            .setPropertyCondition(Conditions.isNotNull())
+            .addMappings(mapper -> mapper.skip(ResultDataDTO.ResultDataDTOBuilder::resultFeatureStats));
 
         modelMapper.createTypeMap(ResultSetDTO.class, ResultSet.ResultSetBuilder.class, builderConfiguration)
             .setPropertyCondition(Conditions.isNotNull())

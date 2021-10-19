@@ -6,6 +6,7 @@ import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.Value;
@@ -114,6 +115,7 @@ public class ResultSet {
      */
     @Data
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class StatusCodeHolder {
         @Delegate
         StatusCode statusCode;
