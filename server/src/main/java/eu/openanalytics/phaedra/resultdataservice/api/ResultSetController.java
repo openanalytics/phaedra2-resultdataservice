@@ -12,6 +12,7 @@ import eu.openanalytics.phaedra.util.exceptionhandling.HttpMessageNotReadableExc
 import eu.openanalytics.phaedra.util.exceptionhandling.MethodArgumentNotValidExceptionHandler;
 import eu.openanalytics.phaedra.util.exceptionhandling.MethodArgumentTypeMismatchExceptionHandler;
 import eu.openanalytics.phaedra.util.exceptionhandling.UserVisibleExceptionHandler;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,6 +27,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -66,11 +69,16 @@ public class ResultSetController implements MethodArgumentNotValidExceptionHandl
 
     @ResponseBody
     @GetMapping(path = "/resultset", produces = {"application/json"})
-    public PageDTO<ResultSetDTO> getAllResultSets(@RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+    public PageDTO<ResultSetDTO> getAllResultSets(@RequestParam(name = "filters", required = false) Map<String, String> filters,
+                                                  @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
                                                   @RequestParam(name = "pageSize", required = false) Optional<Integer> pageSize,
                                                   @RequestParam(name = "outcome", required = false) @Valid StatusCode outcome) {
-        var pages = resultSetService.getPagedResultSets(page, outcome, pageSize);
-        return PageDTO.map(pages);
+        if (MapUtils.isEmpty(filters)) {
+            var pages = resultSetService.getPagedResultSets(page, outcome, pageSize);
+            return PageDTO.map(pages);
+        } else {
+            var pages = resultSetService.getPagedResultSets(page, outcome, pageSize);
+            return PageDTO.map(pages);
+        }
     }
-
 }

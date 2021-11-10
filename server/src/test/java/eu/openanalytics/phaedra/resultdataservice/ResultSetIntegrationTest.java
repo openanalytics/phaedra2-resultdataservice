@@ -273,4 +273,23 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
         Assertions.assertEquals("{\"error\":\"Validation error\",\"status\":\"error\"}", res1);
     }
 
+    @Test
+    public void getResultSetByPlate() throws Exception {
+        // 1. create simple ResultSet
+        var input1 = ResultSetDTO.builder()
+            .protocolId(1L)
+            .plateId(2L)
+            .measId(3L)
+            .build();
+        performRequest(post("/resultset", input1), HttpStatus.CREATED, ResultSetDTO.class);
+
+        var res1 = performRequest(get("/resultset?plateId=2"), HttpStatus.OK, ResultSetDTO.class);
+        Assertions.assertEquals(1L, res1.getId());
+        Assertions.assertEquals(2L, res1.getPlateId());
+        Assertions.assertEquals(3L, res1.getMeasId());
+        Assertions.assertNotNull(res1.getExecutionStartTimeStamp());
+        Assertions.assertEquals(StatusCode.SUCCESS, res1.getOutcome());
+        Assertions.assertNotNull(res1.getExecutionEndTimeStamp());
+    }
+
 }
