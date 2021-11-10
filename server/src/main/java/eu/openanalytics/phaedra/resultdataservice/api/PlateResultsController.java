@@ -3,13 +3,13 @@ package eu.openanalytics.phaedra.resultdataservice.api;
 import eu.openanalytics.phaedra.resultdataservice.dto.PlateResultDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultFeatureStatDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
-import eu.openanalytics.phaedra.resultdataservice.exception.ResultDataNotFoundException;
-import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
 import eu.openanalytics.phaedra.resultdataservice.model.ResultData;
 import eu.openanalytics.phaedra.resultdataservice.service.ModelMapper;
 import eu.openanalytics.phaedra.resultdataservice.service.ResultDataService;
 import eu.openanalytics.phaedra.resultdataservice.service.ResultFeatureStatService;
 import eu.openanalytics.phaedra.resultdataservice.service.ResultSetService;
+import eu.openanalytics.phaedra.util.exceptionhandling.UserVisibleException;
+import eu.openanalytics.phaedra.util.exceptionhandling.UserVisibleExceptionHandler;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @CrossOrigin
 @RestController
 @Validated
-public class PlateResultsController {
+public class PlateResultsController implements UserVisibleExceptionHandler {
 
     private final ResultSetService resultSetService;
     private final ResultDataService resultDataService;
@@ -49,7 +49,7 @@ public class PlateResultsController {
     @GetMapping(path = "/plate-results/{plateId}", produces = {"application/json"})
     @ResponseStatus(HttpStatus.CREATED)
     public PlateResultDTO getPlateResults(@PathVariable(name = "plateId") Long plateId,
-                                          @RequestParam(name = "measId") Optional<Long> measId) throws ResultSetNotFoundException, ResultDataNotFoundException {
+                                          @RequestParam(name = "measId") Optional<Long> measId) throws UserVisibleException {
 
         var resultSets = resultSetService.getResultSetsByPlateId(plateId, measId);
         return getPlateResults(resultSets);
@@ -59,12 +59,16 @@ public class PlateResultsController {
     @GetMapping(path = "/plate-results/{plateId}/latest", produces = {"application/json"})
     @ResponseStatus(HttpStatus.CREATED)
     public PlateResultDTO getLatestPlateResults(@PathVariable(name = "plateId") Long plateId,
-                                                @RequestParam(name = "measId") Optional<Long> measId) throws ResultSetNotFoundException, ResultDataNotFoundException {
+                                                @RequestParam(name = "measId") Optional<Long> measId) throws UserVisibleException {
         var resultSets = resultSetService.getLatestResultSetsByPlateId(plateId, measId);
         return getPlateResults(resultSets);
     }
 
-    private PlateResultDTO getPlateResults(List<ResultSetDTO> resultSets) throws ResultDataNotFoundException, ResultSetNotFoundException {
+    private PlateResultDTO getPlateResults(List<ResultSetDTO> resultSets) throws UserVisibleException {
+        if (resultSets.size() > 100) {
+            throw new UserVisibleException(String.format("Found too many ResultSets for this plate, only 100 ResultSets can be prossed, found %s ResultSets.", resultSets.size()));
+        }
+
         var resultIds = resultSets.stream().map(ResultSetDTO::getId).toList();
 
         // 2. get ResultData for these ResultSets and group by ResultData
