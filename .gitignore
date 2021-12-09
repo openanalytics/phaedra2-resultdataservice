@@ -201,8 +201,8 @@ gradle-app.setting
 /application.yml
 
 # Eclipse IDE files
-/target/
-/.settings/
-/.project
-/.classpath
+target/
+.settings/
+.project
+.classpath
 /phaedra2-resultdataservice.iml
