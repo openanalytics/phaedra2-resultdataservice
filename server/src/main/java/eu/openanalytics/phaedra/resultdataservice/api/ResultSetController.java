@@ -14,6 +14,7 @@ import eu.openanalytics.phaedra.util.exceptionhandling.MethodArgumentTypeMismatc
 import eu.openanalytics.phaedra.util.exceptionhandling.UserVisibleExceptionHandler;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -69,7 +70,7 @@ public class ResultSetController implements MethodArgumentNotValidExceptionHandl
 
     @ResponseBody
     @GetMapping(path = "/resultset", produces = {"application/json"})
-    public PageDTO<ResultSetDTO> getAllResultSets(@RequestParam(name = "filters", required = false) Map<String, String> filters,
+    public PageDTO<ResultSetDTO> getAllResultSets(@RequestParam Map<String, String> filters,
                                                   @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
                                                   @RequestParam(name = "pageSize", required = false) Optional<Integer> pageSize,
                                                   @RequestParam(name = "outcome", required = false) @Valid StatusCode outcome) {
@@ -77,7 +78,7 @@ public class ResultSetController implements MethodArgumentNotValidExceptionHandl
             var pages = resultSetService.getPagedResultSets(page, outcome, pageSize);
             return PageDTO.map(pages);
         } else {
-            var pages = resultSetService.getPagedResultSets(page, outcome, pageSize);
+            var pages = resultSetService.getFilteredPagedResultSets(filters, page, outcome, pageSize);
             return PageDTO.map(pages);
         }
     }

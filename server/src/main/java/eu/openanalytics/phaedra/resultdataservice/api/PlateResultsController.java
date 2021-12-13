@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@CrossOrigin
+//@CrossOrigin
 @RestController
 @Validated
 public class PlateResultsController implements UserVisibleExceptionHandler {

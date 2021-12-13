@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -122,4 +123,13 @@ public class ResultSetService {
         return modelMapper.map(newResultSet).build();
     }
 
+    public Page<ResultSetDTO> getFilteredPagedResultSets(Map<String, String> filters, int pageNumber, StatusCode outcome, Optional<Integer> pageSize) {
+        Page<ResultSet> res;
+        if (outcome == null) {
+            res = resultSetRepository.findAll(PageRequest.of(pageNumber, pageSize.orElse(DEFAULT_PAGE_SIZE), Sort.Direction.ASC, "id"));
+        } else {
+            res = resultSetRepository.findAllByOutcome(PageRequest.of(pageNumber, pageSize.orElse(DEFAULT_PAGE_SIZE), Sort.Direction.ASC, "id"), outcome);
+        }
+        return res.map((r) -> (modelMapper.map(r).build()));
+    }
 }
