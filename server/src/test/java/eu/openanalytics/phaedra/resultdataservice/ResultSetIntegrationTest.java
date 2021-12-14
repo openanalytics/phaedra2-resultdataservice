@@ -1,5 +1,6 @@
 package eu.openanalytics.phaedra.resultdataservice;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
 import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
 import eu.openanalytics.phaedra.resultdataservice.support.AbstractIntegrationTest;
@@ -8,9 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -274,7 +277,6 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
-//    TODO: Fix test as soon as possible
     public void getResultSetByPlate() throws Exception {
         // 1. create simple ResultSet
         var input1 = ResultSetDTO.builder()
@@ -284,13 +286,15 @@ public class ResultSetIntegrationTest extends AbstractIntegrationTest {
             .build();
         performRequest(post("/resultset", input1), HttpStatus.CREATED, ResultSetDTO.class);
 
-        var res1 = performRequest(get("/resultset?plateId=2"), HttpStatus.OK, ResultSetDTO.class);
-        Assertions.assertEquals(1L, res1.getId());
-        Assertions.assertEquals(2L, res1.getPlateId());
-        Assertions.assertEquals(3L, res1.getMeasId());
-        Assertions.assertNotNull(res1.getExecutionStartTimeStamp());
-        Assertions.assertEquals(StatusCode.SUCCESS, res1.getOutcome());
-        Assertions.assertNotNull(res1.getExecutionEndTimeStamp());
+        var res1 = performRequest(get("/resultset?plateId=2"), HttpStatus.OK, new TypeReference<>() {});
+        Assertions.assertNotNull(res1);
+        List<HashMap> data = (List<HashMap>) ((HashMap<String, List<HashMap>>)res1).get("data");
+        Assertions.assertEquals(1, data.get(0).get("id"));
+        Assertions.assertEquals(2, data.get(0).get("plateId"));
+        Assertions.assertEquals(3, data.get(0).get("measId"));
+        Assertions.assertNotNull(data.get(0).get("executionStartTimeStamp"));
+        Assertions.assertEquals("SCHEDULED", data.get(0).get("outcome"));
+        Assertions.assertNull(data.get(0).get("executionEndTimeStamp"));
     }
 
 }
