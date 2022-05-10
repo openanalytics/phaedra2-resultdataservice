@@ -208,6 +208,11 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
     }
 
     @Override
+    public ResultSetDTO getLatestResultSet(long plateId, long measId) throws ResultSetUnresolvableException {
+        return null;
+    }
+
+    @Override
     public List<ResultSetDTO> getResultSet(StatusCode outcome) throws ResultSetUnresolvableException {
         try {
             var currentPage = 0;
