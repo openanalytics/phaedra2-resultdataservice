@@ -32,24 +32,24 @@ import liquibase.integration.spring.SpringLiquibase;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 import java.time.Clock;
 
-@EnableDiscoveryClient
-@EnableScheduling
-@EnableCaching
 @EnableWebSecurity
 @SpringBootApplication
+@EnableDiscoveryClient
+@EnableScheduling
 public class ResultDataServiceApplication {
 
     private final Environment environment;
@@ -66,8 +66,13 @@ public class ResultDataServiceApplication {
     }
 
     public static void main(String[] args) {
-        var app = new SpringApplication(ResultDataServiceApplication.class);
-        app.run(args);
+        SpringApplication.run(ResultDataServiceApplication.class, args);
+    }
+
+    @Bean
+    @LoadBalanced
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 
     @Bean
