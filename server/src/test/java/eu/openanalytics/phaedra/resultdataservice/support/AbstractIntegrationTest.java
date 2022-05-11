@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import eu.openanalytics.phaedra.resultdataservice.Phaedra2ResultDataServiceApplication;
+import eu.openanalytics.phaedra.resultdataservice.ResultDataServiceApplication;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,7 +55,7 @@ import java.sql.SQLException;
 
 @Testcontainers
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {Phaedra2ResultDataServiceApplication.class, IntegrationTestConfiguration.class})
+@ContextConfiguration(classes = {ResultDataServiceApplication.class, IntegrationTestConfiguration.class})
 @WebAppConfiguration
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application-test.properties")

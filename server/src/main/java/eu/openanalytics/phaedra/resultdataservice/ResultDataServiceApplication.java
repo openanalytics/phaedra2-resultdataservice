@@ -22,6 +22,9 @@ package eu.openanalytics.phaedra.resultdataservice;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import eu.openanalytics.phaedra.util.auth.AuthenticationConfigHelper;
+import eu.openanalytics.phaedra.util.auth.AuthorizationServiceFactory;
+import eu.openanalytics.phaedra.util.auth.IAuthorizationService;
 import eu.openanalytics.phaedra.util.jdbc.JDBCUtils;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.servers.Server;
@@ -33,6 +36,8 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
 
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
@@ -41,7 +46,7 @@ import java.time.Clock;
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableScheduling
-public class Phaedra2ResultDataServiceApplication {
+public class ResultDataServiceApplication {
 
     private final Environment environment;
     private final ServletContext servletContext;
@@ -51,13 +56,13 @@ public class Phaedra2ResultDataServiceApplication {
     private static final String PROP_DB_PASSWORD = "phaedra2.result-data-service.db.password";
     private static final String PROP_DB_SCHEMA = "phaedra2.result-data-service.db.schema";
 
-    public Phaedra2ResultDataServiceApplication(Environment environment, ServletContext servletContext) {
+    public ResultDataServiceApplication(Environment environment, ServletContext servletContext) {
         this.environment = environment;
         this.servletContext = servletContext;
     }
 
     public static void main(String[] args) {
-        var app = new SpringApplication(Phaedra2ResultDataServiceApplication.class);
+        var app = new SpringApplication(ResultDataServiceApplication.class);
         app.run(args);
     }
 
@@ -93,6 +98,16 @@ public class Phaedra2ResultDataServiceApplication {
     public OpenAPI customOpenAPI() {
         Server server = new Server().url(servletContext.getContextPath()).description("Default Server URL");
         return new OpenAPI().addServersItem(server);
+    }
+
+    @Bean
+    public IAuthorizationService authService() {
+        return AuthorizationServiceFactory.create();
+    }
+
+    @Bean
+    public SecurityFilterChain httpSecurity(HttpSecurity http) throws Exception {
+        return AuthenticationConfigHelper.configure(http);
     }
 
     @Bean
