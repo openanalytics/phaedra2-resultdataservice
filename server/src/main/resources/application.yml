@@ -9,6 +9,14 @@ spring:
       enabled: false
   application:
     name: phaedra-resultdata-service
+  security:
+      oauth2:
+        resourceserver:
+          jwt:
+            jwk-set-uri: http://localhost
+    jackson:
+      serialization:
+        indent_output: true
 
 eureka:
   client:
