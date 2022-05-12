@@ -188,7 +188,7 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
                     .statusMessage(statusMessage)
                     .exitCode(exitCode)
                     .build())
-        ).get(0);
+        , authToken).get(0);
     }
 
     @Override

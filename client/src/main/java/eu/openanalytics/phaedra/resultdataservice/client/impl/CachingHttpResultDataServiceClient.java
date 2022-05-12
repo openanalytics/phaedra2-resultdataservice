@@ -66,7 +66,7 @@ public class CachingHttpResultDataServiceClient implements ResultDataServiceClie
 
     @Override
     public ResultSetDTO completeResultDataSet(long resultSetId, StatusCode outcome, List<ErrorDTO> errors, String errorsText, String... authToken) throws ResultSetUnresolvableException {
-        var res = httpResultDataServiceClient.completeResultDataSet(resultSetId, outcome, errors, errorsText);
+        var res = httpResultDataServiceClient.completeResultDataSet(resultSetId, outcome, errors, errorsText, authToken);
         // ResultSet is immutable if the outcome is different from SCHEDULED
         if (res.getOutcome() != StatusCode.SCHEDULED) {
             resultSetCache.put(res.getId(), res);
@@ -77,7 +77,7 @@ public class CachingHttpResultDataServiceClient implements ResultDataServiceClie
     @Override
     public ResultDataDTO addResultData(long resultSetId, long featureId, float[] values, StatusCode statusCode, String statusMessage, Integer exitCode, String... authToken) throws ResultDataUnresolvableException {
         // ResultData is immutable -> cache it (note that it can be deleted)
-        var resultData = httpResultDataServiceClient.addResultData(resultSetId, featureId, values, statusCode, statusMessage, exitCode);
+        var resultData = httpResultDataServiceClient.addResultData(resultSetId, featureId, values, statusCode, statusMessage, exitCode, authToken);
         resultDataCache.put(new ResultDataKey(resultSetId, featureId), resultData);
         return resultData;
     }
@@ -87,7 +87,7 @@ public class CachingHttpResultDataServiceClient implements ResultDataServiceClie
         var key = new ResultDataKey(resultSetId, featureId);
         var resultData = resultDataCache.getIfPresent(key);
         if (resultData == null) {
-            resultData = httpResultDataServiceClient.getResultData(resultSetId, featureId);
+            resultData = httpResultDataServiceClient.getResultData(resultSetId, featureId, authToken);
             resultDataCache.put(key, resultData);
         } else {
             logger.info(String.format("Retrieved object from cache: ResultData resultSetId=%s, featureId=%s",  resultSetId, featureId));
@@ -100,7 +100,7 @@ public class CachingHttpResultDataServiceClient implements ResultDataServiceClie
     public ResultSetDTO getResultSet(long resultSetId, String... authToken) throws ResultSetUnresolvableException {
         var resultSet = resultSetCache.getIfPresent(resultSetId);
         if (resultSet == null) {
-            resultSet = httpResultDataServiceClient.getResultSet(resultSetId);
+            resultSet = httpResultDataServiceClient.getResultSet(resultSetId, authToken);
             if (resultSet.getOutcome() != StatusCode.SCHEDULED) {
                 // ResultSet is only immutable if the outcome is different from SCHEDULED
                 resultSetCache.put(resultSetId, resultSet);
@@ -126,13 +126,13 @@ public class CachingHttpResultDataServiceClient implements ResultDataServiceClie
 
     @Override
     public ResultSetDTO createResultDataSet(long protocolId, long plateId, long measId, String...authToken) throws ResultSetUnresolvableException {
-        return httpResultDataServiceClient.createResultDataSet(protocolId, plateId, measId);
+        return httpResultDataServiceClient.createResultDataSet(protocolId, plateId, measId, authToken);
     }
 
     @Override
     public List<ResultDataDTO> getResultData(long resultSetId, String...authToken) throws ResultDataUnresolvableException {
         // we can not return these values from cache since values may be removed/added
-        return httpResultDataServiceClient.getResultData(resultSetId);
+        return httpResultDataServiceClient.getResultData(resultSetId, authToken);
     }
     @Override
     public ResultFeatureStatDTO createResultFeatureStat(long resultSetId, long featureId, long featureStatId,
@@ -154,7 +154,7 @@ public class CachingHttpResultDataServiceClient implements ResultDataServiceClie
 
     @Override
     public List<ResultFeatureStatDTO> getResultFeatureStat(long resultSetId, String... authToken) throws ResultFeatureStatUnresolvableException {
-        return httpResultDataServiceClient.getResultFeatureStat(resultSetId);
+        return httpResultDataServiceClient.getResultFeatureStat(resultSetId, authToken);
     }
 
 }
