@@ -46,5 +46,8 @@ public interface ResultSetRepository extends PagingAndSortingRepository<ResultSe
 
     @Query("SELECT * FROM result_set WHERE id in (SELECT MAX(id) FROM resultdataservice.result_set WHERE plate_id = :plateId and meas_id = :measId GROUP BY (protocol_id))")
     List<ResultSet> findLatestPlateIdAndMeasId(Long plateId, Long measId);
+
+    @Query("SELECT * FROM result_set ORDER BY execution_start_time_stamp DESC LIMIT :n")
+    List<ResultSet> findNMostRecentResultSets(Integer n);
 }
 

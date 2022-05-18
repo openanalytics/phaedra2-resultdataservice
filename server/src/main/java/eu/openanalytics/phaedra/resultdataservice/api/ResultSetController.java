@@ -32,6 +32,8 @@ import eu.openanalytics.phaedra.util.exceptionhandling.HttpMessageNotReadableExc
 import eu.openanalytics.phaedra.util.exceptionhandling.MethodArgumentNotValidExceptionHandler;
 import eu.openanalytics.phaedra.util.exceptionhandling.MethodArgumentTypeMismatchExceptionHandler;
 import eu.openanalytics.phaedra.util.exceptionhandling.UserVisibleExceptionHandler;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.MultiValueMap;
@@ -101,5 +103,11 @@ public class ResultSetController implements MethodArgumentNotValidExceptionHandl
             var pages = resultSetService.getFilteredPagedResultSets(filters, page, outcome, pageSize);
             return PageDTO.map(pages);
         }
+    }
+
+    @ResponseBody
+    @GetMapping(path = "/resultset/latest", produces = { "application/json" })
+    public List<ResultSetDTO> getNMostRecentResultSets(@RequestParam(name = "n", required = false, defaultValue = "10") Integer n) {
+        return resultSetService.getTopNResultsSets(n);
     }
 }

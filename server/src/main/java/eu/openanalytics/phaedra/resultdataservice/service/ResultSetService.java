@@ -152,4 +152,9 @@ public class ResultSetService {
         }
         return res.map((r) -> (modelMapper.map(r).build()));
     }
+
+    public List<ResultSetDTO> getTopNResultsSets(Integer n) {
+        List<ResultSet> result = resultSetRepository.findNMostRecentResultSets(n);
+        return result.stream().map(rs -> modelMapper.map(rs).build()).toList();
+    }
 }
