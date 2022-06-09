@@ -55,11 +55,6 @@ public class ResultDataServiceApplication {
     private final Environment environment;
     private final ServletContext servletContext;
 
-    private static final String PROP_DB_URL = "phaedra2.result-data-service.db.url";
-    private static final String PROP_DB_USERNAME = "phaedra2.result-data-service.db.username";
-    private static final String PROP_DB_PASSWORD = "phaedra2.result-data-service.db.password";
-    private static final String PROP_DB_SCHEMA = "phaedra2.result-data-service.db.schema";
-
     public ResultDataServiceApplication(Environment environment, ServletContext servletContext) {
         this.environment = environment;
         this.servletContext = servletContext;
@@ -77,25 +72,29 @@ public class ResultDataServiceApplication {
 
     @Bean
     public DataSource dataSource() {
-        String url = environment.getProperty(PROP_DB_URL);
+        String url = environment.getProperty("DB_URL");
+        String username = environment.getProperty("DB_USER");
+        String password = environment.getProperty("DB_PASSWORD");
+
         if (StringUtils.isEmpty(url)) {
-            throw new RuntimeException("No database URL configured: " + PROP_DB_URL);
+            throw new RuntimeException("No database URL configured: " + url);
         }
         String driverClassName = JDBCUtils.getDriverClassName(url);
         if (driverClassName == null) {
             throw new RuntimeException("Unsupported database type: " + url);
         }
 
+
         HikariConfig config = new HikariConfig();
         config.setMaximumPoolSize(20);
         config.setConnectionTimeout(60000);
         config.setJdbcUrl(url);
         config.setDriverClassName(driverClassName);
-        config.setUsername(environment.getProperty(PROP_DB_USERNAME));
-        config.setPassword(environment.getProperty(PROP_DB_PASSWORD));
+        config.setUsername(username);
+        config.setPassword(password);
         config.setAutoCommit(true);
 
-        String schema = environment.getProperty(PROP_DB_SCHEMA);
+        String schema = environment.getProperty("DB_SCHEMA");
         if (!StringUtils.isEmpty(schema)) {
             config.setConnectionInitSql("set search_path to " + schema);
         }
@@ -124,7 +123,7 @@ public class ResultDataServiceApplication {
         SpringLiquibase liquibase = new SpringLiquibase();
         liquibase.setChangeLog("classpath:liquibase-changeLog.xml");
 
-        String schema = environment.getProperty(PROP_DB_SCHEMA);
+        String schema = environment.getProperty("DB_SCHEMA");
         if (!StringUtils.isEmpty(schema)) {
             liquibase.setDefaultSchema(schema);
         }
@@ -137,16 +136,4 @@ public class ResultDataServiceApplication {
     public Clock clock() {
         return Clock.systemDefaultZone();
     }
-
-//    @Bean
-//    public WebMvcConfigurer corsConfigurer() {
-//        return new WebMvcConfigurer() {
-//            @Override
-//            public void addCorsMappings(CorsRegistry registry) {
-//                CorsRegistration registration = registry.addMapping("/**");
-//                registration.allowedMethods("*");
-//            }
-//        };
-//    }
-
 }
