@@ -89,7 +89,7 @@ pipeline {
 
                         configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
 
-                            sh "mvn -s \$MAVEN_SETTINGS_RSB dockerfile:build -Ddocker.repoPrefix=${env.REPO_PREFIX} ${env.MVN_ARGS}"
+                            sh "mvn -s \$MAVEN_SETTINGS_RSB docker:build -Ddocker.repoPrefix=${env.REPO_PREFIX} ${env.MVN_ARGS}"
 
                         }
 
@@ -103,6 +103,7 @@ pipeline {
                 dir('server') {
                     container('builder') {
                         sh "aws --region eu-west-1 ecr describe-repositories --repository-names ${env.REPO} || aws --region eu-west-1 ecr create-repository --repository-name ${env.REPO}"
+                        sh "aws --region eu-west-1 ecr describe-repositories --repository-names ${env.REPO}.liquibase || aws --region eu-west-1 ecr create-repository --repository-name ${env.REPO}.liquibase"
                         sh "\$(aws ecr get-login --registry-ids '${env.ACCOUNTID}' --region 'eu-west-1' --no-include-email)"
 
                         configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
