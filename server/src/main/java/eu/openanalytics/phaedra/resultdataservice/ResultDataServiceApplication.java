@@ -73,9 +73,6 @@ public class ResultDataServiceApplication {
     @Bean
     public DataSource dataSource() {
         String url = environment.getProperty("DB_URL");
-        String username = environment.getProperty("DB_USER");
-        String password = environment.getProperty("DB_PASSWORD");
-
         if (StringUtils.isEmpty(url)) {
             throw new RuntimeException("No database URL configured: " + url);
         }
@@ -84,14 +81,13 @@ public class ResultDataServiceApplication {
             throw new RuntimeException("Unsupported database type: " + url);
         }
 
-
         HikariConfig config = new HikariConfig();
         config.setMaximumPoolSize(20);
         config.setConnectionTimeout(60000);
         config.setJdbcUrl(url);
         config.setDriverClassName(driverClassName);
-        config.setUsername(username);
-        config.setPassword(password);
+        config.setUsername(environment.getProperty("DB_USER"));
+        config.setPassword(environment.getProperty("DB_PASSWORD"));
         config.setAutoCommit(true);
 
         String schema = environment.getProperty("DB_SCHEMA");
