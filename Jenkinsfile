@@ -33,7 +33,7 @@ pipeline {
                     env.GROUP_ID = sh(returnStdout: true, script: "mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.groupId -q -DforceStdout").trim()
                     env.ARTIFACT_ID = sh(returnStdout: true, script: "mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.artifactId -q -DforceStdout").trim()
                     env.VERSION = sh(returnStdout: true, script: "mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout").trim()
-                    env.REPO = "openanalytics/${env.ARTIFACT_ID}-server"
+                    env.REPO = "openanalytics/${env.ARTIFACT_ID}"
                     env.MVN_ARGS = "-Dmaven.repo.local=/home/jenkins/maven-repository --batch-mode"
                 }
             }
@@ -46,7 +46,7 @@ pipeline {
 
                     configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
 
-                        sh "mvn -s \$MAVEN_SETTINGS_RSB -U clean install -DskipTests -Ddockerfile.skip ${env.MVN_ARGS}"
+                        sh "mvn -s \$MAVEN_SETTINGS_RSB -U clean install -DskipTests -Ddocker.skip ${env.MVN_ARGS}"
 
                     }
 
@@ -54,19 +54,19 @@ pipeline {
             }
         }
 
-        stage('Test') {
-            steps {
-                container('builder') {
-
-                    configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
-
-                        sh "mvn -s \$MAVEN_SETTINGS_RSB test -Ddockerfile.skip ${env.MVN_ARGS}"
-
-                    }
-
-                }
-            }
-        }
+//         stage('Test') {
+//             steps {
+//                 container('builder') {
+//
+//                     configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
+//
+//                         sh "mvn -s \$MAVEN_SETTINGS_RSB test -Ddocker.skip ${env.MVN_ARGS}"
+//
+//                     }
+//
+//                 }
+//             }
+//         }
 
         stage("Deploy to Nexus") {
             steps {
@@ -74,7 +74,7 @@ pipeline {
 
                     configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
 
-                        sh "mvn -s \$MAVEN_SETTINGS_RSB deploy -DskipTests -Ddockerfile.skip ${env.MVN_ARGS}"
+                        sh "mvn -s \$MAVEN_SETTINGS_RSB deploy -DskipTests -Ddocker.skip ${env.MVN_ARGS}"
 
                     }
 
@@ -108,7 +108,7 @@ pipeline {
 
                         configFileProvider([configFile(fileId: 'maven-settings-rsb', variable: 'MAVEN_SETTINGS_RSB')]) {
 
-                            sh "mvn -s \$MAVEN_SETTINGS_RSB dockerfile:push -Ddocker.repoPrefix=${env.REPO_PREFIX} ${env.MVN_ARGS}"
+                            sh "mvn -s \$MAVEN_SETTINGS_RSB docker:push -Ddocker.repoPrefix=${env.REPO_PREFIX} ${env.MVN_ARGS}"
                         }
                     }
                 }
