@@ -1,0 +1,120 @@
+databaseChangeLog:
+  - changeSet:
+      id: 01_initial_db
+      author: Tobia
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: resultdataservice
+                tableName: result_set
+        - not:
+            - tableExists:
+                schemaName: resultdataservice
+                tableName: result_data
+      changes:
+        - sql:
+            sql: DO $$ BEGIN
+                  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'status_code') THEN
+                    CREATE TYPE status_code AS ENUM ('SCHEDULED', 'SUCCESS', 'FAILURE');
+                    CREATE CAST (CHARACTER VARYING AS status_code) WITH INOUT AS IMPLICIT;
+                  END IF;
+                END $$;
+        - createTable:
+            tableName: result_set
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: protocol_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: plate_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: meas_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: execution_start_time_stamp
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: execution_end_time_stamp
+                  type: timestamp
+                  constraints:
+                    nullable: true
+              - column:
+                  name: outcome
+                  type: status_code
+                  constraints:
+                    nullable: false
+              - column:
+                  name: errors
+                  type: jsonb
+                  constraints:
+                    nullable: true
+              - column:
+                  name: errors_text
+                  type: text
+                  constraints:
+                    nullable: true
+        - createTable:
+            tableName: result_data
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: result_set_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: result_id_fk
+                    references: result_set(id)
+                    deleteCascade: true
+              - column:
+                  name: feature_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: values
+                  type: float4[]
+                  constraints:
+                    nullable: true
+              - column:
+                  name: status_code
+                  type: status_code
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status_message
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: exit_code
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_timestamp
+                  type: timestamp
+                  constraints:
+                    nullable: false

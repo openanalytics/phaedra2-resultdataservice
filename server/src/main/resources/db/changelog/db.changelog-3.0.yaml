@@ -1,0 +1,40 @@
+databaseChangeLog:
+  - changeSet:
+      id: 03_result_curve_fit
+      author: sberberovic
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: resultdataservice
+                tableName: result_curve_fit
+      changes:
+        - createTable:
+            tableName: result_curve_fit
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: result_set_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: result_id_fk
+                    references: result_set(id)
+                    deleteCascade: false
+              - column:
+                  name: feature_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: plot
+                  type: bytea
+              - column:
+                  name: properties
+                  type: text

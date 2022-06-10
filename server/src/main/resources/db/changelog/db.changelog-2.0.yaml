@@ -1,0 +1,79 @@
+databaseChangeLog:
+  - changeSet:
+      id: 02_result_feature_stat
+      author: tdekoninck
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                schemaName: resultdataservice
+                tableName: result_feature_stat
+      changes:
+        - createTable:
+            tableName: result_feature_stat
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: result_set_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: result_id_fk
+                    references: result_set(id)
+                    deleteCascade: true
+              - column:
+                  name: feature_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: feature_stat_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: value
+                  type: float4
+                  constraints:
+                    nullable: true
+              - column:
+                  name: statistic_name
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: welltype
+                  type: text
+                  constraints:
+                    nullable: true
+              - column:
+                  name: status_code
+                  type: status_code
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status_message
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: exit_code
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_timestamp
+                  type: timestamp
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            tableName: result_feature_stat
+            columnNames: result_set_id, feature_stat_id, welltype
+        - sql:
+            sql: CREATE UNIQUE INDEX ON result_feature_stat (result_set_id, feature_stat_id) WHERE welltype IS NULL
