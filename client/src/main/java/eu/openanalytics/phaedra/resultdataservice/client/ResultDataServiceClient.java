@@ -35,28 +35,28 @@ import java.util.Optional;
 
 public interface ResultDataServiceClient {
 
-    ResultSetDTO createResultDataSet(long protocolId, long plateId, long measId, String...authToken) throws ResultSetUnresolvableException;
+    ResultSetDTO createResultDataSet(long protocolId, long plateId, long measId) throws ResultSetUnresolvableException;
 
-    ResultSetDTO completeResultDataSet(long resultSetId, StatusCode outcome, List<ErrorDTO> errors, String errorsText, String... authToken) throws ResultSetUnresolvableException;
+    ResultSetDTO completeResultDataSet(long resultSetId, StatusCode outcome, List<ErrorDTO> errors, String errorsText) throws ResultSetUnresolvableException;
 
-    ResultDataDTO addResultData(long resultSetId, long featureId, float[] values, StatusCode statusCode, String statusMessage, Integer exitCode, String... authToken) throws ResultDataUnresolvableException;
+    ResultDataDTO addResultData(long resultSetId, long featureId, float[] values, StatusCode statusCode, String statusMessage, Integer exitCode) throws ResultDataUnresolvableException;
 
-    ResultDataDTO getResultData(long resultSetId, long featureId, String...authToken) throws ResultDataUnresolvableException;
+    ResultDataDTO getResultData(long resultSetId, long featureId) throws ResultDataUnresolvableException;
 
     ResultFeatureStatDTO createResultFeatureStat(long resultSetId, long featureId, long featureStatId, Optional<Float> value, String statisticName, String welltype,
-                                                 StatusCode statusCode, String statusMessage, Integer exitCode, String... authToken) throws ResultFeatureStatUnresolvableException;
+                                                 StatusCode statusCode, String statusMessage, Integer exitCode) throws ResultFeatureStatUnresolvableException;
 
-    List<ResultFeatureStatDTO> createResultFeatureStats(long resultSetId, List<ResultFeatureStatDTO> resultFeatureStats, String... authToken) throws ResultFeatureStatUnresolvableException;
+    List<ResultFeatureStatDTO> createResultFeatureStats(long resultSetId, List<ResultFeatureStatDTO> resultFeatureStats) throws ResultFeatureStatUnresolvableException;
 
-    ResultFeatureStatDTO getResultFeatureStat(long resultSetId, long resultFeatureStatId, String... authToken) throws ResultFeatureStatUnresolvableException;
+    ResultFeatureStatDTO getResultFeatureStat(long resultSetId, long resultFeatureStatId) throws ResultFeatureStatUnresolvableException;
 
-    ResultSetDTO getResultSet(long resultSetId, String...authToken) throws ResultSetUnresolvableException;
+    ResultSetDTO getResultSet(long resultSetId) throws ResultSetUnresolvableException;
 
-    ResultSetDTO getLatestResultSet(long plateId, long measId, String...authToken) throws ResultSetUnresolvableException;
+    ResultSetDTO getLatestResultSet(long plateId, long measId) throws ResultSetUnresolvableException;
 
-    List<ResultSetDTO> getResultSet(StatusCode outcome, String...authToken) throws ResultSetUnresolvableException;
+    List<ResultSetDTO> getResultSet(StatusCode outcome) throws ResultSetUnresolvableException;
 
-    List<ResultDataDTO> getResultData(long resultSetId, String...authToken) throws ResultDataUnresolvableException;
+    List<ResultDataDTO> getResultData(long resultSetId) throws ResultDataUnresolvableException;
 
-    List<ResultFeatureStatDTO> getResultFeatureStat(long resultSetId, String...authToken) throws ResultFeatureStatUnresolvableException;
+    List<ResultFeatureStatDTO> getResultFeatureStat(long resultSetId) throws ResultFeatureStatUnresolvableException;
 }
