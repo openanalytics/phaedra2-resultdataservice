@@ -20,7 +20,7 @@
  */
 package eu.openanalytics.phaedra.resultdataservice.dto;
 
-import eu.openanalytics.phaedra.resultdataservice.dto.validation.OnCreate;
+import eu.openanalytics.phaedra.util.dto.validation.OnCreate;
 import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

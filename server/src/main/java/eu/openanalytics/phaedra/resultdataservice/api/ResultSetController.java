@@ -22,8 +22,8 @@ package eu.openanalytics.phaedra.resultdataservice.api;
 
 import eu.openanalytics.phaedra.resultdataservice.dto.PageDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
-import eu.openanalytics.phaedra.resultdataservice.dto.validation.OnCreate;
-import eu.openanalytics.phaedra.resultdataservice.dto.validation.OnUpdate;
+import eu.openanalytics.phaedra.util.dto.validation.OnCreate;
+import eu.openanalytics.phaedra.util.dto.validation.OnUpdate;
 import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetAlreadyCompletedException;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
@@ -32,11 +32,8 @@ import eu.openanalytics.phaedra.util.exceptionhandling.HttpMessageNotReadableExc
 import eu.openanalytics.phaedra.util.exceptionhandling.MethodArgumentNotValidExceptionHandler;
 import eu.openanalytics.phaedra.util.exceptionhandling.MethodArgumentTypeMismatchExceptionHandler;
 import eu.openanalytics.phaedra.util.exceptionhandling.UserVisibleExceptionHandler;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

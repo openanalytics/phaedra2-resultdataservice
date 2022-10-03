@@ -22,7 +22,7 @@ package eu.openanalytics.phaedra.resultdataservice.api;
 
 import eu.openanalytics.phaedra.resultdataservice.dto.PageDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultDataDTO;
-import eu.openanalytics.phaedra.resultdataservice.dto.validation.OnCreate;
+import eu.openanalytics.phaedra.util.dto.validation.OnCreate;
 import eu.openanalytics.phaedra.resultdataservice.exception.InvalidResultSetIdException;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultDataNotFoundException;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetAlreadyCompletedException;

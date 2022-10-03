@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import eu.openanalytics.phaedra.resultdataservice.dto.PageDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultFeatureStatDTO;
-import eu.openanalytics.phaedra.resultdataservice.dto.validation.OnCreate;
+import eu.openanalytics.phaedra.util.dto.validation.OnCreate;
 import eu.openanalytics.phaedra.resultdataservice.exception.DuplicateResultFeatureStatException;
 import eu.openanalytics.phaedra.resultdataservice.exception.InvalidResultSetIdException;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultFeatureStatNotFoundException;
