@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -153,8 +154,16 @@ public class ResultSetService {
         return res.map((r) -> (modelMapper.map(r).build()));
     }
 
-    public List<ResultSetDTO> getTopNResultsSets(Integer n) {
-        List<ResultSet> result = resultSetRepository.findNMostRecentResultSets(n);
+    public List<ResultSetDTO> getTopNResultsSets(Integer n, Long plateId, Long measId) {
+        List<ResultSet> result = new ArrayList<>();
+        if (plateId != null && measId != null)
+            result = resultSetRepository.findLatestPlateIdAndMeasId(plateId, measId);
+        else if (plateId != null && measId == null)
+            result = resultSetRepository.findLatestByPlateId(plateId);
+        else if (plateId == null && measId != null)
+            result = resultSetRepository.findLatestByMeasId(measId);
+        else
+            result = resultSetRepository.findNMostRecentResultSets(n);
         return result.stream().map(rs -> modelMapper.map(rs).build()).toList();
     }
 }

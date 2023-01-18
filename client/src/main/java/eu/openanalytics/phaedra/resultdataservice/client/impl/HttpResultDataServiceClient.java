@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -227,7 +228,14 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
 
     @Override
     public ResultSetDTO getLatestResultSet(long plateId, long measId) throws ResultSetUnresolvableException {
-        return null;
+        HttpEntity<?> httpEntity = new HttpEntity<>(makeHttpHeaders());
+        var resultSet = restTemplate.exchange(UrlFactory.resultSetLatest(plateId, measId), HttpMethod.GET, httpEntity, ResultSetDTO[].class, plateId, measId);
+
+        if (resultSet.getStatusCode().isError()) {
+            throw new ResultSetUnresolvableException("ResultSet could not be converted");
+        }
+
+        return ArrayUtils.isNotEmpty(resultSet.getBody()) ? resultSet.getBody()[0] : null;
     }
 
     @Override

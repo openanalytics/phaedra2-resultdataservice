@@ -104,7 +104,9 @@ public class ResultSetController implements MethodArgumentNotValidExceptionHandl
 
     @ResponseBody
     @GetMapping(path = "/resultset/latest", produces = { "application/json" })
-    public List<ResultSetDTO> getNMostRecentResultSets(@RequestParam(name = "n", required = false, defaultValue = "10") Integer n) {
-        return resultSetService.getTopNResultsSets(n);
+    public List<ResultSetDTO> getNMostRecentResultSets(@RequestParam(name = "n", required = false, defaultValue = "10") Integer n,
+                                                       @RequestParam(name = "plateId", required = false) Long plateId,
+                                                       @RequestParam(name = "measId", required = false) Long measId) {
+        return resultSetService.getTopNResultsSets(n, plateId, measId);
     }
 }
