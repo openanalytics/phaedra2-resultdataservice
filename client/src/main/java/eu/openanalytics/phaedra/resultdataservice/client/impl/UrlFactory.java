@@ -40,7 +40,7 @@ public class UrlFactory {
     }
 
     public static String resultSetLatest(long plateId, long measId) {
-        return String.format("%s/plate-results/%s/latest?measId=%s", RESULTDATA_SERVICE, plateId, measId);
+        return String.format("%s/resultset/latest?plateId=%s&measId=%s&n=%s", RESULTDATA_SERVICE, plateId, measId, 1);
     }
 
     public static String resultData(long resultSetId) {
