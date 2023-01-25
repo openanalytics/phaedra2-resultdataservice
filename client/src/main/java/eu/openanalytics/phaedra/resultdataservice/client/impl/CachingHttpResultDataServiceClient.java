@@ -117,7 +117,7 @@ public class CachingHttpResultDataServiceClient implements ResultDataServiceClie
 
     @Override
     public ResultSetDTO getLatestResultSet(long plateId, long measId) throws ResultSetUnresolvableException {
-        return null;
+        return httpResultDataServiceClient.getLatestResultSet(plateId, measId);
     }
 
     @Override
