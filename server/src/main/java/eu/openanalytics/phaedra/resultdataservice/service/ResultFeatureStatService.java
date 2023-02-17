@@ -79,6 +79,20 @@ public class ResultFeatureStatService {
         return save(resultFeatureStats);
     }
 
+    public ResultFeatureStatDTO create(long resultSetId, ResultFeatureStatDTO resultFeatureStatDTO) throws ResultSetNotFoundException, ResultSetAlreadyCompletedException, DuplicateResultFeatureStatException {
+        var resultSet = resultSetService.getResultSetById(resultSetId);
+
+        if (resultSet.getOutcome() != StatusCode.SCHEDULED) {
+            throw new ResultSetAlreadyCompletedException("ResultSet is already completed, cannot add new ResultFeatureStat to this set.");
+        }
+
+        var resultFeatureStat = modelMapper.map(resultFeatureStatDTO)
+            .resultSetId(resultSetId)
+            .createdTimestamp(LocalDateTime.now(clock))
+            .build();
+
+        return save(resultFeatureStat);
+    }
 
     public Page<ResultFeatureStatDTO> getPagedResultFeatureStats(long resultSetId, int pageNumber, Optional<Integer> pageSize) throws ResultSetNotFoundException {
         if (!resultSetService.exists(resultSetId)) {
