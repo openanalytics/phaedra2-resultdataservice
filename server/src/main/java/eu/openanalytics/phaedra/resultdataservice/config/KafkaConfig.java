@@ -8,21 +8,22 @@ import org.springframework.kafka.listener.adapter.RecordFilterStrategy;
 @Configuration
 @EnableKafka
 public class KafkaConfig {
-    // Kafka topics
-    public static final String RESULTDATA_TOPIC = "resultdata-topic";
+	
+	public static final String GROUP_ID = "resultdata-service";
+	
+    // Topics
+    public static final String TOPIC_RESULTDATA = "resultdata";
 
-    // Kafka events
-    public static final String SAVE_FEATURE_RESULTDATA_EVENT = "saveResultDataEvent";
-    public static final String SAVE_FEATURE_STATS_EVENT = "saveResultStatsEvent";
+    // Events
+    public static final String EVENT_SAVE_RESULT_DATA = "saveResultData";
+    public static final String EVENT_SAVE_RESULT_STATS = "saveResultStats";
 
     @Bean
     public RecordFilterStrategy<String, Object> saveResultDataEventFilter() {
-        RecordFilterStrategy<String, Object> recordFilterStrategy = consumerRecord -> !(consumerRecord.key().equalsIgnoreCase(SAVE_FEATURE_RESULTDATA_EVENT));
-        return recordFilterStrategy;
+        return rec -> !(rec.key().equalsIgnoreCase(EVENT_SAVE_RESULT_DATA));
     }
     @Bean
     public RecordFilterStrategy<String, Object> saveResultStatsEventFilter() {
-        RecordFilterStrategy<String, Object> recordFilterStrategy = consumerRecord -> !(consumerRecord.key().equalsIgnoreCase(SAVE_FEATURE_STATS_EVENT));
-        return recordFilterStrategy;
+        return rec -> !(rec.key().equalsIgnoreCase(EVENT_SAVE_RESULT_STATS));
     }
 }
