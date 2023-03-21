@@ -20,20 +20,12 @@
  */
 package eu.openanalytics.phaedra.resultdataservice.api;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
-import eu.openanalytics.phaedra.resultdataservice.dto.PageDTO;
-import eu.openanalytics.phaedra.resultdataservice.dto.ResultFeatureStatDTO;
-import eu.openanalytics.phaedra.util.dto.validation.OnCreate;
-import eu.openanalytics.phaedra.resultdataservice.exception.DuplicateResultFeatureStatException;
-import eu.openanalytics.phaedra.resultdataservice.exception.InvalidResultSetIdException;
-import eu.openanalytics.phaedra.resultdataservice.exception.ResultFeatureStatNotFoundException;
-import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetAlreadyCompletedException;
-import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
-import eu.openanalytics.phaedra.resultdataservice.service.ResultFeatureStatService;
-import eu.openanalytics.phaedra.util.exceptionhandling.HttpMessageNotReadableExceptionHandler;
-import eu.openanalytics.phaedra.util.exceptionhandling.MethodArgumentNotValidExceptionHandler;
-import eu.openanalytics.phaedra.util.exceptionhandling.UserVisibleExceptionHandler;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import javax.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -42,18 +34,27 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
+import eu.openanalytics.phaedra.resultdataservice.dto.PageDTO;
+import eu.openanalytics.phaedra.resultdataservice.dto.ResultFeatureStatDTO;
+import eu.openanalytics.phaedra.resultdataservice.exception.DuplicateResultFeatureStatException;
+import eu.openanalytics.phaedra.resultdataservice.exception.InvalidResultSetIdException;
+import eu.openanalytics.phaedra.resultdataservice.exception.ResultFeatureStatNotFoundException;
+import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetAlreadyCompletedException;
+import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
+import eu.openanalytics.phaedra.resultdataservice.service.ResultFeatureStatService;
+import eu.openanalytics.phaedra.util.dto.validation.OnCreate;
+import eu.openanalytics.phaedra.util.exceptionhandling.HttpMessageNotReadableExceptionHandler;
+import eu.openanalytics.phaedra.util.exceptionhandling.MethodArgumentNotValidExceptionHandler;
+import eu.openanalytics.phaedra.util.exceptionhandling.UserVisibleExceptionHandler;
 
 @RestController
 @Validated
@@ -65,16 +66,16 @@ public class ResultFeatureStatController implements MethodArgumentNotValidExcept
         this.resultFeatureStatService = resultFeatureStatService;
     }
 
+    @PostMapping("/resultsets/{resultSetId}/resultfeaturestats")
     @ResponseBody
-    @PostMapping(path = "/resultset/{resultSetId}/resultfeaturestat", produces = {"application/json"}, consumes = {"application/json"})
     @ResponseStatus(HttpStatus.CREATED)
     @Validated(OnCreate.class)
     public List<ResultFeatureStatDTO> createResultFeatureStat(@PathVariable long resultSetId, @RequestBody @Validated(OnCreate.class) ResultFeatureStatDTOList resultFeatureStatDTOList) throws ResultSetNotFoundException, ResultSetAlreadyCompletedException, DuplicateResultFeatureStatException {
         return resultFeatureStatService.create(resultSetId, resultFeatureStatDTOList.list);
     }
 
+    @GetMapping("/resultsets/{resultSetId}/resultfeaturestats")
     @ResponseBody
-    @GetMapping(path = "/resultset/{resultSetId}/resultfeaturestat", produces = {"application/json"})
     public PageDTO<ResultFeatureStatDTO> getResultFeatureStat(@PathVariable long resultSetId,
                                                               @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
                                                               @RequestParam(name = "pageSize", required = false) Optional<Integer> pageSize,
@@ -88,24 +89,14 @@ public class ResultFeatureStatController implements MethodArgumentNotValidExcept
         return PageDTO.map(pages);
     }
 
+    @GetMapping("/resultsets/{resultSetId}/resultfeaturestats/{resultFeatureStatId}")
     @ResponseBody
-    @GetMapping(path = "/resultset/{resultSetId}/resultfeaturestat/{resultFeatureStatId}", produces = {"application/json"})
     public ResultFeatureStatDTO getResultFeatureStat(@PathVariable long resultSetId, @PathVariable long resultFeatureStatId) throws ResultSetNotFoundException, ResultFeatureStatNotFoundException {
         return resultFeatureStatService.getResultFeatureStat(resultSetId, resultFeatureStatId);
     }
 
+    @DeleteMapping("/resultsets/{resultSetId}/resultfeaturestats/{resultFeatureStatId}")
     @ResponseBody
-    @PutMapping(path = "/resultset/{resultSetId}/resultfeaturestat/{resultFeatureStatId}", produces = {"application/json"})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public HashMap<String, String> updateResultFeatureStat(@PathVariable long resultSetId, @PathVariable long resultFeatureStatId) {
-        return new HashMap<>() {{
-            put("status", "error");
-            put("error", "ResultFeatureStat cannot be updated (it can be deleted).");
-        }};
-    }
-
-    @ResponseBody
-    @DeleteMapping("/resultset/{resultSetId}/resultfeaturestat/{resultFeatureStatId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteResultFeatureStat(@PathVariable long resultSetId, @PathVariable long resultFeatureStatId) throws ResultSetNotFoundException, InvalidResultSetIdException, ResultSetAlreadyCompletedException, ResultFeatureStatNotFoundException {
         resultFeatureStatService.delete(resultSetId, resultFeatureStatId);
@@ -118,7 +109,7 @@ public class ResultFeatureStatController implements MethodArgumentNotValidExcept
      * Therefore, we create a simple POJO that wraps the list and that can be used as parameter to a method.
      * In that a {@link MethodArgumentNotValidException} is thrown, which we can properly handle.
      */
-    private static class ResultFeatureStatDTOList {
+    static class ResultFeatureStatDTOList {
         @JsonValue
         @Valid
         private List<ResultFeatureStatDTO> list;

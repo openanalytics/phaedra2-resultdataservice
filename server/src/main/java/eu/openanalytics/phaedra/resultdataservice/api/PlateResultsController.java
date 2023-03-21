@@ -20,6 +20,24 @@
  */
 package eu.openanalytics.phaedra.resultdataservice.api;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
 import eu.openanalytics.phaedra.resultdataservice.dto.PlateResultDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultFeatureStatDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
@@ -30,27 +48,13 @@ import eu.openanalytics.phaedra.resultdataservice.service.ResultFeatureStatServi
 import eu.openanalytics.phaedra.resultdataservice.service.ResultSetService;
 import eu.openanalytics.phaedra.util.exceptionhandling.UserVisibleException;
 import eu.openanalytics.phaedra.util.exceptionhandling.UserVisibleExceptionHandler;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-//@CrossOrigin
+/**
+ * Convenience API for retrieving result data based on plate IDs.
+ */
 @RestController
 @Validated
+@RequestMapping("/plate-results")
 public class PlateResultsController implements UserVisibleExceptionHandler {
 
     private final ResultSetService resultSetService;
@@ -65,8 +69,8 @@ public class PlateResultsController implements UserVisibleExceptionHandler {
         this.modelMapper = modelMapper;
     }
 
+    @GetMapping("/{plateId}")
     @ResponseBody
-    @GetMapping(path = "/plate-results/{plateId}", produces = {"application/json"})
     @ResponseStatus(HttpStatus.CREATED)
     public PlateResultDTO getPlateResults(@PathVariable(name = "plateId") Long plateId,
                                           @RequestParam(name = "measId") Optional<Long> measId) throws UserVisibleException {
@@ -75,8 +79,8 @@ public class PlateResultsController implements UserVisibleExceptionHandler {
         return getPlateResults(resultSets);
     }
 
+    @GetMapping("/{plateId}/latest")
     @ResponseBody
-    @GetMapping(path = "/plate-results/{plateId}/latest", produces = {"application/json"})
     @ResponseStatus(HttpStatus.CREATED)
     public PlateResultDTO getLatestPlateResults(@PathVariable(name = "plateId") Long plateId,
                                                 @RequestParam(name = "measId") Optional<Long> measId) throws UserVisibleException {

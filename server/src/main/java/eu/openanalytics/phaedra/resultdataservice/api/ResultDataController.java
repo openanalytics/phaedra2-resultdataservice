@@ -20,17 +20,8 @@
  */
 package eu.openanalytics.phaedra.resultdataservice.api;
 
-import eu.openanalytics.phaedra.resultdataservice.dto.PageDTO;
-import eu.openanalytics.phaedra.resultdataservice.dto.ResultDataDTO;
-import eu.openanalytics.phaedra.util.dto.validation.OnCreate;
-import eu.openanalytics.phaedra.resultdataservice.exception.InvalidResultSetIdException;
-import eu.openanalytics.phaedra.resultdataservice.exception.ResultDataNotFoundException;
-import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetAlreadyCompletedException;
-import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
-import eu.openanalytics.phaedra.resultdataservice.service.ResultDataService;
-import eu.openanalytics.phaedra.util.exceptionhandling.HttpMessageNotReadableExceptionHandler;
-import eu.openanalytics.phaedra.util.exceptionhandling.MethodArgumentNotValidExceptionHandler;
-import eu.openanalytics.phaedra.util.exceptionhandling.UserVisibleExceptionHandler;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -38,15 +29,23 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Optional;
+import eu.openanalytics.phaedra.resultdataservice.dto.PageDTO;
+import eu.openanalytics.phaedra.resultdataservice.dto.ResultDataDTO;
+import eu.openanalytics.phaedra.resultdataservice.exception.InvalidResultSetIdException;
+import eu.openanalytics.phaedra.resultdataservice.exception.ResultDataNotFoundException;
+import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetAlreadyCompletedException;
+import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
+import eu.openanalytics.phaedra.resultdataservice.service.ResultDataService;
+import eu.openanalytics.phaedra.util.dto.validation.OnCreate;
+import eu.openanalytics.phaedra.util.exceptionhandling.HttpMessageNotReadableExceptionHandler;
+import eu.openanalytics.phaedra.util.exceptionhandling.MethodArgumentNotValidExceptionHandler;
+import eu.openanalytics.phaedra.util.exceptionhandling.UserVisibleExceptionHandler;
 
 @RestController
 @Validated
@@ -58,15 +57,15 @@ public class ResultDataController implements MethodArgumentNotValidExceptionHand
         this.resultDataService = resultDataService;
     }
 
+    @PostMapping("/resultsets/{resultSetId}/resultdata")
     @ResponseBody
-    @PostMapping(path = "/resultset/{resultSetId}/resultdata", produces = {"application/json"}, consumes = {"application/json"})
     @ResponseStatus(HttpStatus.CREATED)
     public ResultDataDTO createResultData(@PathVariable long resultSetId, @Validated(OnCreate.class) @RequestBody ResultDataDTO resultDataDTO) throws ResultSetNotFoundException, ResultSetAlreadyCompletedException {
         return resultDataService.create(resultSetId, resultDataDTO);
     }
 
+    @GetMapping("/resultsets/{resultSetId}/resultdata")
     @ResponseBody
-    @GetMapping(path = "/resultset/{resultSetId}/resultdata", produces = {"application/json"})
     public PageDTO<ResultDataDTO> getResultData(@PathVariable long resultSetId,
                                                 @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
                                                 @RequestParam(name = "pageSize", required = false) Optional<Integer> pageSize,
@@ -80,24 +79,14 @@ public class ResultDataController implements MethodArgumentNotValidExceptionHand
         return PageDTO.map(pages);
     }
 
+    @GetMapping("/resultsets/{resultSetId}/resultdata/{resultDataId}")
     @ResponseBody
-    @GetMapping(path = "/resultset/{resultSetId}/resultdata/{resultDataId}", produces = {"application/json"})
     public ResultDataDTO getResultData(@PathVariable long resultSetId, @PathVariable long resultDataId) throws ResultSetNotFoundException, ResultDataNotFoundException {
         return resultDataService.getResultData(resultSetId, resultDataId);
     }
 
+    @DeleteMapping("/resultsets/{resultSetId}/resultdata/{resultDataId}")
     @ResponseBody
-    @PutMapping(path = "/resultset/{resultSetId}/resultdata/{resultDataId}", produces = {"application/json"})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public HashMap<String, String> updateResultData(@PathVariable long resultSetId, @PathVariable long resultDataId) {
-        return new HashMap<>() {{
-            put("status", "error");
-            put("error", "ResultData cannot be updated (it can be deleted).");
-        }};
-    }
-
-    @ResponseBody
-    @DeleteMapping("/resultset/{resultSetId}/resultdata/{resultDataId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteResultData(@PathVariable long resultSetId, @PathVariable long resultDataId) throws ResultDataNotFoundException, ResultSetNotFoundException, InvalidResultSetIdException, ResultSetAlreadyCompletedException {
         resultDataService.delete(resultSetId, resultDataId);

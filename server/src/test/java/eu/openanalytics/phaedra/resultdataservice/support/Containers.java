@@ -22,6 +22,7 @@ package eu.openanalytics.phaedra.resultdataservice.support;
 
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.utility.DockerImageName;
 
 public class Containers {
 
@@ -29,7 +30,8 @@ public class Containers {
     public static final PostgreSQLContainer<?> postgreSQLContainer;
 
     static {
-        postgreSQLContainer = new PostgreSQLContainer<>("postgres:13-alpine");
+    	postgreSQLContainer = new PostgreSQLContainer<>(DockerImageName.parse("registry.openanalytics.eu/library/postgres:13-alpine")
+                .asCompatibleSubstituteFor(PostgreSQLContainer.IMAGE));
         postgreSQLContainer.start();
     }
 }

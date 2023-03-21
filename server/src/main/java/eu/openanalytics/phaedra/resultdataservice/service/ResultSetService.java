@@ -20,23 +20,23 @@
  */
 package eu.openanalytics.phaedra.resultdataservice.service;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
 import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetAlreadyCompletedException;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
 import eu.openanalytics.phaedra.resultdataservice.model.ResultSet;
 import eu.openanalytics.phaedra.resultdataservice.repository.ResultSetRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 
 @Service
@@ -142,16 +142,6 @@ public class ResultSetService {
     private ResultSetDTO save(ResultSet resultSet) {
         ResultSet newResultSet = resultSetRepository.save(resultSet);
         return modelMapper.map(newResultSet).build();
-    }
-
-    public Page<ResultSetDTO> getFilteredPagedResultSets(Map<String, String> filters, int pageNumber, StatusCode outcome, Optional<Integer> pageSize) {
-        Page<ResultSet> res;
-        if (outcome == null) {
-            res = resultSetRepository.findAll(PageRequest.of(pageNumber, pageSize.orElse(DEFAULT_PAGE_SIZE), Sort.Direction.ASC, "id"));
-        } else {
-            res = resultSetRepository.findAllByOutcome(PageRequest.of(pageNumber, pageSize.orElse(DEFAULT_PAGE_SIZE), Sort.Direction.ASC, "id"), outcome);
-        }
-        return res.map((r) -> (modelMapper.map(r).build()));
     }
 
     public List<ResultSetDTO> getTopNResultsSets(Integer n, Long plateId, Long measId) {
