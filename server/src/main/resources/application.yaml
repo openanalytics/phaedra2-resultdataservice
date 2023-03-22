@@ -18,8 +18,4 @@ spring:
     serialization:
       indent_output: true
 
-eureka:
-  client:
-    enabled: true
-
 
