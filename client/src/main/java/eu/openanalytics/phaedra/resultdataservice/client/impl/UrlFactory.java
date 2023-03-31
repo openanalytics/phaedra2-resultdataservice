@@ -28,43 +28,43 @@ public class UrlFactory {
     private static final int PAGE_SIZE = 100;
 
     public static String resultSet() {
-        return String.format("%s/resultset", RESULTDATA_SERVICE);
+        return String.format("%s/resultsets", RESULTDATA_SERVICE);
     }
 
     public static String resultSet(long resultId) {
-        return String.format("%s/resultset/%s", RESULTDATA_SERVICE, resultId);
+        return String.format("%s/resultsets/%s", RESULTDATA_SERVICE, resultId);
     }
 
     public static String resultSet(StatusCode outcome, int page) {
-        return String.format("%s/resultset?outcome=%s&page=%s&pageSize=%s", RESULTDATA_SERVICE, outcome, page, PAGE_SIZE);
+        return String.format("%s/resultsets?outcome=%s&page=%s&pageSize=%s", RESULTDATA_SERVICE, outcome, page, PAGE_SIZE);
     }
 
     public static String resultSetLatest(long plateId, long measId) {
-        return String.format("%s/resultset/latest?plateId=%s&measId=%s&n=%s", RESULTDATA_SERVICE, plateId, measId, 1);
+        return String.format("%s/resultsets/latest?plateId=%s&measId=%s&n=%s", RESULTDATA_SERVICE, plateId, measId, 1);
     }
 
     public static String resultData(long resultSetId) {
-        return String.format("%s/resultset/%s/resultdata", RESULTDATA_SERVICE, resultSetId);
+        return String.format("%s/resultsets/%s/resultdata", RESULTDATA_SERVICE, resultSetId);
     }
 
     public static String resultData(long resultSetId, int page) {
-        return String.format("%s/resultset/%s/resultdata?page=%s&pageSize=%s", RESULTDATA_SERVICE, resultSetId, page, PAGE_SIZE);
+        return String.format("%s/resultsets/%s/resultdata?page=%s&pageSize=%s", RESULTDATA_SERVICE, resultSetId, page, PAGE_SIZE);
     }
 
     public static String resultDataByFeatureId(long resultSetId, long featureId) {
-        return String.format("%s/resultset/%s/resultdata?featureId=%s", RESULTDATA_SERVICE, resultSetId, featureId);
+        return String.format("%s/resultsets/%s/resultdata?featureId=%s", RESULTDATA_SERVICE, resultSetId, featureId);
     }
 
     public static String resultFeatureStat(long resultSetId) {
-        return String.format("%s/resultset/%s/resultfeaturestat", RESULTDATA_SERVICE, resultSetId);
+        return String.format("%s/resultsets/%s/resultfeaturestats", RESULTDATA_SERVICE, resultSetId);
     }
 
     public static String resultFeatureStat(long resultSetId, int currentPage) {
-        return String.format("%s/resultset/%s/resultfeaturestat?page=%s&pageSize=%s", RESULTDATA_SERVICE, resultSetId, currentPage, PAGE_SIZE);
+        return String.format("%s/resultsets/%s/resultfeaturestats?page=%s&pageSize=%s", RESULTDATA_SERVICE, resultSetId, currentPage, PAGE_SIZE);
     }
 
     public static String resultFeatureStatByFeatureStatId(long resultSetId, long featureStatId) {
-        return String.format("%s/resultset/%s/resultfeaturestat/%s", RESULTDATA_SERVICE, resultSetId, featureStatId);
+        return String.format("%s/resultsets/%s/resultfeaturestats/%s", RESULTDATA_SERVICE, resultSetId, featureStatId);
     }
 
 
