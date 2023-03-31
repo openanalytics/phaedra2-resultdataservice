@@ -24,7 +24,7 @@ import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
 
 public class UrlFactory {
 
-    private static final String RESULTDATA_SERVICE = "http://phaedra-resultdata-service/phaedra/resultdata-service";
+    private static final String RESULTDATA_SERVICE = "http://phaedra-resultdata-service:8080/phaedra/resultdata-service";
     private static final int PAGE_SIZE = 100;
 
     public static String resultSet() {
