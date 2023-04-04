@@ -43,12 +43,16 @@ import eu.openanalytics.phaedra.resultdataservice.repository.ResultSetRepository
 public class ResultSetService {
 
     private final ResultSetRepository resultSetRepository;
+    private final KafkaProducerService kafkaProducerService;
+    
     private final Clock clock;
     private final ModelMapper modelMapper;
+    
     private static final int DEFAULT_PAGE_SIZE = 20;
 
-    public ResultSetService(ResultSetRepository resultSetRepository, Clock clock, ModelMapper modelMapper) {
+    public ResultSetService(ResultSetRepository resultSetRepository, KafkaProducerService kafkaProducerService, Clock clock, ModelMapper modelMapper) {
         this.resultSetRepository = resultSetRepository;
+        this.kafkaProducerService = kafkaProducerService;
         this.clock = clock;
         this.modelMapper = modelMapper;
     }
@@ -59,7 +63,9 @@ public class ResultSetService {
             .outcome(StatusCode.SCHEDULED)
             .build();
 
-        return save(resultSet);
+        resultSetDTO = save(resultSet);
+        kafkaProducerService.sendResultSetUpdated(resultSetDTO);
+        return resultSetDTO;
     }
 
     public ResultSetDTO updateOutcome(ResultSetDTO resultSetDTO) throws ResultSetAlreadyCompletedException, ResultSetNotFoundException {
@@ -75,7 +81,9 @@ public class ResultSetService {
             .executionEndTimeStamp(LocalDateTime.now(clock))
             .build();
 
-        return save(resultSet);
+        resultSetDTO = save(resultSet);
+        kafkaProducerService.sendResultSetUpdated(resultSetDTO);
+        return resultSetDTO;
     }
 
     public void delete(Long id) throws ResultSetNotFoundException {

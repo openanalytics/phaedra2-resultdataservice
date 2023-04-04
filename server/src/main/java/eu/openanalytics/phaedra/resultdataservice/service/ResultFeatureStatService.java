@@ -48,13 +48,22 @@ import java.util.stream.StreamSupport;
 public class ResultFeatureStatService {
 
     private final ResultFeatureStatRepository resultFeatureStatRepository;
+    private final KafkaProducerService kafkaProducerService;
     private final ResultSetService resultSetService;
+    
     private final Clock clock;
     private final ModelMapper modelMapper;
+    
     private static final int DEFAULT_PAGE_SIZE = 20;
 
-    public ResultFeatureStatService(ResultFeatureStatRepository resultFeatureStatRepository, ResultSetService resultSetService, DataSource dataSource, Clock clock, ModelMapper modelMapper) {
+    public ResultFeatureStatService(
+    		ResultFeatureStatRepository resultFeatureStatRepository,
+    		KafkaProducerService kafkaProducerService,
+    		ResultSetService resultSetService,
+    		DataSource dataSource, Clock clock, ModelMapper modelMapper) {
+    	
         this.resultFeatureStatRepository = resultFeatureStatRepository;
+        this.kafkaProducerService = kafkaProducerService;
         this.resultSetService = resultSetService;
         this.clock = clock;
         this.modelMapper = modelMapper;
@@ -76,7 +85,9 @@ public class ResultFeatureStatService {
                 .build()
             ).collect(Collectors.toList());
 
-        return save(resultFeatureStats);
+        List<ResultFeatureStatDTO> createdStats = save(resultFeatureStats);
+        createdStats.forEach(s -> kafkaProducerService.sendResultFeatureStatUpdated(s));
+        return createdStats;
     }
 
     public ResultFeatureStatDTO create(long resultSetId, ResultFeatureStatDTO resultFeatureStatDTO) throws ResultSetNotFoundException, ResultSetAlreadyCompletedException, DuplicateResultFeatureStatException {
@@ -91,7 +102,9 @@ public class ResultFeatureStatService {
             .createdTimestamp(LocalDateTime.now(clock))
             .build();
 
-        return save(resultFeatureStat);
+        resultFeatureStatDTO = save(resultFeatureStat);
+        kafkaProducerService.sendResultFeatureStatUpdated(resultFeatureStatDTO);
+        return resultFeatureStatDTO;
     }
 
     public Page<ResultFeatureStatDTO> getPagedResultFeatureStats(long resultSetId, int pageNumber, Optional<Integer> pageSize) throws ResultSetNotFoundException {

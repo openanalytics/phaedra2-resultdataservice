@@ -45,14 +45,23 @@ import java.util.Optional;
 public class ResultDataService {
 
     private final ResultDataRepository resultDataRepository;
+    private final KafkaProducerService kafkaProducerService;
     private final ResultSetService resultSetService;
+    
     private final DataSource dataSource;
     private final Clock clock;
     private final ModelMapper modelMapper;
+    
     private static final int DEFAULT_PAGE_SIZE = 20;
 
-    public ResultDataService(ResultDataRepository resultDataRepository, ResultSetService resultSetService, DataSource dataSource, Clock clock, ModelMapper modelMapper) {
+    public ResultDataService(
+    		ResultDataRepository resultDataRepository,
+    		KafkaProducerService kafkaProducerService,
+    		ResultSetService resultSetService,
+    		DataSource dataSource, Clock clock, ModelMapper modelMapper) {
+    	
         this.resultDataRepository = resultDataRepository;
+        this.kafkaProducerService = kafkaProducerService;
         this.resultSetService = resultSetService;
         this.dataSource = dataSource;
         this.clock = clock;
@@ -72,7 +81,9 @@ public class ResultDataService {
             .createdTimestamp(LocalDateTime.now(clock))
             .build();
 
-        return save(resultData);
+        resultDataDTO = save(resultData);
+        kafkaProducerService.sendResultDataUpdated(resultDataDTO);
+        return resultDataDTO;
     }
 
     public Page<ResultDataDTO> getPagedResultData(long resultSetId, int pageNumber, Optional<Integer> pageSize) throws ResultSetNotFoundException {

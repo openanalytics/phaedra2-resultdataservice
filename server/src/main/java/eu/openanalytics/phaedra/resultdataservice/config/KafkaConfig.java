@@ -17,6 +17,10 @@ public class KafkaConfig {
     // Events
     public static final String EVENT_SAVE_RESULT_DATA = "saveResultData";
     public static final String EVENT_SAVE_RESULT_STATS = "saveResultStats";
+    
+    public static final String EVENT_RESULT_SET_UPDATED = "resultSetUpdated";
+    public static final String EVENT_RESULT_DATA_UPDATED = "resultDataUpdated";
+    public static final String EVENT_RESULT_FEATURE_STAT_UPDATED = "resultFeatureStatUpdated";
 
     @Bean
     public RecordFilterStrategy<String, Object> saveResultDataEventFilter() {
