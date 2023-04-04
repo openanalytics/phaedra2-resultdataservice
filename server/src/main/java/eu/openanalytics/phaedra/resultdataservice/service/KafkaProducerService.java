@@ -20,6 +20,8 @@
  */
 package eu.openanalytics.phaedra.resultdataservice.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -33,20 +35,25 @@ public class KafkaProducerService {
 	
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    
     public KafkaProducerService(KafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
     public void sendResultSetUpdated(ResultSetDTO resultSet) {
     	kafkaTemplate.send(KafkaConfig.TOPIC_RESULTDATA, KafkaConfig.EVENT_RESULT_SET_UPDATED, resultSet);
+    	logger.info("Event sent for resultSet: " + resultSet);
     }
     
     public void sendResultDataUpdated(ResultDataDTO resultData) {
     	kafkaTemplate.send(KafkaConfig.TOPIC_RESULTDATA, KafkaConfig.EVENT_RESULT_DATA_UPDATED, resultData);
+    	logger.info("Event sent for resultData: " + resultData);
     }
     
     public void sendResultFeatureStatUpdated(ResultFeatureStatDTO featureStat) {
     	kafkaTemplate.send(KafkaConfig.TOPIC_RESULTDATA, KafkaConfig.EVENT_RESULT_FEATURE_STAT_UPDATED, featureStat);
+    	logger.info("Event sent for featureStats: " + featureStat);
     }
     
 }
