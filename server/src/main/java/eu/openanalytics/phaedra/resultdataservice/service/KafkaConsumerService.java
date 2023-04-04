@@ -1,6 +1,5 @@
 package eu.openanalytics.phaedra.resultdataservice.service;
 
-import static eu.openanalytics.phaedra.resultdataservice.config.KafkaConfig.EVENT_SAVE_RESULT_DATA;
 import static eu.openanalytics.phaedra.resultdataservice.config.KafkaConfig.GROUP_ID;
 import static eu.openanalytics.phaedra.resultdataservice.config.KafkaConfig.TOPIC_RESULTDATA;
 
@@ -29,7 +28,7 @@ public class KafkaConsumerService {
         resultDataService.create(resultDataDTO.getResultSetId(), resultDataDTO);
     }
 
-    @KafkaListener(topics = EVENT_SAVE_RESULT_DATA, groupId = GROUP_ID, filter = "saveResultStatsEventFilter")
+    @KafkaListener(topics = TOPIC_RESULTDATA, groupId = GROUP_ID, filter = "saveResultStatsEventFilter")
     public void onSaveResultStatsEvent(ResultFeatureStatDTO featureStatDTO) throws ResultSetNotFoundException, DuplicateResultFeatureStatException, ResultSetAlreadyCompletedException {
         resultFeatureStatService.create(featureStatDTO.getResultSetId(), featureStatDTO);
     }
