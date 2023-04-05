@@ -27,13 +27,13 @@ public class KafkaConsumerService {
         this.resultFeatureStatService = resultFeatureStatService;
     }
 
-    @KafkaListener(topics = TOPIC_RESULTDATA, groupId = GROUP_ID, filter = "saveResultDataEventFilter")
+    @KafkaListener(topics = TOPIC_RESULTDATA, groupId = GROUP_ID + "_resData", filter = "saveResultDataEventFilter")
     public void onSaveResultDataEvent(ResultDataDTO resultDataDTO) throws ResultSetNotFoundException, ResultSetAlreadyCompletedException {
     	logger.info(String.format("Event received to save resultData for resultSet %d, feature %d", resultDataDTO.getResultSetId(), resultDataDTO.getFeatureId()));
         resultDataService.create(resultDataDTO.getResultSetId(), resultDataDTO);
     }
 
-    @KafkaListener(topics = TOPIC_RESULTDATA, groupId = GROUP_ID, filter = "saveResultStatsEventFilter")
+    @KafkaListener(topics = TOPIC_RESULTDATA, groupId = GROUP_ID + "_resStats", filter = "saveResultStatsEventFilter")
     public void onSaveResultStatsEvent(ResultFeatureStatDTO featureStatDTO) throws ResultSetNotFoundException, DuplicateResultFeatureStatException, ResultSetAlreadyCompletedException {
     	logger.info(String.format("Event received to save featureStats for resultSet %d, feature %d, stat %s", featureStatDTO.getResultSetId(), featureStatDTO.getFeatureId(), featureStatDTO.getStatisticName()));
         resultFeatureStatService.create(featureStatDTO.getResultSetId(), featureStatDTO);
