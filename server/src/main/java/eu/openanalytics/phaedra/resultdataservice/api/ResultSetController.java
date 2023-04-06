@@ -93,10 +93,9 @@ public class ResultSetController implements MethodArgumentNotValidExceptionHandl
     public PageDTO<ResultSetDTO> getResultSets(
     		@RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
     		@RequestParam(name = "pageSize", required = false) Optional<Integer> pageSize,
+    		@RequestParam(name = "plateId", required = false) Long plateId,
     		@RequestParam(name = "outcome", required = false) @Valid StatusCode outcome) {
-    	
-    	var pages = resultSetService.getPagedResultSets(page, outcome, pageSize);
-    	return PageDTO.map(pages);
+    	return PageDTO.map(resultSetService.getPagedResultSets(plateId, outcome, page, pageSize));
     }
 
     @GetMapping("/latest")

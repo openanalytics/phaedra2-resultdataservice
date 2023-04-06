@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -130,12 +131,18 @@ public class ResultSetService {
         return resultSets.stream().map(it -> modelMapper.map(it).build()).toList();
     }
 
-    public Page<ResultSetDTO> getPagedResultSets(int pageNumber, StatusCode outcome, Optional<Integer> pageSize) {
+    public Page<ResultSetDTO> getPagedResultSets(Long plateId, StatusCode outcome, int pageNumber, Optional<Integer> pageSize) {
         Page<ResultSet> res;
-        if (outcome == null) {
-            res = resultSetRepository.findAll(PageRequest.of(pageNumber, pageSize.orElse(DEFAULT_PAGE_SIZE), Sort.Direction.ASC, "id"));
+        if (plateId != null) {
+        	try {
+				return new PageImpl<>(getResultSetsByPlateId(plateId, Optional.empty()));
+			} catch (ResultSetNotFoundException e) {
+				throw new IllegalArgumentException(e);
+			}
+        } else if (outcome != null) {
+        	res = resultSetRepository.findAllByOutcome(PageRequest.of(pageNumber, pageSize.orElse(DEFAULT_PAGE_SIZE), Sort.Direction.ASC, "id"), outcome);
         } else {
-            res = resultSetRepository.findAllByOutcome(PageRequest.of(pageNumber, pageSize.orElse(DEFAULT_PAGE_SIZE), Sort.Direction.ASC, "id"), outcome);
+            res = resultSetRepository.findAll(PageRequest.of(pageNumber, pageSize.orElse(DEFAULT_PAGE_SIZE), Sort.Direction.ASC, "id"));
         }
         return res.map((r) -> (modelMapper.map(r).build()));
     }
