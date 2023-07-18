@@ -39,6 +39,10 @@ public class UrlFactory {
         return String.format("%s/resultsets?outcome=%s&page=%s&pageSize=%s", RESULTDATA_SERVICE, outcome, page, PAGE_SIZE);
     }
 
+    public static String latestResultSetByPlateId(long plateId) {
+        return String.format("%s/resultsets/latest?plateId=%s", RESULTDATA_SERVICE, plateId);
+    }
+
     public static String resultSetLatest(long plateId, long measId) {
         return String.format("%s/resultsets/latest?plateId=%s&measId=%s&n=%s", RESULTDATA_SERVICE, plateId, measId, 1);
     }

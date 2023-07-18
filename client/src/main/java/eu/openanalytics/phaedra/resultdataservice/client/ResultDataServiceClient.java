@@ -52,6 +52,8 @@ public interface ResultDataServiceClient {
 
     ResultSetDTO getResultSet(long resultSetId) throws ResultSetUnresolvableException;
 
+    ResultSetDTO getLatestResultSet(long plateId) throws ResultSetUnresolvableException;
+
     ResultSetDTO getLatestResultSet(long plateId, long measId) throws ResultSetUnresolvableException;
 
     List<ResultSetDTO> getResultSet(StatusCode outcome) throws ResultSetUnresolvableException;

@@ -1,0 +1,31 @@
+type FeatureData {
+    featureId: ID
+    featureName: String
+}
+
+type PlateData {
+    plateId: ID
+    wells: WellData
+}
+
+type PlateResultSetData {
+    plateData: PlateData
+    protocol: ProtocolData
+}
+
+type ProtocolData {
+    protocolId: ID
+    protocolName: String
+    features: [FeatureData]
+}
+
+type WellData {
+    wellId: ID
+    wellType: String
+    row: Int
+    column: Int
+}
+
+type Query {
+    latestPlateResultByPlateId(plateId: ID): PlateResultSetData
+}

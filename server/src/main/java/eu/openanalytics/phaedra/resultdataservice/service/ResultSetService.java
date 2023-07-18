@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -45,10 +46,10 @@ public class ResultSetService {
 
     private final ResultSetRepository resultSetRepository;
     private final KafkaProducerService kafkaProducerService;
-    
+
     private final Clock clock;
     private final ModelMapper modelMapper;
-    
+
     private static final int DEFAULT_PAGE_SIZE = 20;
 
     public ResultSetService(ResultSetRepository resultSetRepository, KafkaProducerService kafkaProducerService, Clock clock, ModelMapper modelMapper) {
@@ -119,6 +120,16 @@ public class ResultSetService {
             resultSets = resultSetRepository.findByPlateIdAndMeasId(plateId, measId.get());
         }
         return resultSets.stream().map(it -> modelMapper.map(it).build()).toList();
+    }
+
+    public ResultSetDTO getLatestResultSetByPlateId(Long plateId, Optional<Long> measId) throws ResultSetNotFoundException {
+        List<ResultSet> resultSets;
+        if (measId.isEmpty()) {
+            resultSets = resultSetRepository.findLatestByPlateId(plateId);
+        } else {
+            resultSets = resultSetRepository.findLatestPlateIdAndMeasId(plateId, measId.get());
+        }
+        return CollectionUtils.isNotEmpty(resultSets) ? modelMapper.map(resultSets.get(0)).build() : null;
     }
 
     public List<ResultSetDTO> getLatestResultSetsByPlateId(Long plateId, Optional<Long> measId) throws ResultSetNotFoundException {

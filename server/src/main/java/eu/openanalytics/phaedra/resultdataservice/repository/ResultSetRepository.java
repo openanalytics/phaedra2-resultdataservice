@@ -25,11 +25,12 @@ import eu.openanalytics.phaedra.resultdataservice.model.ResultSet;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jdbc.repository.query.Query;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.List;
 
-public interface ResultSetRepository extends PagingAndSortingRepository<ResultSet, Long> {
+public interface ResultSetRepository extends PagingAndSortingRepository<ResultSet, Long>, CrudRepository<ResultSet, Long> {
 
     Page<ResultSet> findAllByOutcome(Pageable pageable, ResultSet.StatusCodeHolder outcome);
 

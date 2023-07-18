@@ -22,19 +22,21 @@ package eu.openanalytics.phaedra.resultdataservice;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import eu.openanalytics.phaedra.plateservice.client.PlateServiceClient;
+import eu.openanalytics.phaedra.protocolservice.client.ProtocolServiceClient;
 import eu.openanalytics.phaedra.util.auth.AuthenticationConfigHelper;
 import eu.openanalytics.phaedra.util.auth.AuthorizationServiceFactory;
 import eu.openanalytics.phaedra.util.auth.IAuthorizationService;
 import eu.openanalytics.phaedra.util.jdbc.JDBCUtils;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.servers.Server;
-import liquibase.integration.spring.SpringLiquibase;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -50,6 +52,8 @@ import java.time.Clock;
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableScheduling
+@Import({PlateServiceClient.class,
+        ProtocolServiceClient.class,})
 public class ResultDataServiceApplication {
 
     private final Environment environment;
@@ -113,20 +117,6 @@ public class ResultDataServiceApplication {
     public SecurityFilterChain httpSecurity(HttpSecurity http) throws Exception {
         return AuthenticationConfigHelper.configure(http);
     }
-
-//    @Bean
-//    public SpringLiquibase liquibase() {
-//        SpringLiquibase liquibase = new SpringLiquibase();
-//        liquibase.setChangeLog("classpath:liquibase-changeLog.xml");
-//
-//        String schema = environment.getProperty("DB_SCHEMA");
-//        if (!StringUtils.isEmpty(schema)) {
-//            liquibase.setDefaultSchema(schema);
-//        }
-//
-//        liquibase.setDataSource(dataSource());
-//        return liquibase;
-//    }
 
     @Bean
     public Clock clock() {

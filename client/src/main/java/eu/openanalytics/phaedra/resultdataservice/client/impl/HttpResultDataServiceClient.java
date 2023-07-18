@@ -227,6 +227,17 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
     }
 
     @Override
+    public ResultSetDTO getLatestResultSet(long plateId) throws ResultSetUnresolvableException {
+        var resultSet = restTemplate.exchange(UrlFactory.latestResultSetByPlateId(plateId), HttpMethod.GET, new HttpEntity<>(makeHttpHeaders()), ResultSetDTO[].class, plateId);
+
+        if (resultSet.getStatusCode().isError()) {
+            throw new ResultSetUnresolvableException("ResultSet could not be converted");
+        }
+
+        return ArrayUtils.isNotEmpty(resultSet.getBody()) ? resultSet.getBody()[0] : null;
+    }
+
+    @Override
     public ResultSetDTO getLatestResultSet(long plateId, long measId) throws ResultSetUnresolvableException {
         HttpEntity<?> httpEntity = new HttpEntity<>(makeHttpHeaders());
         var resultSet = restTemplate.exchange(UrlFactory.resultSetLatest(plateId, measId), HttpMethod.GET, httpEntity, ResultSetDTO[].class, plateId, measId);

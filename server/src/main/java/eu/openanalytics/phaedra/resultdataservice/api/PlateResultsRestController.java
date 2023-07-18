@@ -55,14 +55,14 @@ import eu.openanalytics.phaedra.util.exceptionhandling.UserVisibleExceptionHandl
 @RestController
 @Validated
 @RequestMapping("/plate-results")
-public class PlateResultsController implements UserVisibleExceptionHandler {
+public class PlateResultsRestController implements UserVisibleExceptionHandler {
 
     private final ResultSetService resultSetService;
     private final ResultDataService resultDataService;
     private final ResultFeatureStatService resultFeatureStatService;
     private final ModelMapper modelMapper;
 
-    public PlateResultsController(ResultSetService resultSetService, ResultDataService resultDataService, ResultFeatureStatService resultFeatureStatService, ModelMapper modelMapper) {
+    public PlateResultsRestController(ResultSetService resultSetService, ResultDataService resultDataService, ResultFeatureStatService resultFeatureStatService, ModelMapper modelMapper) {
         this.resultSetService = resultSetService;
         this.resultDataService = resultDataService;
         this.resultFeatureStatService = resultFeatureStatService;
