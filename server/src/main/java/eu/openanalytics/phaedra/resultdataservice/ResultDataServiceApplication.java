@@ -23,7 +23,9 @@ package eu.openanalytics.phaedra.resultdataservice;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import eu.openanalytics.phaedra.plateservice.client.PlateServiceClient;
+import eu.openanalytics.phaedra.plateservice.client.config.PlateServiceClientAutoConfiguration;
 import eu.openanalytics.phaedra.protocolservice.client.ProtocolServiceClient;
+import eu.openanalytics.phaedra.protocolservice.client.config.ProtocolServiceClientAutoConfiguration;
 import eu.openanalytics.phaedra.util.auth.AuthenticationConfigHelper;
 import eu.openanalytics.phaedra.util.auth.AuthorizationServiceFactory;
 import eu.openanalytics.phaedra.util.auth.IAuthorizationService;
@@ -52,8 +54,8 @@ import java.time.Clock;
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableScheduling
-@Import({PlateServiceClient.class,
-        ProtocolServiceClient.class,})
+@Import({PlateServiceClientAutoConfiguration.class,
+        ProtocolServiceClientAutoConfiguration.class,})
 public class ResultDataServiceApplication {
 
     private final Environment environment;
