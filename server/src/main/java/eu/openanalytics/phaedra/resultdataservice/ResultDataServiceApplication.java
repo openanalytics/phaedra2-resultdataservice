@@ -22,17 +22,16 @@ package eu.openanalytics.phaedra.resultdataservice;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import eu.openanalytics.phaedra.plateservice.client.PlateServiceClient;
 import eu.openanalytics.phaedra.plateservice.client.config.PlateServiceClientAutoConfiguration;
-import eu.openanalytics.phaedra.protocolservice.client.ProtocolServiceClient;
 import eu.openanalytics.phaedra.protocolservice.client.config.ProtocolServiceClientAutoConfiguration;
+import eu.openanalytics.phaedra.util.PhaedraRestTemplate;
 import eu.openanalytics.phaedra.util.auth.AuthenticationConfigHelper;
 import eu.openanalytics.phaedra.util.auth.AuthorizationServiceFactory;
 import eu.openanalytics.phaedra.util.auth.IAuthorizationService;
 import eu.openanalytics.phaedra.util.jdbc.JDBCUtils;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.servers.Server;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -44,9 +43,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 import java.time.Clock;
 
@@ -58,23 +55,21 @@ import java.time.Clock;
         ProtocolServiceClientAutoConfiguration.class,})
 public class ResultDataServiceApplication {
 
-    private final Environment environment;
-    private final ServletContext servletContext;
+	private final Environment environment;
 
-    public ResultDataServiceApplication(Environment environment, ServletContext servletContext) {
+    public ResultDataServiceApplication(Environment environment) {
         this.environment = environment;
-        this.servletContext = servletContext;
     }
 
     public static void main(String[] args) {
         SpringApplication.run(ResultDataServiceApplication.class, args);
     }
 
-    @Bean
-    @LoadBalanced
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
+	@Bean
+	@LoadBalanced
+	public PhaedraRestTemplate restTemplate() {
+		return new PhaedraRestTemplate();
+	}
 
     @Bean
     public DataSource dataSource() {

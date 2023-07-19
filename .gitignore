@@ -209,3 +209,5 @@ target/
 /server/phaedra2-resultdataservice-server.iml
 /dto/phaedra2-resultdataservice-dto.iml
 /client/phaedra2-resultdataservice-client.iml
+
+/.idea/
