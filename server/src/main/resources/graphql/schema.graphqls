@@ -5,11 +5,12 @@ type FeatureData {
 
 type PlateData {
     plateId: ID
+    barcode: String
     wells: WellData
 }
 
 type PlateResultSetData {
-    plateData: PlateData
+    plate: PlateData
     protocol: ProtocolData
 }
 
