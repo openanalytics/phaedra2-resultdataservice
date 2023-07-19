@@ -63,7 +63,7 @@ public class PlateResultsGraphQLController {
         PlateDTO plateDTO = plateServiceClient.getPlate(plateId);
         List<WellDTO> wellDTOs = plateServiceClient.getWells(plateId);
         logger.info(String.format("Number of wells for plate %s found: %s", plateId, wellDTOs.size()));
-        List<WellData> wells = wellDTOs.stream().map(wellDTO -> new WellData(wellDTO.getId(), wellDTO.getWellType(), wellDTO.getRow(), wellDTO.getColumn())).collect(Collectors.toList());
+        List<WellData> wells = wellDTOs.stream().map(w -> new WellData(w.getId(), w.getWellType(), w.getRow(), w.getColumn())).collect(Collectors.toList());
         logger.info(String.format("Number of WellDTO objects mapped to WellData records: %s", wells.size()));
         PlateData plate = new PlateData(plateId, plateDTO.getBarcode(), wells);
 

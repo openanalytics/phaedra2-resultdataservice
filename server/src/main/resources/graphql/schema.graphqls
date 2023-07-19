@@ -6,7 +6,7 @@ type FeatureData {
 type PlateData {
     plateId: ID
     barcode: String
-    wells: WellData
+    wells: [WellData]
 }
 
 type PlateResultSetData {
