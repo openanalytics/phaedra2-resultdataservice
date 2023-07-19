@@ -3,6 +3,12 @@ type FeatureData {
     featureName: String
 }
 
+type FeatureValue {
+    featureId: ID
+    wellId: ID
+    value: Float
+}
+
 type PlateData {
     plateId: ID
     barcode: String
@@ -29,4 +35,6 @@ type WellData {
 
 type Query {
     latestPlateResultByPlateId(plateId: ID): PlateResultSetData
+    protocolsByPlateId(plateId: ID): [ProtocolData]
+#    featureValuesByPlateIdAndFeatureId(plateId: ID, featureId: ID): [FeatureValue]
 }

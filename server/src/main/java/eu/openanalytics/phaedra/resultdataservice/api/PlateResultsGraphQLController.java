@@ -37,6 +37,7 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -72,5 +73,24 @@ public class PlateResultsGraphQLController {
         ProtocolData protocol = new ProtocolData(protocolDTO.getId(), protocolDTO.getName(), features);
 
         return new PlateResultSetData(plate, protocol);
+    }
+
+    @QueryMapping
+    public List<ProtocolData> protocolsByPlateId(@Argument long plateId) throws ResultSetNotFoundException {
+        List<ProtocolData> result = new ArrayList<>();
+
+        List<ResultSetDTO> resultSets = resultSetService.getResultSetsByPlateId(plateId, Optional.empty());
+        if (resultSets.isEmpty()) return result;
+
+        List<Long> protocolIds = resultSets.stream().map(rs -> rs.getProtocolId()).distinct().collect(Collectors.toList());
+        return protocolIds.stream().map(pId -> {
+            try {
+                ProtocolDTO protocolDTO = protocolServiceClient.getProtocol(pId);
+                List<FeatureData> features = protocolDTO.getFeatures().stream().map(f -> new FeatureData(f.getId(), f.getName())).collect(Collectors.toList());
+                return  new ProtocolData(protocolDTO.getId(), protocolDTO.getName(), features);
+            } catch (ProtocolUnresolvableException e) {
+                throw new RuntimeException(e);
+            }
+        }).collect(Collectors.toList());
     }
 }
