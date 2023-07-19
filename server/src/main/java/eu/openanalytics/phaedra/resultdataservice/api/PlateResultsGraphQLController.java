@@ -36,6 +36,7 @@ import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -53,7 +54,7 @@ public class PlateResultsGraphQLController {
 
     @QueryMapping
     public PlateResultSetData latestPlateResultByPlateId(@Argument long plateId) throws ResultSetNotFoundException, PlateUnresolvableException, ProtocolUnresolvableException {
-        ResultSetDTO resultSetDTO = resultSetService.getLatestResultSetByPlateId(plateId, null);
+        ResultSetDTO resultSetDTO = resultSetService.getLatestResultSetByPlateId(plateId, Optional.empty());
         PlateDTO plateDTO = plateServiceClient.getPlate(plateId);
         List<WellDTO> wellDTOs = plateServiceClient.getWells(plateId);
         ProtocolDTO protocolDTO = protocolServiceClient.getProtocol(resultSetDTO.getProtocolId());
