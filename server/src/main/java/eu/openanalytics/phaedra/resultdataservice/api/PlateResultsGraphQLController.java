@@ -59,9 +59,11 @@ public class PlateResultsGraphQLController {
         List<WellDTO> wellDTOs = plateServiceClient.getWells(plateId);
         ProtocolDTO protocolDTO = protocolServiceClient.getProtocol(resultSetDTO.getProtocolId());
 
+        List<FeatureData> features = protocolDTO.getFeatures().stream().map(f -> new FeatureData(f.getId(), f.getName())).collect(Collectors.toList());
+        ProtocolData protocol = new ProtocolData(protocolDTO.getId(), protocolDTO.getName(), features);
+        List<WellData> wells = wellDTOs.stream().map(wellDTO -> new WellData(wellDTO.getId(), wellDTO.getWellType(), wellDTO.getRow(), wellDTO.getColumn())).collect(Collectors.toList());
+        PlateData plate = new PlateData(plateId, plateDTO.getBarcode(), wells);
 
-        return new PlateResultSetData(new PlateData(plateDTO.getId(),
-                wellDTOs.stream().map(w -> new WellData(w.getId(), w.getWellType(), w.getRow(), w.getColumn())).collect(Collectors.toList())),
-                new ProtocolData(protocolDTO.getId(), protocolDTO.getName(), protocolDTO.getFeatures().stream().map(f -> new FeatureData(f.getId(), f.getName())).collect(Collectors.toList())));
+        return new PlateResultSetData(plate, protocol);
     }
 }

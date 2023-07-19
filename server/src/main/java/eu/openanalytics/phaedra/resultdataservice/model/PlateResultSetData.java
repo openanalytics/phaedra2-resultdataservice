@@ -20,5 +20,5 @@
  */
 package eu.openanalytics.phaedra.resultdataservice.model;
 
-public record PlateResultSetData(PlateData plateData, ProtocolData protocol) {
+public record PlateResultSetData(PlateData plate, ProtocolData protocol) {
 }

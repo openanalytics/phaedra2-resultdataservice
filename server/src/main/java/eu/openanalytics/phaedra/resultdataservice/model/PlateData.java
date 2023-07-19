@@ -22,5 +22,5 @@ package eu.openanalytics.phaedra.resultdataservice.model;
 
 import java.util.List;
 
-public record PlateData(long plateId, List<WellData> wells) {
+public record PlateData(long plateId, String barcode, List<WellData> wells) {
 }
