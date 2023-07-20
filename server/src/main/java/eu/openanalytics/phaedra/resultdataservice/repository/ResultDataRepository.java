@@ -27,12 +27,15 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface ResultDataRepository extends PagingAndSortingRepository<ResultData, Long> {
 
     Page<ResultData> findAllByResultSetId(Pageable pageable, long resultSetId);
 
     Page<ResultData> findAllByResultSetIdAndFeatureId(Pageable pageable, long resultSetId, long featureId);
+
+    Optional<ResultData> findByResultSetIdAndFeatureId(long resultSetId, long featureId);
 
     List<ResultData> findByResultSetIdIn(Collection<Long> resultSetIds);
 }

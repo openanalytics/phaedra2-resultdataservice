@@ -47,11 +47,11 @@ public class ResultDataService {
     private final ResultDataRepository resultDataRepository;
     private final KafkaProducerService kafkaProducerService;
     private final ResultSetService resultSetService;
-    
+
     private final DataSource dataSource;
     private final Clock clock;
     private final ModelMapper modelMapper;
-    
+
     private static final int DEFAULT_PAGE_SIZE = 20;
 
     public ResultDataService(
@@ -59,7 +59,7 @@ public class ResultDataService {
     		KafkaProducerService kafkaProducerService,
     		ResultSetService resultSetService,
     		DataSource dataSource, Clock clock, ModelMapper modelMapper) {
-    	
+
         this.resultDataRepository = resultDataRepository;
         this.kafkaProducerService = kafkaProducerService;
         this.resultSetService = resultSetService;
@@ -105,6 +105,19 @@ public class ResultDataService {
         }
 
         return modelMapper.map(res.get()).build();
+    }
+
+    public ResultDataDTO getResultDataByResultSetIdAndFeatureId(long resultSetId, long featureId) throws ResultSetNotFoundException, ResultDataNotFoundException {
+        if (!resultSetService.exists(resultSetId)) {
+            throw new ResultSetNotFoundException(resultSetId);
+        }
+
+        var result = resultDataRepository.findByResultSetIdAndFeatureId(resultSetId, featureId);
+        if (result.isEmpty()) {
+            throw new ResultDataNotFoundException(String.format("No resultData found for resultSetId %s and featureId %s", resultSetId, featureId));
+        }
+
+        return modelMapper.map(result.get()).build();
     }
 
     public List<ResultData> getResultDataByResultSetIds(List<Long> resultSetIds) throws ResultSetNotFoundException, ResultDataNotFoundException {

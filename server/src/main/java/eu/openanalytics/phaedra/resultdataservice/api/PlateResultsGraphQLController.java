@@ -27,9 +27,12 @@ import eu.openanalytics.phaedra.plateservice.dto.WellDTO;
 import eu.openanalytics.phaedra.protocolservice.client.ProtocolServiceClient;
 import eu.openanalytics.phaedra.protocolservice.client.exception.ProtocolUnresolvableException;
 import eu.openanalytics.phaedra.protocolservice.dto.ProtocolDTO;
+import eu.openanalytics.phaedra.resultdataservice.dto.ResultDataDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
+import eu.openanalytics.phaedra.resultdataservice.exception.ResultDataNotFoundException;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
 import eu.openanalytics.phaedra.resultdataservice.model.*;
+import eu.openanalytics.phaedra.resultdataservice.service.ResultDataService;
 import eu.openanalytics.phaedra.resultdataservice.service.ResultSetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,18 +44,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Controller
 public class PlateResultsGraphQLController {
 
     private final ResultSetService resultSetService;
+    private final ResultDataService resultDataService;
     private final ProtocolServiceClient protocolServiceClient;
     private final PlateServiceClient plateServiceClient;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public PlateResultsGraphQLController(ResultSetService resultSetService, ProtocolServiceClient protocolServiceClient, PlateServiceClient plateServiceClient) {
+    public PlateResultsGraphQLController(ResultSetService resultSetService, ResultDataService resultDataService, ProtocolServiceClient protocolServiceClient, PlateServiceClient plateServiceClient) {
         this.resultSetService = resultSetService;
+        this.resultDataService = resultDataService;
         this.protocolServiceClient = protocolServiceClient;
         this.plateServiceClient = plateServiceClient;
     }
@@ -92,5 +98,17 @@ public class PlateResultsGraphQLController {
                 throw new RuntimeException(e);
             }
         }).collect(Collectors.toList());
+    }
+
+    @QueryMapping
+    public List<FeatureValue> featureValueByPlateIdAndFeatureId(@Argument long plateId, @Argument long featureId) throws ResultSetNotFoundException, ResultDataNotFoundException, PlateUnresolvableException {
+        ResultSetDTO latestResultSet = resultSetService.getLatestResultSetByPlateId(plateId, Optional.empty());
+
+        ResultDataDTO resultData = resultDataService.getResultDataByResultSetIdAndFeatureId(latestResultSet.getId(), featureId);
+        List<WellDTO> wells = plateServiceClient.getWells(plateId);
+
+        return IntStream.range(0, resultData.getValues().length)
+                .mapToObj(i -> new FeatureValue(plateId, wells.get(i).getId(), featureId, resultData.getValues()[i]))
+                .collect(Collectors.toList());
     }
 }
