@@ -4,6 +4,7 @@ type FeatureData {
 }
 
 type FeatureValue {
+    plateId: ID
     featureId: ID
     wellId: ID
     value: Float
@@ -36,5 +37,5 @@ type WellData {
 type Query {
     latestPlateResultByPlateId(plateId: ID): PlateResultSetData
     protocolsByPlateId(plateId: ID): [ProtocolData]
-#    featureValuesByPlateIdAndFeatureId(plateId: ID, featureId: ID): [FeatureValue]
+    featureValuesByPlateIdAndFeatureId(plateId: ID, featureId: ID): [FeatureValue]
 }
