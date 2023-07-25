@@ -108,7 +108,7 @@ public class PlateResultsGraphQLController {
         List<WellDTO> wells = plateServiceClient.getWells(plateId);
 
         return IntStream.range(0, resultData.getValues().length)
-                .mapToObj(i -> new FeatureValue(plateId, wells.get(i).getId(), featureId, resultData.getValues()[i]))
+                .mapToObj(i -> new FeatureValue(plateId, wells.get(i), featureId, resultData.getValues()[i]))
                 .collect(Collectors.toList());
     }
 }
