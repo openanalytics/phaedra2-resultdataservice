@@ -20,4 +20,6 @@
  */
 package eu.openanalytics.phaedra.resultdataservice.model;
 
-public record FeatureValue(long plateId, long wellId, long featureId, float value) {}
+import eu.openanalytics.phaedra.plateservice.dto.WellDTO;
+
+public record FeatureValue(long plateId, WellDTO well, long featureId, float value) {}
