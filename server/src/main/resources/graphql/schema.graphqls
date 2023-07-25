@@ -6,7 +6,7 @@ type FeatureData {
 type FeatureValue {
     plateId: ID
     featureId: ID
-    wellId: ID
+    well: WellData
     value: Float
 }
 
