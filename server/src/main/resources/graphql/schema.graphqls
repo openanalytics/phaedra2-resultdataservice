@@ -4,10 +4,16 @@ type FeatureData {
 }
 
 type FeatureValue {
+    # Plate info
     plateId: ID
+    # Feature info
     featureId: ID
-    well: WellData
     value: Float
+    # Well info
+    wellId: ID
+    wellType: String
+    row: Int
+    column: Int
 }
 
 type PlateData {

@@ -20,4 +20,4 @@
  */
 package eu.openanalytics.phaedra.resultdataservice.model;
 
-public record FeatureValue(long plateId, WellData well, long featureId, float value) {}
+public record FeatureValue(long plateId, long featureId, float value, long wellId, String wellType, int row, int column) {}
