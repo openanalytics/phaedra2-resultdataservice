@@ -228,7 +228,7 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
 
     @Override
     public ResultSetDTO getLatestResultSetByPlateId(long plateId) throws ResultSetUnresolvableException {
-        var resultSet = restTemplate.exchange(UrlFactory.latestResultSetByPlateId(plateId), HttpMethod.GET, new HttpEntity<>(makeHttpHeaders()), ResultSetDTO[].class, plateId);
+        var resultSet = restTemplate.exchange(UrlFactory.latestPlateResults(plateId), HttpMethod.GET, new HttpEntity<>(makeHttpHeaders()), ResultSetDTO[].class, plateId);
 
         if (resultSet.getStatusCode().isError()) {
             throw new ResultSetUnresolvableException("ResultSet could not be converted");
@@ -240,7 +240,7 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
     @Override
     public ResultSetDTO getLatestResultSetByPlateIdAndMeasId(long plateId, long measId) throws ResultSetUnresolvableException {
         HttpEntity<?> httpEntity = new HttpEntity<>(makeHttpHeaders());
-        var resultSet = restTemplate.exchange(UrlFactory.latestResultSetByPlateIdAndMeasId(plateId, measId), HttpMethod.GET, httpEntity, ResultSetDTO[].class, plateId, measId);
+        var resultSet = restTemplate.exchange(UrlFactory.latestPlateResultsByMeasId(plateId, measId), HttpMethod.GET, httpEntity, ResultSetDTO[].class, plateId, measId);
 
         if (resultSet.getStatusCode().isError()) {
             throw new ResultSetUnresolvableException("ResultSet could not be converted");
@@ -252,7 +252,7 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
     @Override
     public ResultSetDTO getLatestResultSetByPlateIdAndProtocolId(long plateId, long protocolId) throws ResultSetUnresolvableException {
         HttpEntity<?> httpEntity = new HttpEntity<>(makeHttpHeaders());
-        var resultSet = restTemplate.exchange(UrlFactory.latestResultSetByPlateIdAndProtocolId(plateId, protocolId), HttpMethod.GET, httpEntity, ResultSetDTO[].class, plateId, protocolId);
+        var resultSet = restTemplate.exchange(UrlFactory.latestPlateResultsAndProtocolId(plateId, protocolId), HttpMethod.GET, httpEntity, ResultSetDTO[].class, plateId, protocolId);
 
         if (resultSet.getStatusCode().isError()) {
             throw new ResultSetUnresolvableException("ResultSet could not be converted");
