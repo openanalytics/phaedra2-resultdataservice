@@ -83,8 +83,9 @@ public class PlateResultsRestController implements UserVisibleExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
     public PlateResultDTO getLatestPlateResults(@PathVariable(name = "plateId") Long plateId,
-                                                @RequestParam(name = "measId") Optional<Long> measId) throws UserVisibleException {
-        var resultSets = resultSetService.getLatestResultSetsByPlateId(plateId, measId);
+                                                @RequestParam(name = "measId") Optional<Long> measId,
+                                                @RequestParam(name = "protocolId") Optional<Long> protocolId) throws UserVisibleException {
+        var resultSets = resultSetService.getLatestResultSetsByPlateId(plateId, measId, protocolId);
         return getPlateResults(resultSets);
     }
 

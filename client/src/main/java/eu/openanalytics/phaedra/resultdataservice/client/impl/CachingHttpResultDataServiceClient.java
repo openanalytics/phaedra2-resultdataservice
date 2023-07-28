@@ -116,13 +116,18 @@ public class CachingHttpResultDataServiceClient implements ResultDataServiceClie
     }
 
     @Override
-    public ResultSetDTO getLatestResultSet(long plateId) throws ResultSetUnresolvableException {
-        return httpResultDataServiceClient.getLatestResultSet(plateId);
+    public ResultSetDTO getLatestResultSetByPlateId(long plateId) throws ResultSetUnresolvableException {
+        return httpResultDataServiceClient.getLatestResultSetByPlateId(plateId);
     }
 
     @Override
-    public ResultSetDTO getLatestResultSet(long plateId, long measId) throws ResultSetUnresolvableException {
-        return httpResultDataServiceClient.getLatestResultSet(plateId, measId);
+    public ResultSetDTO getLatestResultSetByPlateIdAndMeasId(long plateId, long measId) throws ResultSetUnresolvableException {
+        return httpResultDataServiceClient.getLatestResultSetByPlateIdAndMeasId(plateId, measId);
+    }
+
+    @Override
+    public ResultSetDTO getLatestResultSetByPlateIdAndProtocolId(long plateId, long protocolId) throws ResultSetUnresolvableException {
+        return httpResultDataServiceClient.getLatestResultSetByPlateIdAndProtocolId(plateId, protocolId);
     }
 
     @Override

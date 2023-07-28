@@ -127,19 +127,23 @@ public class ResultSetService {
         if (measId.isEmpty()) {
             resultSets = resultSetRepository.findLatestByPlateId(plateId);
         } else {
-            resultSets = resultSetRepository.findLatestPlateIdAndMeasId(plateId, measId.get());
+            resultSets = resultSetRepository.findLatestByPlateIdAndMeasId(plateId, measId.get());
         }
         return CollectionUtils.isNotEmpty(resultSets) ? modelMapper.map(resultSets.get(0)).build() : null;
     }
 
-    public List<ResultSetDTO> getLatestResultSetsByPlateId(Long plateId, Optional<Long> measId) throws ResultSetNotFoundException {
+    public List<ResultSetDTO> getLatestResultSetsByPlateId(Long plateId, Optional<Long> measId, Optional<Long> protocolId) throws ResultSetNotFoundException {
         List<ResultSet> resultSets;
-        if (measId.isEmpty()) {
+        if (measId.isPresent() && protocolId.isEmpty())
+            resultSets = resultSetRepository.findLatestByPlateIdAndMeasId(plateId, measId.get());
+        else if (protocolId.isPresent() && measId.isEmpty())
+            resultSets = resultSetRepository.findLatestByPlateIdAndProtocolId(plateId, protocolId.get());
+        else if (protocolId.isPresent() && measId.isPresent())
+            resultSets = resultSetRepository.findLatestByPlateIdAndProtocolIdAndMeasId(plateId, protocolId.get(), measId.get());
+        else
             resultSets = resultSetRepository.findLatestByPlateId(plateId);
-        } else {
-            resultSets = resultSetRepository.findLatestPlateIdAndMeasId(plateId, measId.get());
-        }
-        return resultSets.stream().map(it -> modelMapper.map(it).build()).toList();
+
+         return resultSets.stream().map(it -> modelMapper.map(it).build()).toList();
     }
 
     public Page<ResultSetDTO> getPagedResultSets(Long plateId, StatusCode outcome, int pageNumber, Optional<Integer> pageSize) {
@@ -173,7 +177,7 @@ public class ResultSetService {
     public List<ResultSetDTO> getTopNResultsSets(Integer n, Long plateId, Long measId) {
         List<ResultSet> result = new ArrayList<>();
         if (plateId != null && measId != null)
-            result = resultSetRepository.findLatestPlateIdAndMeasId(plateId, measId);
+            result = resultSetRepository.findLatestByPlateIdAndMeasId(plateId, measId);
         else if (plateId != null && measId == null)
             result = resultSetRepository.findLatestByPlateId(plateId);
         else if (plateId == null && measId != null)

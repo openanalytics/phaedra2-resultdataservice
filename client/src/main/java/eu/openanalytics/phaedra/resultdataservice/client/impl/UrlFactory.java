@@ -43,8 +43,12 @@ public class UrlFactory {
         return String.format("%s/resultsets/latest?plateId=%s", RESULTDATA_SERVICE, plateId);
     }
 
-    public static String resultSetLatest(long plateId, long measId) {
+    public static String latestResultSetByPlateIdAndMeasId(long plateId, long measId) {
         return String.format("%s/resultsets/latest?plateId=%s&measId=%s&n=%s", RESULTDATA_SERVICE, plateId, measId, 1);
+    }
+
+    public static String latestResultSetByPlateIdAndProtocolId(long plateId, long protocolId) {
+        return String.format("%s/resultsets/latest?plateId=%s&protocolId=%s&n=%s", RESULTDATA_SERVICE, plateId, protocolId, 1);
     }
 
     public static String resultData(long resultSetId) {
