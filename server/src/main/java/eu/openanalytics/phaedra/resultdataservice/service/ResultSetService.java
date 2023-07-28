@@ -174,16 +174,33 @@ public class ResultSetService {
         return modelMapper.map(newResultSet).build();
     }
 
-    public List<ResultSetDTO> getTopNResultsSets(Integer n, Long plateId, Long measId) {
-        List<ResultSet> result = new ArrayList<>();
-        if (plateId != null && measId != null)
-            result = resultSetRepository.findLatestByPlateIdAndMeasId(plateId, measId);
-        else if (plateId != null && measId == null)
-            result = resultSetRepository.findLatestByPlateId(plateId);
-        else if (plateId == null && measId != null)
-            result = resultSetRepository.findLatestByMeasId(measId);
+    public List<ResultSetDTO> getTopNResultsSets(Integer n, Optional<Long> plateId, Optional<Long> measId, Optional<Long> protocolId) {
+        List<ResultSet> result;
+
+        // All 3 present
+        if (plateId.isPresent() && measId.isPresent() && protocolId.isPresent())
+            result = resultSetRepository.findLatestByPlateIdAndProtocolIdAndMeasId(plateId.get(), protocolId.get(), measId.get());
+        // Only plateId present
+        else if (plateId.isPresent() && measId.isEmpty() && protocolId.isEmpty())
+            result = resultSetRepository.findLatestByPlateId(plateId.get());
+        // Only measId present
+        else if (plateId.isEmpty() && measId.isPresent() && protocolId.isEmpty())
+            result = resultSetRepository.findLatestByMeasId(measId.get());
+        // Only protocolId present
+        else if (plateId.isEmpty() && measId.isEmpty() && protocolId.isPresent())
+            result = resultSetRepository.findLatestByProtocolId(protocolId.get());
+        // Only PlateId and MeasId present
+        else if (plateId.isPresent() && measId.isPresent() && protocolId.isEmpty())
+            result = resultSetRepository.findLatestByPlateIdAndMeasId(plateId.get(), measId.get());
+        // Only PlateId and ProtocolId present
+        else if (plateId.isPresent() && measId.isEmpty() && protocolId.isPresent())
+            result = resultSetRepository.findLatestByPlateIdAndProtocolId(plateId.get(), protocolId.get());
+        // Only MeasId and ProtocolId present
+        else if (plateId.isEmpty() && measId.isPresent() && protocolId.isPresent())
+            result = resultSetRepository.findLatestByMeasIdAndProtocolId(measId.get(), protocolId.get());
         else
             result = resultSetRepository.findNMostRecentResultSets(n);
+
         return result.stream().map(rs -> modelMapper.map(rs).build()).toList();
     }
 }

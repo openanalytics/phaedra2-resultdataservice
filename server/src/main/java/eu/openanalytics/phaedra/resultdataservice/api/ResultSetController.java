@@ -102,9 +102,10 @@ public class ResultSetController implements MethodArgumentNotValidExceptionHandl
     @ResponseBody
     public List<ResultSetDTO> getNMostRecentResultSets(
     		@RequestParam(name = "n", required = false, defaultValue = "10") Integer n,
-    		@RequestParam(name = "plateId", required = false) Long plateId,
-    		@RequestParam(name = "measId", required = false) Long measId) {
-    	
-        return resultSetService.getTopNResultsSets(n, plateId, measId);
+    		@RequestParam(name = "plateId", required = false) Optional<Long> plateId,
+    		@RequestParam(name = "measId", required = false) Optional<Long> measId,
+            @RequestParam(name = "protocolId", required = false) Optional<Long> protocolId) {
+
+        return resultSetService.getTopNResultsSets(n, plateId, measId, protocolId);
     }
 }

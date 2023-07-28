@@ -45,19 +45,25 @@ public interface ResultSetRepository extends PagingAndSortingRepository<ResultSe
     @Query("SELECT * FROM result_set WHERE id in (SELECT MAX(id) FROM resultdataservice.result_set WHERE plate_id = :plateId GROUP BY (protocol_id))")
     List<ResultSet> findLatestByPlateId(Long plateId);
 
+    @Query("SELECT * FROM result_set WHERE id in (SELECT MAX(id) FROM resultdataservice.result_set WHERE meas_id = :measId GROUP BY (protocol_id))")
+    List<ResultSet> findLatestByMeasId(Long measId);
+
+    @Query("SELECT * FROM result_set WHERE id in (SELECT MAX(id) FROM resultdataservice.result_set WHERE protocol_id = :protocolId GROUP BY (protocol_id))")
+    List<ResultSet> findLatestByProtocolId(Long protocolId);
+
     @Query("SELECT * FROM result_set WHERE id in (SELECT MAX(id) FROM resultdataservice.result_set WHERE plate_id = :plateId and meas_id = :measId GROUP BY (protocol_id))")
     List<ResultSet> findLatestByPlateIdAndMeasId(Long plateId, Long measId);
 
-    @Query("SELECT * FROM result_set WHERE id in (SELECT MAX(id) FROM resultdataservice.result_set WHERE plate_id = :plateId and protocol_id = :protocolId)")
+    @Query("SELECT * FROM result_set WHERE id in (SELECT MAX(id) FROM resultdataservice.result_set WHERE plate_id = :plateId and protocol_id = :protocolId) GROUP BY (protocol_id)")
     List<ResultSet> findLatestByPlateIdAndProtocolId(Long plateId, Long protocolId);
 
-    @Query("SELECT * FROM result_set WHERE id in (SELECT MAX(id) FROM resultdataservice.result_set WHERE plate_id = :plateId and protocol_id = :protocolId and meas_id = :measId)")
+    @Query("SELECT * FROM result_set WHERE id in (SELECT MAX(id) FROM resultdataservice.result_set WHERE meas_id = :plateId and protocol_id = :protocolId) GROUP BY (protocol_id)")
+    List<ResultSet> findLatestByMeasIdAndProtocolId(Long measId, Long protocolId);
+
+    @Query("SELECT * FROM result_set WHERE id in (SELECT MAX(id) FROM resultdataservice.result_set WHERE plate_id = :plateId and protocol_id = :protocolId and meas_id = :measId GROUP BY (protocol_id))")
     List<ResultSet> findLatestByPlateIdAndProtocolIdAndMeasId(Long plateId, Long protocolId, Long measId);
 
     @Query("SELECT * FROM result_set ORDER BY execution_start_time_stamp DESC LIMIT :n")
     List<ResultSet> findNMostRecentResultSets(Integer n);
-
-    @Query("SELECT * FROM result_set WHERE id in (SELECT MAX(id) FROM resultdataservice.result_set WHERE meas_id = :measId GROUP BY (protocol_id))")
-    List<ResultSet> findLatestByMeasId(Long measId);
 }
 
