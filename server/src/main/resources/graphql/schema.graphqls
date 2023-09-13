@@ -1,5 +1,5 @@
 scalar Date
-scalar
+scalar FloatNaN
 
 type FeatureData {
     featureId: ID
@@ -11,7 +11,7 @@ type FeatureValue {
     plateId: ID
     # Feature info
     featureId: ID
-    value: Float
+    value: FloatNaN
     # Well info
     wellId: ID
     wellType: String
@@ -87,7 +87,7 @@ type ResultFeatureStatDTO {
     featureId: ID
     featureStatId: ID
     statisticName: String
-    value: Float
+    value: FloatNaN
     welltype: String
     statusCode: StatusCode
     statusMessage: String
