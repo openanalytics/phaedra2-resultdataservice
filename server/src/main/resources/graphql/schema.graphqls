@@ -1,4 +1,5 @@
 scalar Date
+scalar
 
 type FeatureData {
     featureId: ID
@@ -86,6 +87,7 @@ type ResultFeatureStatDTO {
     featureId: ID
     featureStatId: ID
     statisticName: String
+    value: Float
     welltype: String
     statusCode: StatusCode
     statusMessage: String
