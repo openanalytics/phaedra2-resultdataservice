@@ -85,6 +85,6 @@ type Query {
     protocolsByPlateId(plateId: ID): [ProtocolData]
     featureValuesByPlateIdAndFeatureId(plateId: ID, featureId: ID): [FeatureValue]
     getResultSet: ResultSetDTO
-    getResultSetsByPlateId: [ResultSetDTO]
-    getResultSetsByPlateIdAndMeasurementId: [ResultSetDTO]
+    getResultSetsByPlateId(plateId: ID): [ResultSetDTO]
+    getResultSetsByPlateIdAndMeasurementId(plateId: ID, measId: ID): [ResultSetDTO]
 }
