@@ -45,8 +45,8 @@ public class ResultSetGraphQLController {
     }
 
     @QueryMapping
-    public ResultSetDTO resultSetById(@Argument long id) throws ResultSetNotFoundException {
-        return resultSetService.getResultSetById(id);
+    public ResultSetDTO resultSetById(@Argument long resultSetId) throws ResultSetNotFoundException {
+        return resultSetService.getResultSetById(resultSetId);
     }
 
     @QueryMapping
