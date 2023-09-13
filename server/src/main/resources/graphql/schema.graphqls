@@ -80,6 +80,19 @@ type ErrorDTO {
     newResultSetId: ID
 }
 
+type ResultFeatureStatDTO {
+    id: ID
+    resultSetId: ID
+    featureId: ID
+    featureStatId: ID
+    statisticName: String
+    welltype: String
+    statusCode: StatusCode
+    statusMessage: String
+    exitCode: Int
+    createdTimestamp: Date
+}
+
 type Query {
     latestPlateResultByPlateId(plateId: ID): PlateResultSetData
     protocolsByPlateId(plateId: ID): [ProtocolData]
@@ -87,4 +100,7 @@ type Query {
     resultSetById(resultSetId: ID): ResultSetDTO
     resultSetsByPlateId(plateId: ID): [ResultSetDTO]
     resultSetsByPlateIdAndMeasurementId(plateId: ID, measurementId: ID): [ResultSetDTO]
+    resultFeatureStat(resultSetId: ID, resultFeatureStatId: ID): ResultFeatureStatDTO
+    resultSetFeatureStats(resultSetId: ID): [ResultFeatureStatDTO]
+
 }

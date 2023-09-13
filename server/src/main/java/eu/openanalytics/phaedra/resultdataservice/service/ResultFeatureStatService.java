@@ -50,10 +50,10 @@ public class ResultFeatureStatService {
     private final ResultFeatureStatRepository resultFeatureStatRepository;
     private final KafkaProducerService kafkaProducerService;
     private final ResultSetService resultSetService;
-    
+
     private final Clock clock;
     private final ModelMapper modelMapper;
-    
+
     private static final int DEFAULT_PAGE_SIZE = 20;
 
     public ResultFeatureStatService(
@@ -61,7 +61,7 @@ public class ResultFeatureStatService {
     		KafkaProducerService kafkaProducerService,
     		ResultSetService resultSetService,
     		DataSource dataSource, Clock clock, ModelMapper modelMapper) {
-    	
+
         this.resultFeatureStatRepository = resultFeatureStatRepository;
         this.kafkaProducerService = kafkaProducerService;
         this.resultSetService = resultSetService;
@@ -105,6 +105,14 @@ public class ResultFeatureStatService {
         resultFeatureStatDTO = save(resultFeatureStat);
         kafkaProducerService.sendResultFeatureStatUpdated(resultFeatureStatDTO);
         return resultFeatureStatDTO;
+    }
+
+    public List<ResultFeatureStatDTO> getResultSetFeatureStats(long resultSetId) throws ResultSetNotFoundException {
+        if (!resultSetService.exists(resultSetId)) {
+            throw new ResultSetNotFoundException(resultSetId);
+        }
+        List<ResultFeatureStat> result = resultFeatureStatRepository.findAllByResultSetId(resultSetId);
+        return result.stream().map(r -> modelMapper.map(r).build()).collect(Collectors.toList());
     }
 
     public Page<ResultFeatureStatDTO> getPagedResultFeatureStats(long resultSetId, int pageNumber, Optional<Integer> pageSize) throws ResultSetNotFoundException {

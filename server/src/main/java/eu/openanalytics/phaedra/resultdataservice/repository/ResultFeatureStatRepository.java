@@ -30,6 +30,8 @@ import java.util.List;
 
 public interface ResultFeatureStatRepository extends PagingAndSortingRepository<ResultFeatureStat, Long> {
 
+    List<ResultFeatureStat> findAllByResultSetId(long resultSetId);
+
     Page<ResultFeatureStat> findAllByResultSetId(Pageable pageable, long resultSetId);
 
     Page<ResultFeatureStat> findAllByResultSetIdAndFeatureId(Pageable pageable, long resultSetId, long featureId);
