@@ -1,3 +1,5 @@
+scalar Date
+
 type FeatureData {
     featureId: ID
     featureName: String
@@ -40,8 +42,49 @@ type WellData {
     column: Int
 }
 
+enum StatusCode {
+    SCHEDULED
+    SUCCESS
+    FAILURE
+}
+
+type ResultSetDTO {
+    id: ID
+    protocolId: ID
+    plateId: ID
+    measId: ID
+    executionStartTimeStamp: Date
+    executionEndTimeStamp: Date
+    outcome: StatusCode
+    errors: [ErrorDTO]
+    errorsText: String
+}
+
+type ErrorDTO {
+    timestamp: Date
+    exceptionClassName: String
+    exceptionMessage: String
+    description: String
+    featureId: ID
+    featureName: String
+    sequenceNumber: Int
+    formulaId: ID
+    formulaName: String
+    civType: String
+    civVariableName: String
+    civSource: String
+    exitCode: Int
+    statusMessage: String
+    featureStatId: ID
+    featureStatName: String
+    newResultSetId: ID
+}
+
 type Query {
     latestPlateResultByPlateId(plateId: ID): PlateResultSetData
     protocolsByPlateId(plateId: ID): [ProtocolData]
     featureValuesByPlateIdAndFeatureId(plateId: ID, featureId: ID): [FeatureValue]
+    getResultSet: ResultSetDTO
+    getResultSetsByPlateId: [ResultSetDTO]
+    getResultSetsByPlateIdAndMeasurementId: [ResultSetDTO]
 }
