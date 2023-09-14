@@ -95,6 +95,18 @@ type ResultFeatureStatDTO {
     createdTimestamp: Date
 }
 
+type ResultDataDTO {
+    id: ID
+    resultSetId: ID
+    featureId: ID
+    values: [FloatNaN]
+    statusCode: StatusCode
+    statusMessage: String
+    exitCode: Int
+    createdTimestamp: Date
+    resultFeatureStats: [ResultFeatureStatDTO]
+}
+
 type Query {
     latestPlateResultByPlateId(plateId: ID): PlateResultSetData
     protocolsByPlateId(plateId: ID): [ProtocolData]
@@ -104,5 +116,7 @@ type Query {
     resultSetsByPlateIdAndMeasurementId(plateId: ID, measurementId: ID): [ResultSetDTO]
     resultFeatureStat(resultSetId: ID, resultFeatureStatId: ID): ResultFeatureStatDTO
     resultSetFeatureStats(resultSetId: ID): [ResultFeatureStatDTO]
-
+    resultDataByResultSetId(resultSetId: ID): [ResultDataDTO]
+    resultDataByResultSetIdAndResultDataId(resultSetId: ID, resultDataId: ID): ResultDataDTO
+    resultDataByResultSetIdAndFeatureId(resultSetId: ID, featureId: ID): ResultDataDTO
 }

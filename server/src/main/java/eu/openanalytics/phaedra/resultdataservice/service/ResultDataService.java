@@ -40,6 +40,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ResultDataService {
@@ -92,6 +93,14 @@ public class ResultDataService {
         }
         var res = resultDataRepository.findAllByResultSetId(PageRequest.of(pageNumber, pageSize.orElse(DEFAULT_PAGE_SIZE), Sort.Direction.ASC, "id"), resultSetId);
         return res.map((r) -> modelMapper.map(r).build());
+    }
+
+    public List<ResultDataDTO> getResultDataByResultSetId(long resultSetId) throws ResultSetNotFoundException {
+        if (!resultSetService.exists(resultSetId)) {
+            throw new ResultSetNotFoundException(resultSetId);
+        }
+        List<ResultData> results = resultDataRepository.findAllByResultSetId(resultSetId);
+        return results.stream().map(r -> modelMapper.map(r).build()).collect(Collectors.toList());
     }
 
     public ResultDataDTO getResultData(long resultSetId, long resultDataId) throws ResultSetNotFoundException, ResultDataNotFoundException {
