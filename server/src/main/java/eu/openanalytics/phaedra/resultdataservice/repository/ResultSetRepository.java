@@ -38,8 +38,10 @@ public interface ResultSetRepository extends PagingAndSortingRepository<ResultSe
         return findAllByOutcome(pageable, new ResultSet.StatusCodeHolder(outcome));
     }
 
+    @Query("SELECT * FROM result_set WHERE plate_id = :plateId ORDER BY execution_end_time_stamp DESC")
     List<ResultSet> findAllByPlateId(Long plateId);
 
+    @Query("SELECT * FROM result_set WHERE plate_id = :plateId AND meas_id = :measId ORDER BY execution_end_time_stamp DESC")
     List<ResultSet> findByPlateIdAndMeasId(Long plateId, Long measId);
 
     @Query("SELECT * FROM result_set WHERE id in (SELECT MAX(id) FROM resultdataservice.result_set WHERE plate_id = :plateId)")
