@@ -63,6 +63,6 @@ public class ResultDataGraphQLController implements MethodArgumentNotValidExcept
 
     @QueryMapping
     public ResultDataDTO resultDataByResultSetIdAndFeatureId(@Argument long resultSetId, @Argument long featureId) throws ResultSetNotFoundException, ResultDataNotFoundException {
-        return resultDataService.getResultData(resultSetId, featureId);
+        return resultDataService.getResultDataByResultSetIdAndFeatureId(resultSetId, featureId);
     }
 }
