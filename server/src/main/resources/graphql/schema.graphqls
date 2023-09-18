@@ -110,6 +110,7 @@ type ResultDataDTO {
 type Query {
     latestPlateResultByPlateId(plateId: ID): PlateResultSetData
     protocolsByPlateId(plateId: ID): [ProtocolData]
+    protocolsByExperimentId(experimentId: ID): [ProtocolData]
     featureValuesByPlateIdAndFeatureId(plateId: ID, featureId: ID): [FeatureValue]
     resultSetById(resultSetId: ID): ResultSetDTO
     resultSetsByPlateId(plateId: ID): [ResultSetDTO]

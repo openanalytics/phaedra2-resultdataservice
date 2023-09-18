@@ -101,6 +101,31 @@ public class PlateResultsGraphQLController {
     }
 
     @QueryMapping
+    public List<ProtocolData> protocolsByExperimentId(@Argument long experimentId) throws ResultSetNotFoundException {
+        List<ProtocolData> result = new ArrayList<>();
+
+        List<PlateDTO> plates = plateServiceClient.getPlatesByExperiment(experimentId);
+
+        List<ResultSetDTO> resultSets = new ArrayList<>();
+        for (PlateDTO plate: plates) {
+            resultSets.addAll(resultSetService.getResultSetsByPlateId(plate.getId(), Optional.empty()));
+        }
+
+        if (resultSets.isEmpty()) return result;
+
+        List<Long> protocolIds = resultSets.stream().map(rs -> rs.getProtocolId()).distinct().collect(Collectors.toList());
+        return protocolIds.stream().map(pId -> {
+            try {
+                ProtocolDTO protocolDTO = protocolServiceClient.getProtocol(pId);
+                List<FeatureData> features = protocolDTO.getFeatures().stream().map(f -> new FeatureData(f.getId(), f.getName())).collect(Collectors.toList());
+                return  new ProtocolData(protocolDTO.getId(), protocolDTO.getName(), features);
+            } catch (ProtocolUnresolvableException e) {
+                throw new RuntimeException(e);
+            }
+        }).collect(Collectors.toList());
+    }
+
+    @QueryMapping
     public List<FeatureValue> featureValuesByPlateIdAndFeatureId(@Argument long plateId, @Argument long featureId) throws ResultSetNotFoundException, ResultDataNotFoundException, PlateUnresolvableException {
         ResultSetDTO latestResultSet = resultSetService.getLatestResultSetByPlateId(plateId, Optional.empty());
 
