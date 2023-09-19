@@ -6,18 +6,12 @@
         <groupId>eu.openanalytics.phaedra</groupId>
         <artifactId>phaedra2-resultdataservice</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>phaedra2-resultdataservice-client</artifactId>
     <name>phaedra2-resultdataservice-client</name>
 
-    <properties>
-        <java.version>16</java.version>
-    </properties>
-
     <dependencies>
-        <!-- Dependency on DTO -->
         <dependency>
             <groupId>eu.openanalytics.phaedra</groupId>
             <artifactId>phaedra2-resultdataservice-dto</artifactId>
