@@ -23,6 +23,7 @@ package eu.openanalytics.phaedra.resultdataservice.repository;
 import eu.openanalytics.phaedra.resultdataservice.model.ResultData;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.Collection;
@@ -40,5 +41,10 @@ public interface ResultDataRepository extends PagingAndSortingRepository<ResultD
     Optional<ResultData> findByResultSetIdAndFeatureId(long resultSetId, long featureId);
 
     List<ResultData> findByResultSetIdIn(Collection<Long> resultSetIds);
+
+    @Query("select * from result_data as rd inner join result_set as rs on rd.result_set_id = rs.id " +
+            "where rs.plate_id = :plateId and rs.protocol_id = :protocolId and rd.feature_id = :featureId " +
+            "order by rs.execution_end_time_stamp desc")
+    List<ResultData> findByPlateIdAndProtocolIdAndFeatureId(long plateId, long protocolId, long featureId);
 }
 

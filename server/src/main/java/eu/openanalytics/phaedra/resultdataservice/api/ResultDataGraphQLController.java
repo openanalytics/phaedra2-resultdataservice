@@ -65,4 +65,9 @@ public class ResultDataGraphQLController implements MethodArgumentNotValidExcept
     public ResultDataDTO resultDataByResultSetIdAndFeatureId(@Argument long resultSetId, @Argument long featureId) throws ResultSetNotFoundException, ResultDataNotFoundException {
         return resultDataService.getResultDataByResultSetIdAndFeatureId(resultSetId, featureId);
     }
+
+    @QueryMapping
+    public List<ResultDataDTO> resultDataByPlateIdAndProtocolIdAndFeatureId(@Argument Long plateId, @Argument Long protocolId, @Argument Long featureId) {
+        return resultDataService.getResultDataByPlateIdAndProtocolIdAndFeatureId(plateId, protocolId, featureId);
+    }
 }

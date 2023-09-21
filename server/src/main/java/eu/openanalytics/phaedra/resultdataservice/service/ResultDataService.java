@@ -141,6 +141,11 @@ public class ResultDataService {
         return res.map((r) -> modelMapper.map(r).build());
     }
 
+    public List<ResultDataDTO> getResultDataByPlateIdAndProtocolIdAndFeatureId(long plateId, long protocolId, long featureId) {
+        List<ResultData> result = resultDataRepository.findByPlateIdAndProtocolIdAndFeatureId(plateId, protocolId, featureId);
+        return result.stream().map(r -> modelMapper.map(r).build()).toList();
+    }
+
     public void delete(long resultSetId, long resultDataId) throws ResultSetNotFoundException, ResultDataNotFoundException, InvalidResultSetIdException, ResultSetAlreadyCompletedException {
         var resultSet = resultSetService.getResultSetById(resultSetId);
         if (resultSet.getOutcome() != StatusCode.SCHEDULED) {
