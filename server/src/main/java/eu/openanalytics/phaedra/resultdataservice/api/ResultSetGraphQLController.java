@@ -62,7 +62,7 @@ public class ResultSetGraphQLController {
     @QueryMapping
     public ResultSetDTO latestResultSetByPlateId(@Argument long plateId) {
         try {
-            return resultSetService.getLatestResultSetByPlateId(plateId, null);
+            return resultSetService.getLatestResultSetByPlateId(plateId, Optional.empty());
         } catch (ResultSetNotFoundException e) {
             return null;
         }
