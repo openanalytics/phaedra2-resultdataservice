@@ -58,4 +58,13 @@ public class ResultSetGraphQLController {
     public List<ResultSetDTO> resultSetsByPlateIdAndMeasurementId(@Argument long plateId, @Argument long measurementId) throws ResultSetNotFoundException {
         return resultSetService.getResultSetsByPlateId(plateId, Optional.of(measurementId));
     }
+
+    @QueryMapping
+    public ResultSetDTO latestResultSetByPlateId(@Argument long plateId) {
+        try {
+            return resultSetService.getLatestResultSetByPlateId(plateId, null);
+        } catch (ResultSetNotFoundException e) {
+            return null;
+        }
+    }
 }
