@@ -114,6 +114,7 @@ type Query {
     featureValuesByPlateIdAndFeatureId(plateId: ID, featureId: ID): [FeatureValue]
     resultSetById(resultSetId: ID): ResultSetDTO
     resultSetsByPlateId(plateId: ID): [ResultSetDTO]
+    latestResultSetByPlateId(plateId: ID): ResultSetDTO
     resultSetsByPlateIdAndMeasurementId(plateId: ID, measurementId: ID): [ResultSetDTO]
     resultFeatureStat(resultSetId: ID, resultFeatureStatId: ID): ResultFeatureStatDTO
     resultSetFeatureStats(resultSetId: ID): [ResultFeatureStatDTO]
