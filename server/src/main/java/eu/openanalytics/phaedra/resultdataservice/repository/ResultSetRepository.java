@@ -28,6 +28,7 @@ import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface ResultSetRepository extends PagingAndSortingRepository<ResultSet, Long>, CrudRepository<ResultSet, Long> {
@@ -67,5 +68,10 @@ public interface ResultSetRepository extends PagingAndSortingRepository<ResultSe
 
     @Query("SELECT * FROM result_set ORDER BY execution_start_time_stamp DESC LIMIT :n")
     List<ResultSet> findNMostRecentResultSets(Integer n);
+
+    @Query("SELECT * FROM result_set WHERE id in (SELECT MAX(id) FROM resultdataservice.result_set WHERE plate_id in (:plateIds))")
+    List<ResultSet> findLatestByPlateIds(Collection<Long> plateIds);
+
+
 }
 

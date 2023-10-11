@@ -203,4 +203,12 @@ public class ResultSetService {
 
         return result.stream().map(rs -> modelMapper.map(rs).build()).toList();
     }
+
+    public List<ResultSetDTO> getLatestResultSetsByPlateIds(List<Long> plateIds) {
+        List<ResultSet> result;
+
+        result = resultSetRepository.findLatestByPlateIds(plateIds);
+
+        return result.stream().map(rs -> modelMapper.map(rs).build()).toList();
+    }
 }

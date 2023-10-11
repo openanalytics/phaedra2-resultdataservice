@@ -67,4 +67,9 @@ public class ResultSetGraphQLController {
             return null;
         }
     }
+
+    @QueryMapping
+    public List<ResultSetDTO> latestResultSetsByPlateIds(@Argument List<Long> plateIds) {
+        return resultSetService.getLatestResultSetsByPlateIds(plateIds);
+    }
 }
