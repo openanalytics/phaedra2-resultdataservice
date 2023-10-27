@@ -205,10 +205,11 @@ public class ResultSetService {
     }
 
     public List<ResultSetDTO> getLatestResultSetsByPlateIds(List<Long> plateIds) {
-        List<ResultSet> result;
+        List<ResultSet> result = null;
 
-        result = resultSetRepository.findLatestByPlateIds(plateIds);
+        if (CollectionUtils.isNotEmpty(plateIds))
+            result = resultSetRepository.findLatestByPlateIds(plateIds);
 
-        return result.stream().map(rs -> modelMapper.map(rs).build()).toList();
+        return result != null ? result.stream().map(rs -> modelMapper.map(rs).build()).toList() : new ArrayList<>();
     }
 }
