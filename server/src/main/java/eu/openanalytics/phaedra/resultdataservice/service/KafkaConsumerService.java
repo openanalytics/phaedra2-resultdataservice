@@ -1,7 +1,7 @@
 /**
  * Phaedra II
  *
- * Copyright (C) 2016-2023 Open Analytics
+ * Copyright (C) 2016-2024 Open Analytics
  *
  * ===========================================================================
  *
@@ -41,7 +41,7 @@ public class KafkaConsumerService {
     private final ResultFeatureStatService resultFeatureStatService;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    
+
     public KafkaConsumerService(ResultDataService resultDataService, ResultFeatureStatService resultFeatureStatService) {
         this.resultDataService = resultDataService;
         this.resultFeatureStatService = resultFeatureStatService;
