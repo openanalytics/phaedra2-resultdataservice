@@ -14,12 +14,12 @@ databaseChangeLog:
                 tableName: result_data
       changes:
         - sql:
-            sql: DO $$ BEGIN
+            sql: DO ' BEGIN
                   IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'status_code') THEN
                     CREATE TYPE status_code AS ENUM ('SCHEDULED', 'SUCCESS', 'FAILURE');
                     CREATE CAST (CHARACTER VARYING AS status_code) WITH INOUT AS IMPLICIT;
                   END IF;
-                END $$;
+                END; ' ;
         - createTable:
             tableName: result_set
             columns:
