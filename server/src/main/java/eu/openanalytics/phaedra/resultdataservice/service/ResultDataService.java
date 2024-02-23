@@ -1,7 +1,7 @@
 /**
  * Phaedra II
  *
- * Copyright (C) 2016-2023 Open Analytics
+ * Copyright (C) 2016-2024 Open Analytics
  *
  * ===========================================================================
  *
@@ -168,17 +168,19 @@ public class ResultDataService {
         // workaround for https://github.com/spring-projects/spring-data-jdbc/issues/1033
         var simpleJdbcInsert = new SimpleJdbcInsert(dataSource).withTableName("result_data").usingGeneratedKeyColumns("id");
 
-        Number id = simpleJdbcInsert.executeAndReturnKey(new HashMap<>() {{
-            put("result_set_id", resultData.getResultSetId());
-            put("feature_id", resultData.getFeatureId());
-            put("values", resultData.getValues());
-            put("status_code", resultData.getStatusCode());
-            put("status_message", resultData.getStatusMessage());
-            put("exit_code", resultData.getExitCode());
-            put("created_timestamp", resultData.getCreatedTimestamp());
-        }});
+        ResultData created = resultDataRepository.save(resultData);
+        return modelMapper.map(created).build();
 
-        return modelMapper.map(resultDataRepository.findById(id.longValue()).get()).build();
+//        Number id = simpleJdbcInsert.executeAndReturnKey(new HashMap<>() {{
+//            put("result_set_id", resultData.getResultSetId());
+//            put("feature_id", resultData.getFeatureId());
+//            put("values", resultData.getValues());
+//            put("status_code", resultData.getStatusCode());
+//            put("status_message", resultData.getStatusMessage());
+//            put("exit_code", resultData.getExitCode());
+//            put("created_timestamp", resultData.getCreatedTimestamp());
+//        }});
+//        return modelMapper.map(resultDataRepository.findById(id.longValue()).get()).build();
     }
 
 }

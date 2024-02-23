@@ -1,7 +1,7 @@
 /**
  * Phaedra II
  *
- * Copyright (C) 2016-2023 Open Analytics
+ * Copyright (C) 2016-2024 Open Analytics
  *
  * ===========================================================================
  *
@@ -20,18 +20,10 @@
  */
 package eu.openanalytics.phaedra.resultdataservice;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-import eu.openanalytics.phaedra.plateservice.client.config.PlateServiceClientAutoConfiguration;
-import eu.openanalytics.phaedra.protocolservice.client.config.ProtocolServiceClientAutoConfiguration;
-import eu.openanalytics.phaedra.util.PhaedraRestTemplate;
-import eu.openanalytics.phaedra.util.auth.AuthenticationConfigHelper;
-import eu.openanalytics.phaedra.util.auth.AuthorizationServiceFactory;
-import eu.openanalytics.phaedra.util.auth.IAuthorizationService;
-import eu.openanalytics.phaedra.util.jdbc.JDBCUtils;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.servers.Server;
-import org.apache.commons.lang3.StringUtils;
+import java.time.Clock;
+
+import javax.sql.DataSource;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -44,8 +36,15 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
-import javax.sql.DataSource;
-import java.time.Clock;
+import eu.openanalytics.phaedra.plateservice.client.config.PlateServiceClientAutoConfiguration;
+import eu.openanalytics.phaedra.protocolservice.client.config.ProtocolServiceClientAutoConfiguration;
+import eu.openanalytics.phaedra.util.PhaedraRestTemplate;
+import eu.openanalytics.phaedra.util.auth.AuthenticationConfigHelper;
+import eu.openanalytics.phaedra.util.auth.AuthorizationServiceFactory;
+import eu.openanalytics.phaedra.util.auth.IAuthorizationService;
+import eu.openanalytics.phaedra.util.jdbc.JDBCUtils;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.servers.Server;
 
 @EnableWebSecurity
 @SpringBootApplication
@@ -73,30 +72,7 @@ public class ResultDataServiceApplication {
 
     @Bean
     public DataSource dataSource() {
-        String url = environment.getProperty("DB_URL");
-        if (StringUtils.isEmpty(url)) {
-            throw new RuntimeException("No database URL configured: " + url);
-        }
-        String driverClassName = JDBCUtils.getDriverClassName(url);
-        if (driverClassName == null) {
-            throw new RuntimeException("Unsupported database type: " + url);
-        }
-
-        HikariConfig config = new HikariConfig();
-        config.setMaximumPoolSize(20);
-        config.setConnectionTimeout(60000);
-        config.setJdbcUrl(url);
-        config.setDriverClassName(driverClassName);
-        config.setUsername(environment.getProperty("DB_USER"));
-        config.setPassword(environment.getProperty("DB_PASSWORD"));
-        config.setAutoCommit(true);
-
-        String schema = environment.getProperty("DB_SCHEMA");
-        if (!StringUtils.isEmpty(schema)) {
-            config.setConnectionInitSql("set search_path to " + schema);
-        }
-
-        return new HikariDataSource(config);
+    	return JDBCUtils.createDataSource(environment);
     }
 
     @Bean
