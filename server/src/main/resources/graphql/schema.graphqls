@@ -115,7 +115,7 @@ type Query {
     latestPlateResultByPlateId(plateId: ID): PlateResultSetData
     protocolsByPlateId(plateId: ID): [ProtocolData]
     protocolsByExperimentId(experimentId: ID): [ProtocolData]
-    featureValuesByPlateIdAndFeatureIdAndMeasurementIdAndProtocolId(plateId: ID, featureId: ID, measurementId: ID, protocolId: ID): [FeatureValue]
+    featureValuesByPlateIdAndFeatureIdAndProtocolId(plateId: ID, featureId: ID, protocolId: ID): [FeatureValue]
     resultSetById(resultSetId: ID): ResultSetDTO
     resultSetsByPlateId(plateId: ID): [ResultSetDTO]
     latestResultSetByPlateId(plateId: ID): ResultSetDTO

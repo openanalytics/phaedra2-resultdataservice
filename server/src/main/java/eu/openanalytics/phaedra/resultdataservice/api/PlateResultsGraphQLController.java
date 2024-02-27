@@ -126,8 +126,8 @@ public class PlateResultsGraphQLController {
     }
 
     @QueryMapping
-    public List<FeatureValue> featureValuesByPlateIdAndFeatureIdAndMeasurementIdAndProtocolId(@Argument long plateId, @Argument long featureId, @Argument long measurementId, @Argument long protocolId) throws ResultSetNotFoundException, ResultDataNotFoundException, PlateUnresolvableException {
-        List<ResultSetDTO> latestResultSets = resultSetService.getLatestResultSetsByPlateId(plateId, Optional.of(measurementId), Optional.of(protocolId));
+    public List<FeatureValue> featureValuesByPlateIdAndFeatureIdAndProtocolId(@Argument long plateId, @Argument long featureId, @Argument long protocolId) throws ResultSetNotFoundException, ResultDataNotFoundException, PlateUnresolvableException {
+        List<ResultSetDTO> latestResultSets = resultSetService.getLatestResultSetsByPlateId(plateId, Optional.empty(), Optional.of(protocolId));
         ResultSetDTO latestResultSet = latestResultSets.get(0);
 
         ResultDataDTO resultData = resultDataService.getResultDataByResultSetIdAndFeatureId(latestResultSet.getId(), featureId);
