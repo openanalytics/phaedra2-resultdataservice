@@ -132,7 +132,7 @@ public class ResultSetService {
         return CollectionUtils.isNotEmpty(resultSets) ? modelMapper.map(resultSets.get(0)).build() : null;
     }
 
-    public List<ResultSetDTO> getLatestResultSetsByPlateId(Long plateId, Optional<Long> measId, Optional<Long> protocolId) throws ResultSetNotFoundException {
+    public List<ResultSetDTO> getLatestResultSetsByPlateId(Long plateId, Optional<Long> measId, Optional<Long> protocolId) {
         List<ResultSet> resultSets;
         if (measId.isPresent() && protocolId.isEmpty())
             resultSets = resultSetRepository.findLatestByPlateIdAndMeasId(plateId, measId.get());
