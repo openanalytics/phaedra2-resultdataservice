@@ -13,8 +13,8 @@
 
     <properties>
         <docker.imageName>openanalytics/${project.parent.artifactId}</docker.imageName>
-        <phaedra2-protocolservice-client.version>2.0.4</phaedra2-protocolservice-client.version>
-        <phaedra2-plateservice-client.version>2.0.4</phaedra2-plateservice-client.version>
+        <phaedra2-protocolservice-client.version>2.0.5-SNAPSHOT</phaedra2-protocolservice-client.version>
+        <phaedra2-plateservice-client.version>2.0.5-SNAPSHOT</phaedra2-plateservice-client.version>
     </properties>
 
     <dependencies>
