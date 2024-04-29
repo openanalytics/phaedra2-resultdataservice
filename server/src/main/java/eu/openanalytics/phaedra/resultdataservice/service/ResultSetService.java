@@ -213,27 +213,32 @@ public class ResultSetService {
     }
 
     public List<ResultSetDTO> getResultSets(Optional<Long> protocolId, Optional<Long> measurementId, Optional<Long> plateId) {
-        List<Supplier<Optional<List<ResultSet>>>> suppliers = Arrays.asList(
-                () -> protocolId.flatMap(pid -> measurementId.flatMap(mid -> plateId.flatMap(plt -> Optional.of(resultSetRepository.findAllByProtocolIdAndMeasurementIdAndPlateId(pid, mid, plt))))),
-                () -> protocolId.flatMap(pid -> measurementId.map(mid -> resultSetRepository.findAllByProtocolIdAndMeasurementId(pid, mid))),
-                () -> protocolId.flatMap(pid -> plateId.map(plt -> resultSetRepository.findAllByProtocolIdAndPlateId(pid, plt))),
-                () -> measurementId.flatMap(mId -> plateId.map(plt -> resultSetRepository.findAllByMeasurementIdAndPlateId(mId, plt))),
-                () -> protocolId.map(pid -> resultSetRepository.findAllByProtocolId(pid)),
-                () -> measurementId.map(mid -> resultSetRepository.findAllByMeasurementId(mid)),
-                () -> plateId.map(plt -> resultSetRepository.findAllByPlateId(plt))
-        );
+        List<ResultSet> resultSets = null;
 
-        return Stream.ofNullable(getFromSuppliers(suppliers).orElseGet(() -> (List<ResultSet>) resultSetRepository.findAll()))
-                .flatMap(Collection::stream)
+        if (protocolId.isPresent() && measurementId.isPresent() && plateId.isPresent()) {
+            resultSets = resultSetRepository.findAllByProtocolIdAndMeasurementIdAndPlateId(
+                    protocolId.get(), measurementId.get(), plateId.get());
+        } else if (protocolId.isPresent() && measurementId.isPresent()) {
+            resultSets = resultSetRepository.findAllByProtocolIdAndMeasurementId(
+                    protocolId.get(), measurementId.get());
+        } else if (protocolId.isPresent() && plateId.isPresent()) {
+            resultSets = resultSetRepository.findAllByProtocolIdAndPlateId(
+                    protocolId.get(), plateId.get());
+        } else if (measurementId.isPresent() && plateId.isPresent()) {
+            resultSets = resultSetRepository.findAllByMeasurementIdAndPlateId(
+                    measurementId.get(), plateId.get());
+        } else if (protocolId.isPresent()) {
+            resultSets = resultSetRepository.findAllByProtocolId(protocolId.get());
+        } else if (measurementId.isPresent()) {
+            resultSets = resultSetRepository.findAllByMeasurementId(measurementId.get());
+        } else if (plateId.isPresent()) {
+            resultSets = resultSetRepository.findAllByPlateId(plateId.get());
+        } else {
+            resultSets = (List<ResultSet>) resultSetRepository.findAll();
+        }
+
+        return resultSets != null ?resultSets.stream()
                 .map(resultSet -> modelMapper.map(resultSet).build())
-                .toList();
-    }
-
-    private Optional<List<ResultSet>> getFromSuppliers(List<Supplier<Optional<List<ResultSet>>>> suppliers){
-        return suppliers.stream()
-                .map(Supplier::get)
-                .filter(Optional::isPresent)
-                .findFirst()
-                .orElse(Optional.empty());
+                .toList() : Collections.emptyList();
     }
 }
