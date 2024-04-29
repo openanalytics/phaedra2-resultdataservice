@@ -118,6 +118,8 @@ type Query {
     featureValuesByPlateIdAndFeatureIdAndProtocolId(plateId: ID, featureId: ID, protocolId: ID): [FeatureValue]
     resultSetById(resultSetId: ID): ResultSetDTO
     resultSetsByPlateId(plateId: ID): [ResultSetDTO]
+    resultSetsByProtocolId(protocolId: ID): [ResultSetDTO]
+    resultSetsByMeasurementId(measurementId: ID): [ResultSetDTO]
     latestResultSetByPlateId(plateId: ID): ResultSetDTO
     latestResultSetsByPlateIds(plateIds: [ID]): [ResultSetDTO]
     resultSetsByPlateIdAndMeasurementId(plateId: ID, measurementId: ID): [ResultSetDTO]

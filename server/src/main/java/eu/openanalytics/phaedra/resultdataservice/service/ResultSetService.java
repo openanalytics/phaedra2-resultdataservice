@@ -20,12 +20,12 @@
  */
 package eu.openanalytics.phaedra.resultdataservice.service;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
+import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
+import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
+import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetAlreadyCompletedException;
+import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
+import eu.openanalytics.phaedra.resultdataservice.model.ResultSet;
+import eu.openanalytics.phaedra.resultdataservice.repository.ResultSetRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -33,12 +33,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
-import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
-import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetAlreadyCompletedException;
-import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
-import eu.openanalytics.phaedra.resultdataservice.model.ResultSet;
-import eu.openanalytics.phaedra.resultdataservice.repository.ResultSetRepository;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 
 @Service
@@ -146,11 +145,11 @@ public class ResultSetService {
          return resultSets.stream().map(it -> modelMapper.map(it).build()).toList();
     }
 
-    public Page<ResultSetDTO> getPagedResultSets(Long plateId, StatusCode outcome, int pageNumber, Optional<Integer> pageSize) {
+    public Page<ResultSetDTO> getPagedResultSets(Optional<Long> plateId, StatusCode outcome, int pageNumber, Optional<Integer> pageSize) {
         Page<ResultSet> res;
-        if (plateId != null) {
+        if (plateId.isPresent()) {
         	try {
-				return new PageImpl<>(getResultSetsByPlateId(plateId, Optional.empty()));
+				return new PageImpl<>(getResultSetsByPlateId(plateId.get(), Optional.empty()));
 			} catch (ResultSetNotFoundException e) {
 				throw new IllegalArgumentException(e);
 			}
@@ -211,5 +210,30 @@ public class ResultSetService {
             result = resultSetRepository.findLatestByPlateIds(plateIds);
 
         return result != null ? result.stream().map(rs -> modelMapper.map(rs).build()).toList() : new ArrayList<>();
+    }
+
+    public List<ResultSetDTO> getResultSets(Optional<Long> protocolId, Optional<Long> measurementId, Optional<Long> plateId) {
+        List<Supplier<Optional<List<ResultSet>>>> suppliers = Arrays.asList(
+                () -> protocolId.flatMap(pid -> measurementId.flatMap(mid -> plateId.flatMap(plt -> Optional.of(resultSetRepository.findAllByProtocolIdAndMeasurementIdAndPlateId(pid, mid, plt))))),
+                () -> protocolId.flatMap(pid -> measurementId.map(mid -> resultSetRepository.findAllByProtocolIdAndMeasurementId(pid, mid))),
+                () -> protocolId.flatMap(pid -> plateId.map(plt -> resultSetRepository.findAllByProtocolIdAndPlateId(pid, plt))),
+                () -> measurementId.flatMap(mId -> plateId.map(plt -> resultSetRepository.findAllByMeasurementIdAndPlateId(mId, plt))),
+                () -> protocolId.map(pid -> resultSetRepository.findAllByProtocolId(pid)),
+                () -> measurementId.map(mid -> resultSetRepository.findAllByMeasurementId(mid)),
+                () -> plateId.map(plt -> resultSetRepository.findAllByPlateId(plt))
+        );
+
+        return Stream.ofNullable(getFromSuppliers(suppliers).orElseGet(() -> (List<ResultSet>) resultSetRepository.findAll()))
+                .flatMap(Collection::stream)
+                .map(resultSet -> modelMapper.map(resultSet).build())
+                .toList();
+    }
+
+    private Optional<List<ResultSet>> getFromSuppliers(List<Supplier<Optional<List<ResultSet>>>> suppliers){
+        return suppliers.stream()
+                .map(Supplier::get)
+                .filter(Optional::isPresent)
+                .findFirst()
+                .orElse(Optional.empty());
     }
 }

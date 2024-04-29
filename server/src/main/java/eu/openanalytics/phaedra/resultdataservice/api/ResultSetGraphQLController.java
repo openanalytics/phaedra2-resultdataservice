@@ -51,12 +51,22 @@ public class ResultSetGraphQLController {
 
     @QueryMapping
     public List<ResultSetDTO> resultSetsByPlateId(@Argument long plateId) throws ResultSetNotFoundException {
-    	return resultSetService.getResultSetsByPlateId(plateId, Optional.empty());
+        return resultSetService.getResultSets(null, null, Optional.of(plateId));
+    }
+
+    @QueryMapping
+    public List<ResultSetDTO> resultSetsByProtocolId(@Argument long protocolId) {
+        return resultSetService.getResultSets(Optional.of(protocolId), null, null);
+    }
+
+    @QueryMapping
+    public List<ResultSetDTO> resultSetsByMeasurementId(@Argument long measurementId) {
+        return resultSetService.getResultSets(null, Optional.of(measurementId), null);
     }
 
     @QueryMapping
     public List<ResultSetDTO> resultSetsByPlateIdAndMeasurementId(@Argument long plateId, @Argument long measurementId) throws ResultSetNotFoundException {
-        return resultSetService.getResultSetsByPlateId(plateId, Optional.of(measurementId));
+        return resultSetService.getResultSets(null, Optional.of(measurementId), Optional.of(plateId));
     }
 
     @QueryMapping
