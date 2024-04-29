@@ -88,15 +88,17 @@ public class ResultSetController implements MethodArgumentNotValidExceptionHandl
         return resultSetService.getResultSetById(id);
     }
 
-    @GetMapping
-    @ResponseBody
-    public PageDTO<ResultSetDTO> getResultSets(
-    		@RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-    		@RequestParam(name = "pageSize", required = false) Optional<Integer> pageSize,
-    		@RequestParam(name = "plateId", required = false) Optional<Long> plateId,
-    		@RequestParam(name = "outcome", required = false) @Valid StatusCode outcome) {
-    	return PageDTO.map(resultSetService.getPagedResultSets(plateId, outcome, page, pageSize));
-    }
+//    @GetMapping
+//    @ResponseBody
+//    public PageDTO<ResultSetDTO> getResultSets(
+//    		@RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+//    		@RequestParam(name = "pageSize", required = false) Optional<Integer> pageSize,
+//            @RequestParam(name = "protocolId", required = false) Optional<Long> protocolId,
+//            @RequestParam(name = "measurementId", required = false) Optional<Long> measurementId,
+//            @RequestParam(name = "plateId", required = false) Optional<Long> plateId,
+//    		@RequestParam(name = "outcome", required = false) @Valid StatusCode outcome) {
+//    	return PageDTO.map(resultSetService.getPagedResultSets(protocolId, measurementId, plateId, outcome, page, pageSize));
+//    }
 
     @GetMapping
     @ResponseBody
