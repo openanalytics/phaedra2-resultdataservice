@@ -23,9 +23,10 @@ package eu.openanalytics.phaedra.resultdataservice.client.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 import eu.openanalytics.phaedra.resultdataservice.client.ResultDataServiceClient;
-import eu.openanalytics.phaedra.resultdataservice.client.impl.CachingHttpResultDataServiceClient;
+import eu.openanalytics.phaedra.resultdataservice.client.impl.HttpResultDataServiceClient;
 import eu.openanalytics.phaedra.util.PhaedraRestTemplate;
 import eu.openanalytics.phaedra.util.auth.IAuthorizationService;
 
@@ -33,8 +34,8 @@ import eu.openanalytics.phaedra.util.auth.IAuthorizationService;
 public class ResultDataServiceClientAutoConfiguration {
 
     @Bean
-    public ResultDataServiceClient resultDataServiceClient(PhaedraRestTemplate phaedraRestTemplate, IAuthorizationService authService) {
-        return new CachingHttpResultDataServiceClient(phaedraRestTemplate, authService);
+    public ResultDataServiceClient resultDataServiceClient(PhaedraRestTemplate phaedraRestTemplate, IAuthorizationService authService, Environment environment) {
+        return new HttpResultDataServiceClient(phaedraRestTemplate, authService, environment);
     }
 
 }
