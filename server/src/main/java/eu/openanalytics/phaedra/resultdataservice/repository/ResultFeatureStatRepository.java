@@ -32,6 +32,8 @@ public interface ResultFeatureStatRepository extends PagingAndSortingRepository<
 
     List<ResultFeatureStat> findAllByResultSetId(long resultSetId);
 
+    List<ResultFeatureStat> findAllByResultSetIdAndStatisticName(long resultSetID, String statisticName);
+
     Page<ResultFeatureStat> findAllByResultSetId(Pageable pageable, long resultSetId);
 
     Page<ResultFeatureStat> findAllByResultSetIdAndFeatureId(Pageable pageable, long resultSetId, long featureId);

@@ -129,4 +129,5 @@ type Query {
     resultDataByResultSetIdAndResultDataId(resultSetId: ID, resultDataId: ID): ResultDataDTO
     resultDataByResultSetIdAndFeatureId(resultSetId: ID, featureId: ID): ResultDataDTO
     resultDataByPlateIdAndProtocolIdAndFeatureId(plateId: ID, protocolId: ID, featureId: ID): [ResultDataDTO]
+    featureStatsByResultSetId(resultSetId: ID!, statName: String, wellType: String): [ResultFeatureStatDTO]
 }

@@ -25,7 +25,14 @@ import eu.openanalytics.phaedra.util.exceptionhandling.EntityNotFoundException;
 public class ResultFeatureStatNotFoundException extends EntityNotFoundException {
 
     public ResultFeatureStatNotFoundException(long resultDataId) {
-        super(String.format("ResultFeatureStat with id %s not found!", resultDataId));
+        super(String.format("No ResultFeatureStat found with id %s!", resultDataId));
     }
 
+    public ResultFeatureStatNotFoundException(String statName) {
+        super(String.format("No ResultFeatureStat found with name %s!", statName));
+    }
+
+    public ResultFeatureStatNotFoundException(String statName, String wellType) {
+        super(String.format("No ResultFeatureStat found with name %s and well type %s!", statName, wellType));
+    }
 }

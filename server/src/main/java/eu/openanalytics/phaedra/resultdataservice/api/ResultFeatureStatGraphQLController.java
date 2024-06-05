@@ -27,6 +27,7 @@ import eu.openanalytics.phaedra.resultdataservice.service.ResultFeatureStatServi
 import eu.openanalytics.phaedra.util.exceptionhandling.HttpMessageNotReadableExceptionHandler;
 import eu.openanalytics.phaedra.util.exceptionhandling.MethodArgumentNotValidExceptionHandler;
 import eu.openanalytics.phaedra.util.exceptionhandling.UserVisibleExceptionHandler;
+import java.util.Optional;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
@@ -51,6 +52,12 @@ public class ResultFeatureStatGraphQLController implements MethodArgumentNotVali
     @QueryMapping
     public ResultFeatureStatDTO resultFeatureStat(@Argument long resultSetId, @Argument long resultFeatureStatId) throws ResultSetNotFoundException, ResultFeatureStatNotFoundException {
         ResultFeatureStatDTO result = resultFeatureStatService.getResultFeatureStat(resultSetId, resultFeatureStatId);
+        return result;
+    }
+
+    @QueryMapping
+    public List<ResultFeatureStatDTO> featureStatsByResultSetId(@Argument long resultSetId, @Argument String statName, @Argument String wellType) throws ResultSetNotFoundException, ResultFeatureStatNotFoundException {
+        List<ResultFeatureStatDTO> result = resultFeatureStatService.getResultFeatureStats(resultSetId, statName, Optional.ofNullable(wellType));
         return result;
     }
 }
