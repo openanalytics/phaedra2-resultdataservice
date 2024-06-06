@@ -29,6 +29,7 @@ import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetAlreadyComp
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
 import eu.openanalytics.phaedra.resultdataservice.model.ResultFeatureStat;
 import eu.openanalytics.phaedra.resultdataservice.repository.ResultFeatureStatRepository;
+import java.util.stream.Stream;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,7 +46,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
-public class ResultFeatureStatService {
+public class FeatureStatService {
 
     private final ResultFeatureStatRepository resultFeatureStatRepository;
     private final KafkaProducerService kafkaProducerService;
@@ -56,7 +57,7 @@ public class ResultFeatureStatService {
 
     private static final int DEFAULT_PAGE_SIZE = 20;
 
-    public ResultFeatureStatService(
+    public FeatureStatService(
     		ResultFeatureStatRepository resultFeatureStatRepository,
     		KafkaProducerService kafkaProducerService,
     		ResultSetService resultSetService,
@@ -134,6 +135,44 @@ public class ResultFeatureStatService {
         }
 
         return modelMapper.map(res.get()).build();
+    }
+
+    public List<ResultFeatureStatDTO> getResultFeatureStats(long resultSetId, String statName, Optional<String> wellType) throws ResultSetNotFoundException, ResultFeatureStatNotFoundException {
+        if (!resultSetService.exists(resultSetId)) {
+            throw new ResultSetNotFoundException(resultSetId);
+        }
+
+        List<ResultFeatureStat> resultFeatureStats = resultFeatureStatRepository.findAllByResultSetIdAndStatisticName(resultSetId, statName);
+        if (resultFeatureStats.isEmpty()) {
+            throw new ResultFeatureStatNotFoundException(statName);
+        }
+
+        Stream<ResultFeatureStat> stream = resultFeatureStats.stream();
+
+        if (wellType.isPresent()) {
+            stream = stream.filter(resultFeatureStat -> wellType.get().equalsIgnoreCase(resultFeatureStat.getWelltype()));
+        }
+
+        return stream.map(resultFeatureStat -> modelMapper.map(resultFeatureStat).build()).toList();
+    }
+
+    public List<ResultFeatureStatDTO> getResultFeatureStats(long resultSetId, String statName, List<String> wellTypes) throws ResultSetNotFoundException, ResultFeatureStatNotFoundException {
+        if (!resultSetService.exists(resultSetId)) {
+            throw new ResultSetNotFoundException(resultSetId);
+        }
+
+        List<ResultFeatureStat> resultFeatureStats = resultFeatureStatRepository.findAllByResultSetIdAndStatisticName(resultSetId, statName);
+        if (resultFeatureStats.isEmpty()) {
+            throw new ResultFeatureStatNotFoundException(statName);
+        }
+
+        Stream<ResultFeatureStat> stream = resultFeatureStats.stream();
+
+        if (!wellTypes.isEmpty()) {
+            stream = stream.filter(resultFeatureStat -> wellTypes.contains(resultFeatureStat.getWelltype()));
+        }
+
+        return stream.map(resultFeatureStat -> modelMapper.map(resultFeatureStat).build()).toList();
     }
 
     public List<ResultFeatureStatDTO> getResultFeatureStatsByResultIds(List<Long> resultIds) {

@@ -38,13 +38,13 @@ import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundExc
 public class KafkaConsumerService {
 
     private final ResultDataService resultDataService;
-    private final ResultFeatureStatService resultFeatureStatService;
+    private final FeatureStatService featureStatService;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public KafkaConsumerService(ResultDataService resultDataService, ResultFeatureStatService resultFeatureStatService) {
+    public KafkaConsumerService(ResultDataService resultDataService, FeatureStatService featureStatService) {
         this.resultDataService = resultDataService;
-        this.resultFeatureStatService = resultFeatureStatService;
+        this.featureStatService = featureStatService;
     }
 
     @KafkaListener(topics = TOPIC_RESULTDATA, groupId = GROUP_ID + "_resData", filter = "saveResultDataEventFilter")
@@ -56,6 +56,6 @@ public class KafkaConsumerService {
     @KafkaListener(topics = TOPIC_RESULTDATA, groupId = GROUP_ID + "_resStats", filter = "saveResultStatsEventFilter")
     public void onSaveResultStatsEvent(ResultFeatureStatDTO featureStatDTO) throws ResultSetNotFoundException, DuplicateResultFeatureStatException, ResultSetAlreadyCompletedException {
     	logger.info(String.format("Event received to save featureStats for resultSet %d, feature %d, stat %s", featureStatDTO.getResultSetId(), featureStatDTO.getFeatureId(), featureStatDTO.getStatisticName()));
-        resultFeatureStatService.create(featureStatDTO.getResultSetId(), featureStatDTO);
+        featureStatService.create(featureStatDTO.getResultSetId(), featureStatDTO);
     }
 }

@@ -24,69 +24,71 @@ import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
 
 public class UrlFactory {
 
-    private static final String RESULTDATA_SERVICE = "http://phaedra-resultdata-service:8080/phaedra/resultdata-service";
-    private static final int PAGE_SIZE = 100;
+	private static final int PAGE_SIZE = 100;
+	
+    private String baseURL;
+    
+    public UrlFactory(String baseURL) {
+    	this.baseURL = baseURL;
+	}
 
-    public static String resultSet() {
-        return String.format("%s/resultsets", RESULTDATA_SERVICE);
+    public String resultSet() {
+        return String.format("%s/resultsets", baseURL);
     }
 
-    public static String resultSet(long resultId) {
-        return String.format("%s/resultsets/%s", RESULTDATA_SERVICE, resultId);
+    public String resultSet(long resultId) {
+        return String.format("%s/resultsets/%s", baseURL, resultId);
     }
 
-    public static String resultSet(StatusCode outcome, int page) {
-        return String.format("%s/resultsets?outcome=%s&page=%s&pageSize=%s", RESULTDATA_SERVICE, outcome, page, PAGE_SIZE);
+    public String resultSet(StatusCode outcome, int page) {
+        return String.format("%s/resultsets?outcome=%s&page=%s&pageSize=%s", baseURL, outcome, page, PAGE_SIZE);
     }
 
-    public static String latestResultSetByPlateId(long plateId) {
-        return String.format("%s/resultsets/latest?plateId=%s", RESULTDATA_SERVICE, plateId);
+    public String latestResultSetByPlateId(long plateId) {
+        return String.format("%s/resultsets/latest?plateId=%s", baseURL, plateId);
     }
 
-    public static String latestResultSetByPlateIdAndMeasId(long plateId, long measId) {
-        return String.format("%s/resultsets/latest?plateId=%s&measId=%s&n=%s", RESULTDATA_SERVICE, plateId, measId, 1);
+    public String latestResultSetByPlateIdAndMeasId(long plateId, long measId) {
+        return String.format("%s/resultsets/latest?plateId=%s&measId=%s&n=%s", baseURL, plateId, measId, 1);
     }
 
-    public static String latestResultSetByPlateIdAndProtocolId(long plateId, long protocolId) {
-        return String.format("%s/resultsets/latest?plateId=%s&protocolId=%s&n=%s", RESULTDATA_SERVICE, plateId, protocolId, 1);
+    public String latestResultSetByPlateIdAndProtocolId(long plateId, long protocolId) {
+        return String.format("%s/resultsets/latest?plateId=%s&protocolId=%s&n=%s", baseURL, plateId, protocolId, 1);
     }
 
-    public static String latestPlateResults(long plateId) {
-        return String.format("%s/plate-results/%s/latest", RESULTDATA_SERVICE, plateId);
+    public String latestPlateResults(long plateId) {
+        return String.format("%s/plate-results/%s/latest", baseURL, plateId);
     }
 
-    public static String latestPlateResultsByMeasId(long plateId, long measId) {
-        return String.format("%s/plate-results/%s/latest?measId=%s", RESULTDATA_SERVICE, plateId, measId);
+    public String latestPlateResultsByMeasId(long plateId, long measId) {
+        return String.format("%s/plate-results/%s/latest?measId=%s", baseURL, plateId, measId);
     }
 
-    public static String latestPlateResultsAndProtocolId(long plateId, long protocolId) {
-        return String.format("%s/plate-results/%s/latest?protocolId=%s", RESULTDATA_SERVICE, plateId, protocolId);
+    public String latestPlateResultsAndProtocolId(long plateId, long protocolId) {
+        return String.format("%s/plate-results/%s/latest?protocolId=%s", baseURL, plateId, protocolId);
     }
 
-    public static String resultData(long resultSetId) {
-        return String.format("%s/resultsets/%s/resultdata", RESULTDATA_SERVICE, resultSetId);
+    public String resultData(long resultSetId) {
+        return String.format("%s/resultsets/%s/resultdata", baseURL, resultSetId);
     }
 
-    public static String resultData(long resultSetId, int page) {
-        return String.format("%s/resultsets/%s/resultdata?page=%s&pageSize=%s", RESULTDATA_SERVICE, resultSetId, page, PAGE_SIZE);
+    public String resultData(long resultSetId, int page) {
+        return String.format("%s/resultsets/%s/resultdata?page=%s&pageSize=%s", baseURL, resultSetId, page, PAGE_SIZE);
     }
 
-    public static String resultDataByFeatureId(long resultSetId, long featureId) {
-        return String.format("%s/resultsets/%s/resultdata?featureId=%s", RESULTDATA_SERVICE, resultSetId, featureId);
+    public String resultDataByFeatureId(long resultSetId, long featureId) {
+        return String.format("%s/resultsets/%s/resultdata?featureId=%s", baseURL, resultSetId, featureId);
     }
 
-    public static String resultFeatureStat(long resultSetId) {
-        return String.format("%s/resultsets/%s/resultfeaturestats", RESULTDATA_SERVICE, resultSetId);
+    public String resultFeatureStat(long resultSetId) {
+        return String.format("%s/resultsets/%s/resultfeaturestats", baseURL, resultSetId);
     }
 
-    public static String resultFeatureStat(long resultSetId, int currentPage) {
-        return String.format("%s/resultsets/%s/resultfeaturestats?page=%s&pageSize=%s", RESULTDATA_SERVICE, resultSetId, currentPage, PAGE_SIZE);
+    public String resultFeatureStat(long resultSetId, int currentPage) {
+        return String.format("%s/resultsets/%s/resultfeaturestats?page=%s&pageSize=%s", baseURL, resultSetId, currentPage, PAGE_SIZE);
     }
 
-    public static String resultFeatureStatByFeatureStatId(long resultSetId, long featureStatId) {
-        return String.format("%s/resultsets/%s/resultfeaturestats/%s", RESULTDATA_SERVICE, resultSetId, featureStatId);
+    public String resultFeatureStatByFeatureStatId(long resultSetId, long featureStatId) {
+        return String.format("%s/resultsets/%s/resultfeaturestats/%s", baseURL, resultSetId, featureStatId);
     }
-
-
-
 }

@@ -28,6 +28,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -51,19 +52,19 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
 
     private final PhaedraRestTemplate restTemplate;
     private final IAuthorizationService authService;
+    private final UrlFactory urlFactory;
+    
+    private static final String PROP_BASE_URL = "phaedra.resultdata-service.base-url";
+    private static final String DEFAULT_BASE_URL = "http://phaedra-resultdata-service:8080/phaedra/resultdata-service";
+    
+    private final static ParameterizedTypeReference<PageDTO<ResultSetDTO>> PAGED_RESULTSET_TYPE = new ParameterizedTypeReference<>() {};
+    private final static ParameterizedTypeReference<PageDTO<ResultDataDTO>> PAGED_RESULTDATA_TYPE = new ParameterizedTypeReference<>() {};
+    private final static ParameterizedTypeReference<PageDTO<ResultFeatureStatDTO>> PAGED_RESULT_FEATURE_STAT_TYPE = new ParameterizedTypeReference<>() {};
 
-    private final static ParameterizedTypeReference<PageDTO<ResultSetDTO>> PAGED_RESULTSET_TYPE = new ParameterizedTypeReference<>() {
-    };
-
-    private final static ParameterizedTypeReference<PageDTO<ResultDataDTO>> PAGED_RESULTDATA_TYPE = new ParameterizedTypeReference<>() {
-    };
-
-    private final static ParameterizedTypeReference<PageDTO<ResultFeatureStatDTO>> PAGED_RESULT_FEATURE_STAT_TYPE = new ParameterizedTypeReference<>() {
-    };
-
-    public HttpResultDataServiceClient(PhaedraRestTemplate restTemplate, IAuthorizationService authService) {
+    public HttpResultDataServiceClient(PhaedraRestTemplate restTemplate, IAuthorizationService authService, Environment environment) {
         this.restTemplate = restTemplate;
         this.authService = authService;
+        this.urlFactory = new UrlFactory(environment.getProperty(PROP_BASE_URL, DEFAULT_BASE_URL));
     }
 
     @Override
@@ -76,7 +77,7 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
 
         HttpEntity<?> httpEntity = new HttpEntity<>(resultSet, makeHttpHeaders());
         try {
-            var res = restTemplate.postForObject(UrlFactory.resultSet(), httpEntity, ResultSetDTO.class);
+            var res = restTemplate.postForObject(urlFactory.resultSet(), httpEntity, ResultSetDTO.class);
             if (res == null) {
                 throw new ResultSetUnresolvableException("ResultSet could not be converted");
             }
@@ -99,7 +100,7 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
 
         HttpEntity<?> httpEntity = new HttpEntity<>(resultSet, makeHttpHeaders());
         try {
-            var res = restTemplate.putForObject(UrlFactory.resultSet(resultSetId), httpEntity, ResultSetDTO.class);
+            var res = restTemplate.putForObject(urlFactory.resultSet(resultSetId), httpEntity, ResultSetDTO.class);
             if (res == null) {
                 throw new ResultSetUnresolvableException("ResultSet could not be converted");
             }
@@ -126,7 +127,7 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
 
         HttpEntity<?> httpEntity = new HttpEntity<>(resultData, makeHttpHeaders());
         try {
-            var res = restTemplate.postForObject(UrlFactory.resultData(resultSetId), httpEntity, ResultDataDTO.class);
+            var res = restTemplate.postForObject(urlFactory.resultData(resultSetId), httpEntity, ResultDataDTO.class);
             if (res == null) {
                 throw new ResultDataUnresolvableException("ResultData could not be converted");
             }
@@ -140,7 +141,7 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
     public ResultDataDTO getResultData(long resultSetId, long featureId) throws ResultDataUnresolvableException {
         try {
             HttpEntity<?> httpEntity = new HttpEntity<>(makeHttpHeaders());
-            var resultData = restTemplate.exchange(UrlFactory.resultDataByFeatureId(resultSetId, featureId), HttpMethod.GET, httpEntity, PAGED_RESULTDATA_TYPE);
+            var resultData = restTemplate.exchange(urlFactory.resultDataByFeatureId(resultSetId, featureId), HttpMethod.GET, httpEntity, PAGED_RESULTDATA_TYPE);
 
             if (resultData.getStatusCode().isError()) {
                 throw new ResultDataUnresolvableException("ResultData could not be converted");
@@ -182,7 +183,7 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
     public List<ResultFeatureStatDTO> createResultFeatureStats(long resultSetId, List<ResultFeatureStatDTO> resultFeatureStats) throws ResultFeatureStatUnresolvableException {
         try {
             HttpEntity<?> httpEntity = new HttpEntity<>(resultFeatureStats, makeHttpHeaders());
-            var res = restTemplate.postForObject(UrlFactory.resultFeatureStat(resultSetId), httpEntity, ResultFeatureStatDTO[].class);
+            var res = restTemplate.postForObject(urlFactory.resultFeatureStat(resultSetId), httpEntity, ResultFeatureStatDTO[].class);
             if (res == null) {
                 throw new ResultFeatureStatUnresolvableException("ResultFeatureStat could not be converted");
             }
@@ -198,7 +199,7 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
     public ResultFeatureStatDTO getResultFeatureStat(long resultSetId, long resultFeatureStatId) throws ResultFeatureStatUnresolvableException {
         try {
             HttpEntity<?> httpEntity = new HttpEntity<>(makeHttpHeaders());
-            var resultFeatureStat = restTemplate.exchange(UrlFactory.resultFeatureStatByFeatureStatId(resultSetId, resultFeatureStatId), HttpMethod.GET, httpEntity, ResultFeatureStatDTO.class);
+            var resultFeatureStat = restTemplate.exchange(urlFactory.resultFeatureStatByFeatureStatId(resultSetId, resultFeatureStatId), HttpMethod.GET, httpEntity, ResultFeatureStatDTO.class);
             if (resultFeatureStat.getStatusCode().isError()) {
                 throw new ResultFeatureStatUnresolvableException("ResultFeatureStat could not be converted");
             }
@@ -214,7 +215,7 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
     public ResultSetDTO getResultSet(long resultSetId) throws ResultSetUnresolvableException {
         try {
             HttpEntity<?> httpEntity = new HttpEntity<>(makeHttpHeaders());
-            var resultSet = restTemplate.exchange(UrlFactory.resultSet(resultSetId), HttpMethod.GET, httpEntity, ResultSetDTO.class);
+            var resultSet = restTemplate.exchange(urlFactory.resultSet(resultSetId), HttpMethod.GET, httpEntity, ResultSetDTO.class);
             if (resultSet.getStatusCode().isError()) {
                 throw new ResultSetUnresolvableException("Error while fetching ResultSet");
             }
@@ -228,7 +229,7 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
 
     @Override
     public ResultSetDTO getLatestResultSetByPlateId(long plateId) throws ResultSetUnresolvableException {
-        var resultSet = restTemplate.exchange(UrlFactory.latestResultSetByPlateId(plateId), HttpMethod.GET, new HttpEntity<>(makeHttpHeaders()), ResultSetDTO[].class, plateId);
+        var resultSet = restTemplate.exchange(urlFactory.latestResultSetByPlateId(plateId), HttpMethod.GET, new HttpEntity<>(makeHttpHeaders()), ResultSetDTO[].class, plateId);
 
         if (resultSet.getStatusCode().isError()) {
             throw new ResultSetUnresolvableException("ResultSet could not be converted");
@@ -240,7 +241,7 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
     @Override
     public ResultSetDTO getLatestResultSetByPlateIdAndMeasId(long plateId, long measId) throws ResultSetUnresolvableException {
         HttpEntity<?> httpEntity = new HttpEntity<>(makeHttpHeaders());
-        var resultSet = restTemplate.exchange(UrlFactory.latestResultSetByPlateIdAndMeasId(plateId, measId), HttpMethod.GET, httpEntity, ResultSetDTO[].class, plateId, measId);
+        var resultSet = restTemplate.exchange(urlFactory.latestResultSetByPlateIdAndMeasId(plateId, measId), HttpMethod.GET, httpEntity, ResultSetDTO[].class, plateId, measId);
 
         if (resultSet.getStatusCode().isError()) {
             throw new ResultSetUnresolvableException("ResultSet could not be converted");
@@ -252,7 +253,7 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
     @Override
     public ResultSetDTO getLatestResultSetByPlateIdAndProtocolId(long plateId, long protocolId) throws ResultSetUnresolvableException {
         HttpEntity<?> httpEntity = new HttpEntity<>(makeHttpHeaders());
-        var resultSet = restTemplate.exchange(UrlFactory.latestResultSetByPlateIdAndProtocolId(plateId, protocolId), HttpMethod.GET, httpEntity, ResultSetDTO[].class, plateId, protocolId);
+        var resultSet = restTemplate.exchange(urlFactory.latestResultSetByPlateIdAndProtocolId(plateId, protocolId), HttpMethod.GET, httpEntity, ResultSetDTO[].class, plateId, protocolId);
 
         if (resultSet.getStatusCode().isError()) {
             throw new ResultSetUnresolvableException("ResultSet could not be converted");
@@ -270,7 +271,7 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
 
             HttpEntity<?> httpEntity = new HttpEntity<>(makeHttpHeaders());
             do {
-                var resultSet = restTemplate.exchange(UrlFactory.resultSet(outcome, currentPage), HttpMethod.GET, httpEntity, PAGED_RESULTSET_TYPE);
+                var resultSet = restTemplate.exchange(urlFactory.resultSet(outcome, currentPage), HttpMethod.GET, httpEntity, PAGED_RESULTSET_TYPE);
 
                 if (resultSet.getStatusCode().isError()) {
                     throw new ResultSetUnresolvableException("ResultSet could not be converted");
@@ -298,7 +299,7 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
 
             HttpEntity<?> httpEntity = new HttpEntity<>(makeHttpHeaders());
             do {
-                var resultData = restTemplate.exchange(UrlFactory.resultData(resultSetId, currentPage), HttpMethod.GET, httpEntity, PAGED_RESULTDATA_TYPE);
+                var resultData = restTemplate.exchange(urlFactory.resultData(resultSetId, currentPage), HttpMethod.GET, httpEntity, PAGED_RESULTDATA_TYPE);
 
                 if (resultData.getStatusCode().isError()) {
                     throw new ResultDataUnresolvableException("ResultData could not be converted");
@@ -326,7 +327,7 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
 
             HttpEntity<?> httpEntity = new HttpEntity<>(makeHttpHeaders());
             do {
-                var resultFeatures = restTemplate.exchange(UrlFactory.resultFeatureStat(resultSetId, currentPage), HttpMethod.GET, httpEntity, PAGED_RESULT_FEATURE_STAT_TYPE);
+                var resultFeatures = restTemplate.exchange(urlFactory.resultFeatureStat(resultSetId, currentPage), HttpMethod.GET, httpEntity, PAGED_RESULT_FEATURE_STAT_TYPE);
 
                 if (resultFeatures.getStatusCode().isError()) {
                     throw new ResultFeatureStatUnresolvableException("ResultFeatureStat could not be converted");
