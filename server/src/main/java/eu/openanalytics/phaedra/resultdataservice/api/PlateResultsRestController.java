@@ -44,7 +44,7 @@ import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
 import eu.openanalytics.phaedra.resultdataservice.model.ResultData;
 import eu.openanalytics.phaedra.resultdataservice.service.ModelMapper;
 import eu.openanalytics.phaedra.resultdataservice.service.ResultDataService;
-import eu.openanalytics.phaedra.resultdataservice.service.ResultFeatureStatService;
+import eu.openanalytics.phaedra.resultdataservice.service.FeatureStatService;
 import eu.openanalytics.phaedra.resultdataservice.service.ResultSetService;
 import eu.openanalytics.phaedra.util.exceptionhandling.UserVisibleException;
 import eu.openanalytics.phaedra.util.exceptionhandling.UserVisibleExceptionHandler;
@@ -59,13 +59,13 @@ public class PlateResultsRestController implements UserVisibleExceptionHandler {
 
     private final ResultSetService resultSetService;
     private final ResultDataService resultDataService;
-    private final ResultFeatureStatService resultFeatureStatService;
+    private final FeatureStatService featureStatService;
     private final ModelMapper modelMapper;
 
-    public PlateResultsRestController(ResultSetService resultSetService, ResultDataService resultDataService, ResultFeatureStatService resultFeatureStatService, ModelMapper modelMapper) {
+    public PlateResultsRestController(ResultSetService resultSetService, ResultDataService resultDataService, FeatureStatService featureStatService, ModelMapper modelMapper) {
         this.resultSetService = resultSetService;
         this.resultDataService = resultDataService;
-        this.resultFeatureStatService = resultFeatureStatService;
+        this.featureStatService = featureStatService;
         this.modelMapper = modelMapper;
     }
 
@@ -106,7 +106,7 @@ public class PlateResultsRestController implements UserVisibleExceptionHandler {
             ));
 
         // 3. get ResultFeatureStats for these ResultData and group by ResultSetId and FeatureId (FeatureId is unique for one protocol)
-        var resultFeatureStats = resultFeatureStatService.getResultFeatureStatsByResultIds(resultIds)
+        var resultFeatureStats = featureStatService.getResultFeatureStatsByResultIds(resultIds)
             .stream()
             .collect(Collectors.groupingBy(
                 ResultFeatureStatDTO::getResultSetId,

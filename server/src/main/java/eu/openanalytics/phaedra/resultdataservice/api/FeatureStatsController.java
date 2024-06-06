@@ -50,7 +50,7 @@ import eu.openanalytics.phaedra.resultdataservice.exception.InvalidResultSetIdEx
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultFeatureStatNotFoundException;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetAlreadyCompletedException;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
-import eu.openanalytics.phaedra.resultdataservice.service.ResultFeatureStatService;
+import eu.openanalytics.phaedra.resultdataservice.service.FeatureStatService;
 import eu.openanalytics.phaedra.util.dto.validation.OnCreate;
 import eu.openanalytics.phaedra.util.exceptionhandling.HttpMessageNotReadableExceptionHandler;
 import eu.openanalytics.phaedra.util.exceptionhandling.MethodArgumentNotValidExceptionHandler;
@@ -58,12 +58,12 @@ import eu.openanalytics.phaedra.util.exceptionhandling.UserVisibleExceptionHandl
 
 @RestController
 @Validated
-public class ResultFeatureStatController implements MethodArgumentNotValidExceptionHandler, HttpMessageNotReadableExceptionHandler, UserVisibleExceptionHandler {
+public class FeatureStatsController implements MethodArgumentNotValidExceptionHandler, HttpMessageNotReadableExceptionHandler, UserVisibleExceptionHandler {
 
-    private final ResultFeatureStatService resultFeatureStatService;
+    private final FeatureStatService featureStatService;
 
-    public ResultFeatureStatController(ResultFeatureStatService resultFeatureStatService) {
-        this.resultFeatureStatService = resultFeatureStatService;
+    public FeatureStatsController(FeatureStatService featureStatService) {
+        this.featureStatService = featureStatService;
     }
 
     @PostMapping("/resultsets/{resultSetId}/resultfeaturestats")
@@ -71,7 +71,7 @@ public class ResultFeatureStatController implements MethodArgumentNotValidExcept
     @ResponseStatus(HttpStatus.CREATED)
     @Validated(OnCreate.class)
     public List<ResultFeatureStatDTO> createResultFeatureStat(@PathVariable long resultSetId, @RequestBody @Validated(OnCreate.class) ResultFeatureStatDTOList resultFeatureStatDTOList) throws ResultSetNotFoundException, ResultSetAlreadyCompletedException, DuplicateResultFeatureStatException {
-        return resultFeatureStatService.create(resultSetId, resultFeatureStatDTOList.list);
+        return featureStatService.create(resultSetId, resultFeatureStatDTOList.list);
     }
 
     @GetMapping("/resultsets/{resultSetId}/resultfeaturestats")
@@ -82,9 +82,9 @@ public class ResultFeatureStatController implements MethodArgumentNotValidExcept
                                                               @RequestParam(name = "featureId", required = false) Integer featureId) throws ResultSetNotFoundException {
         Page<ResultFeatureStatDTO> pages;
         if (featureId == null) {
-            pages = resultFeatureStatService.getPagedResultFeatureStats(resultSetId, page, pageSize);
+            pages = featureStatService.getPagedResultFeatureStats(resultSetId, page, pageSize);
         } else {
-            pages = resultFeatureStatService.getPagedResultFeatureStatByFeatureId(resultSetId, featureId, page, pageSize);
+            pages = featureStatService.getPagedResultFeatureStatByFeatureId(resultSetId, featureId, page, pageSize);
         }
         return PageDTO.map(pages);
     }
@@ -92,14 +92,14 @@ public class ResultFeatureStatController implements MethodArgumentNotValidExcept
     @GetMapping("/resultsets/{resultSetId}/resultfeaturestats/{resultFeatureStatId}")
     @ResponseBody
     public ResultFeatureStatDTO getResultFeatureStat(@PathVariable long resultSetId, @PathVariable long resultFeatureStatId) throws ResultSetNotFoundException, ResultFeatureStatNotFoundException {
-        return resultFeatureStatService.getResultFeatureStat(resultSetId, resultFeatureStatId);
+        return featureStatService.getResultFeatureStat(resultSetId, resultFeatureStatId);
     }
 
     @DeleteMapping("/resultsets/{resultSetId}/resultfeaturestats/{resultFeatureStatId}")
     @ResponseBody
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteResultFeatureStat(@PathVariable long resultSetId, @PathVariable long resultFeatureStatId) throws ResultSetNotFoundException, InvalidResultSetIdException, ResultSetAlreadyCompletedException, ResultFeatureStatNotFoundException {
-        resultFeatureStatService.delete(resultSetId, resultFeatureStatId);
+        featureStatService.delete(resultSetId, resultFeatureStatId);
     }
 
     /**

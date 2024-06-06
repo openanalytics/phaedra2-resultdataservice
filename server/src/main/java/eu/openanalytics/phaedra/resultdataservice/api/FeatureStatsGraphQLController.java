@@ -23,7 +23,7 @@ package eu.openanalytics.phaedra.resultdataservice.api;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultFeatureStatDTO;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultFeatureStatNotFoundException;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
-import eu.openanalytics.phaedra.resultdataservice.service.ResultFeatureStatService;
+import eu.openanalytics.phaedra.resultdataservice.service.FeatureStatService;
 import eu.openanalytics.phaedra.util.exceptionhandling.HttpMessageNotReadableExceptionHandler;
 import eu.openanalytics.phaedra.util.exceptionhandling.MethodArgumentNotValidExceptionHandler;
 import eu.openanalytics.phaedra.util.exceptionhandling.UserVisibleExceptionHandler;
@@ -35,29 +35,29 @@ import org.springframework.stereotype.Controller;
 import java.util.List;
 
 @Controller
-public class ResultFeatureStatGraphQLController implements MethodArgumentNotValidExceptionHandler, HttpMessageNotReadableExceptionHandler, UserVisibleExceptionHandler {
+public class FeatureStatsGraphQLController implements MethodArgumentNotValidExceptionHandler, HttpMessageNotReadableExceptionHandler, UserVisibleExceptionHandler {
 
-    private final ResultFeatureStatService resultFeatureStatService;
+    private final FeatureStatService featureStatService;
 
-    public ResultFeatureStatGraphQLController(ResultFeatureStatService resultFeatureStatService) {
-        this.resultFeatureStatService = resultFeatureStatService;
+    public FeatureStatsGraphQLController(FeatureStatService featureStatService) {
+        this.featureStatService = featureStatService;
     }
 
     @QueryMapping
     public List<ResultFeatureStatDTO> resultSetFeatureStats(@Argument long resultSetId) throws ResultSetNotFoundException {
-        List<ResultFeatureStatDTO> result = resultFeatureStatService.getResultSetFeatureStats(resultSetId);
+        List<ResultFeatureStatDTO> result = featureStatService.getResultSetFeatureStats(resultSetId);
         return result;
     }
 
     @QueryMapping
     public ResultFeatureStatDTO resultFeatureStat(@Argument long resultSetId, @Argument long resultFeatureStatId) throws ResultSetNotFoundException, ResultFeatureStatNotFoundException {
-        ResultFeatureStatDTO result = resultFeatureStatService.getResultFeatureStat(resultSetId, resultFeatureStatId);
+        ResultFeatureStatDTO result = featureStatService.getResultFeatureStat(resultSetId, resultFeatureStatId);
         return result;
     }
 
     @QueryMapping
-    public List<ResultFeatureStatDTO> featureStatsByResultSetId(@Argument long resultSetId, @Argument String statName, @Argument String wellType) throws ResultSetNotFoundException, ResultFeatureStatNotFoundException {
-        List<ResultFeatureStatDTO> result = resultFeatureStatService.getResultFeatureStats(resultSetId, statName, Optional.ofNullable(wellType));
+    public List<ResultFeatureStatDTO> featureStatsByResultSetId(@Argument long resultSetId, @Argument String statName, @Argument List<String> wellTypes) throws ResultSetNotFoundException, ResultFeatureStatNotFoundException {
+        List<ResultFeatureStatDTO> result = featureStatService.getResultFeatureStats(resultSetId, statName, wellTypes);
         return result;
     }
 }
