@@ -63,4 +63,6 @@ public interface ResultDataServiceClient {
     List<ResultDataDTO> getResultData(long resultSetId) throws ResultDataUnresolvableException;
 
     List<ResultFeatureStatDTO> getResultFeatureStat(long resultSetId) throws ResultFeatureStatUnresolvableException;
+
+    List<ResultFeatureStatDTO> getLatestResultFeatureStatsForPlateId(long plateId) throws ResultFeatureStatUnresolvableException;
 }
