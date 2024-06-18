@@ -18,7 +18,7 @@
  * You should have received a copy of the Apache License
  * along with this program.  If not, see <http://www.apache.org/licenses/>
  */
-package eu.openanalytics.phaedra.resultdataservice.model;
+package eu.openanalytics.phaedra.resultdataservice.record;
 
-public record WellData(long wellId, String wellType, int row, int column) {
+public record PlateResultSetData(PlateData plate, ProtocolData protocol) {
 }
