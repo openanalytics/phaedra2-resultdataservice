@@ -31,7 +31,7 @@ import eu.openanalytics.phaedra.resultdataservice.dto.ResultDataDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultDataNotFoundException;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
-import eu.openanalytics.phaedra.resultdataservice.model.*;
+import eu.openanalytics.phaedra.resultdataservice.record.*;
 import eu.openanalytics.phaedra.resultdataservice.service.ResultDataService;
 import eu.openanalytics.phaedra.resultdataservice.service.ResultSetService;
 import org.slf4j.Logger;

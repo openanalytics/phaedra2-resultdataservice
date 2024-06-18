@@ -18,9 +18,7 @@
  * You should have received a copy of the Apache License
  * along with this program.  If not, see <http://www.apache.org/licenses/>
  */
-package eu.openanalytics.phaedra.resultdataservice.model;
+package eu.openanalytics.phaedra.resultdataservice.record;
 
-import java.util.List;
-
-public record PlateData(long plateId, String barcode, List<WellData> wells) {
+public record WellData(long wellId, String wellType, int row, int column) {
 }
