@@ -20,15 +20,17 @@
  */
 package eu.openanalytics.phaedra.resultdataservice.repository;
 
-import eu.openanalytics.phaedra.resultdataservice.model.ResultFeatureStat;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.PagingAndSortingRepository;
-
 import java.util.Collection;
 import java.util.List;
 
-public interface ResultFeatureStatRepository extends PagingAndSortingRepository<ResultFeatureStat, Long> {
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
+
+import eu.openanalytics.phaedra.resultdataservice.model.ResultFeatureStat;
+
+public interface ResultFeatureStatRepository extends PagingAndSortingRepository<ResultFeatureStat, Long>, CrudRepository<ResultFeatureStat, Long> {
 
     List<ResultFeatureStat> findAllByResultSetId(long resultSetId);
 

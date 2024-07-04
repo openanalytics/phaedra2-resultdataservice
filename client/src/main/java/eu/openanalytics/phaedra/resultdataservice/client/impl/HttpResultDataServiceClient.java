@@ -53,10 +53,10 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
     private final PhaedraRestTemplate restTemplate;
     private final IAuthorizationService authService;
     private final UrlFactory urlFactory;
-    
+
     private static final String PROP_BASE_URL = "phaedra.resultdata-service.base-url";
     private static final String DEFAULT_BASE_URL = "http://phaedra-resultdata-service:8080/phaedra/resultdata-service";
-    
+
     private final static ParameterizedTypeReference<PageDTO<ResultSetDTO>> PAGED_RESULTSET_TYPE = new ParameterizedTypeReference<>() {};
     private final static ParameterizedTypeReference<PageDTO<ResultDataDTO>> PAGED_RESULTDATA_TYPE = new ParameterizedTypeReference<>() {};
     private final static ParameterizedTypeReference<PageDTO<ResultFeatureStatDTO>> PAGED_RESULT_FEATURE_STAT_TYPE = new ParameterizedTypeReference<>() {};
@@ -344,6 +344,21 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
         } catch (HttpClientErrorException ex) {
             throw new ResultFeatureStatUnresolvableException("Error while fetching ResultFeatureStat");
         }
+    }
+
+    @Override
+    public List<ResultFeatureStatDTO> getLatestResultFeatureStatsForPlateId(long plateId)
+        throws ResultFeatureStatUnresolvableException {
+        List<ResultFeatureStatDTO> result = new ArrayList<>();
+      try {
+        ResultSetDTO resultSetDTO = getLatestResultSetByPlateId(plateId);
+        if (resultSetDTO != null)
+            result.addAll(getResultFeatureStat(resultSetDTO.getId()));
+      } catch (ResultSetUnresolvableException e) {
+        throw new ResultFeatureStatUnresolvableException(e.getMessage());
+      } finally {
+          return result;
+      }
     }
 
     private HttpHeaders makeHttpHeaders() {

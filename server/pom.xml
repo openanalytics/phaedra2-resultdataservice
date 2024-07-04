@@ -5,7 +5,7 @@
     <parent>
         <groupId>eu.openanalytics.phaedra</groupId>
         <artifactId>phaedra2-resultdataservice</artifactId>
-        <version>2.0.5</version>
+        <version>2.0.6</version>
     </parent>
 
     <artifactId>phaedra2-resultdataservice-server</artifactId>
@@ -13,8 +13,8 @@
 
     <properties>
         <docker.imageName>openanalytics/${project.parent.artifactId}</docker.imageName>
-        <phaedra2-protocolservice-client.version>2.0.5</phaedra2-protocolservice-client.version>
-        <phaedra2-plateservice-client.version>2.0.5</phaedra2-plateservice-client.version>
+        <phaedra2-protocolservice-client.version>2.0.6</phaedra2-protocolservice-client.version>
+        <phaedra2-plateservice-client.version>2.0.6</phaedra2-plateservice-client.version>
     </properties>
 
     <dependencies>
@@ -22,7 +22,7 @@
         <dependency>
             <groupId>eu.openanalytics.phaedra</groupId>
             <artifactId>phaedra2-resultdataservice-dto</artifactId>
-            <version>2.0.5</version>
+            <version>2.0.6</version>
         </dependency>
         <dependency>
             <groupId>eu.openanalytics.phaedra</groupId>
