@@ -20,6 +20,14 @@
  */
 package eu.openanalytics.phaedra.resultdataservice.service;
 
+import java.util.List;
+
+import org.modelmapper.Conditions;
+import org.modelmapper.Converter;
+import org.modelmapper.convention.NameTransformers;
+import org.modelmapper.convention.NamingConventions;
+import org.springframework.stereotype.Service;
+
 import eu.openanalytics.phaedra.resultdataservice.dto.ErrorDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultDataDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultFeatureStatDTO;
@@ -27,14 +35,6 @@ import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
 import eu.openanalytics.phaedra.resultdataservice.model.ResultData;
 import eu.openanalytics.phaedra.resultdataservice.model.ResultFeatureStat;
 import eu.openanalytics.phaedra.resultdataservice.model.ResultSet;
-import org.modelmapper.Conditions;
-import org.modelmapper.Converter;
-import org.modelmapper.config.Configuration;
-import org.modelmapper.convention.NameTransformers;
-import org.modelmapper.convention.NamingConventions;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ModelMapper {
@@ -42,33 +42,30 @@ public class ModelMapper {
     private final org.modelmapper.ModelMapper modelMapper = new org.modelmapper.ModelMapper();
 
     public ModelMapper() {
-        Configuration builderConfiguration = modelMapper.getConfiguration().copy()
-            .setDestinationNameTransformer(NameTransformers.builder())
-            .setDestinationNamingConvention(NamingConventions.builder());
-
-        modelMapper.createTypeMap(ResultDataDTO.class, ResultData.ResultDataBuilder.class, builderConfiguration)
+        modelMapper.getConfiguration().setDestinationNamingConvention(NamingConventions.builder());
+        modelMapper.getConfiguration().setDestinationNameTransformer(NameTransformers.builder());
+        
+        modelMapper.createTypeMap(ResultDataDTO.class, ResultData.ResultDataBuilder.class)
             .setPropertyCondition(Conditions.isNotNull());
 
-        modelMapper.createTypeMap(ResultData.class, ResultDataDTO.ResultDataDTOBuilder.class, builderConfiguration)
+        modelMapper.createTypeMap(ResultData.class, ResultDataDTO.ResultDataDTOBuilder.class)
             .setPropertyCondition(Conditions.isNotNull())
             .addMappings(mapper -> mapper.skip(ResultDataDTO.ResultDataDTOBuilder::resultFeatureStats));
 
-        modelMapper.createTypeMap(ResultSetDTO.class, ResultSet.ResultSetBuilder.class, builderConfiguration)
+        modelMapper.emptyTypeMap(ResultSetDTO.class, ResultSet.ResultSetBuilder.class)
             .setPropertyCondition(Conditions.isNotNull())
-            .addMappings(mapper -> mapper.using((Converter<List<ErrorDTO>, ResultSet.ErrorHolder>) context -> {
-                if (context.getSource() != null) {
-                    return new ResultSet.ErrorHolder(context.getSource());
-                }
-                return null;
-            }).map(ResultSetDTO::getErrors, ResultSet.ResultSetBuilder::errors));
+            .addMappings(mapper -> mapper
+            		.using((Converter<List<ErrorDTO>, ResultSet.ErrorHolder>) context -> { return (context.getSource() == null) ? null : new ResultSet.ErrorHolder(context.getSource()); })
+            		.map(ResultSetDTO::getErrors, ResultSet.ResultSetBuilder::errors))
+            .implicitMappings();
 
-        modelMapper.createTypeMap(ResultSet.class, ResultSetDTO.ResultSetDTOBuilder.class, builderConfiguration)
+        modelMapper.createTypeMap(ResultSet.class, ResultSetDTO.ResultSetDTOBuilder.class)
             .setPropertyCondition(Conditions.isNotNull());
 
-        modelMapper.createTypeMap(ResultFeatureStat.class, ResultFeatureStatDTO.ResultFeatureStatDTOBuilder.class, builderConfiguration)
+        modelMapper.createTypeMap(ResultFeatureStat.class, ResultFeatureStatDTO.ResultFeatureStatDTOBuilder.class)
             .setPropertyCondition(Conditions.isNotNull());
 
-        modelMapper.createTypeMap(ResultFeatureStatDTO.class, ResultFeatureStat.ResultFeatureStatBuilder.class, builderConfiguration)
+        modelMapper.createTypeMap(ResultFeatureStatDTO.class, ResultFeatureStat.ResultFeatureStatBuilder.class)
             .setPropertyCondition(Conditions.isNotNull());
 
         modelMapper.validate(); // ensure that objects can be mapped
