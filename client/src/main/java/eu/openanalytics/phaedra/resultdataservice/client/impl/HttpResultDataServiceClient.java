@@ -347,6 +347,12 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
     }
 
     @Override
+    public List<ResultFeatureStatDTO> getResultFeatureStatByResultSetIdAndFeatureId(long resultSetId, long featureId) throws ResultFeatureStatUnresolvableException {
+        List<ResultFeatureStatDTO> result = getResultFeatureStat(resultSetId);
+        return result.stream().filter(rfs -> rfs.getFeatureId() == featureId).toList();
+    }
+
+    @Override
     public List<ResultFeatureStatDTO> getLatestResultFeatureStatsForPlateId(long plateId)
         throws ResultFeatureStatUnresolvableException {
         List<ResultFeatureStatDTO> result = new ArrayList<>();
@@ -356,9 +362,23 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
             result.addAll(getResultFeatureStat(resultSetDTO.getId()));
       } catch (ResultSetUnresolvableException e) {
         throw new ResultFeatureStatUnresolvableException(e.getMessage());
-      } finally {
-          return result;
       }
+
+      return result;
+    }
+
+    @Override
+    public List<ResultFeatureStatDTO> getLatestResultFeatureStatsForPlateIdAndFeatureId(long plateId, long featureId) throws ResultFeatureStatUnresolvableException {
+        List<ResultFeatureStatDTO> result = new ArrayList<>();
+        try {
+            ResultSetDTO resultSetDTO = getLatestResultSetByPlateId(plateId);
+            if (resultSetDTO != null)
+                result.addAll(getResultFeatureStatByResultSetIdAndFeatureId(resultSetDTO.getId(), featureId));
+        } catch (ResultSetUnresolvableException e) {
+            throw new ResultFeatureStatUnresolvableException(e.getMessage());
+        }
+
+        return result;
     }
 
     private HttpHeaders makeHttpHeaders() {
