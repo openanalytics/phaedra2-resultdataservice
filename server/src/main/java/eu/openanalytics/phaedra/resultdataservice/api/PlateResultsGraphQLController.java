@@ -21,7 +21,7 @@
 package eu.openanalytics.phaedra.resultdataservice.api;
 
 import eu.openanalytics.phaedra.plateservice.client.PlateServiceClient;
-import eu.openanalytics.phaedra.plateservice.client.exception.PlateUnresolvableException;
+import eu.openanalytics.phaedra.plateservice.client.exception.UnresolvableObjectException;
 import eu.openanalytics.phaedra.plateservice.dto.PlateDTO;
 import eu.openanalytics.phaedra.plateservice.dto.WellDTO;
 import eu.openanalytics.phaedra.protocolservice.client.ProtocolServiceClient;
@@ -64,7 +64,7 @@ public class PlateResultsGraphQLController {
     }
 
     @QueryMapping
-    public PlateResultSetData latestPlateResultByPlateId(@Argument long plateId) throws ResultSetNotFoundException, PlateUnresolvableException, ProtocolUnresolvableException {
+    public PlateResultSetData latestPlateResultByPlateId(@Argument long plateId) throws ResultSetNotFoundException, UnresolvableObjectException, ProtocolUnresolvableException {
         ResultSetDTO resultSetDTO = resultSetService.getLatestResultSetByPlateId(plateId, Optional.empty());
 
         PlateDTO plateDTO = plateServiceClient.getPlate(plateId);
@@ -126,7 +126,7 @@ public class PlateResultsGraphQLController {
     }
 
     @QueryMapping
-    public List<FeatureValue> featureValuesByPlateIdAndFeatureIdAndProtocolId(@Argument long plateId, @Argument long featureId, @Argument long protocolId) throws ResultSetNotFoundException, ResultDataNotFoundException, PlateUnresolvableException {
+    public List<FeatureValue> featureValuesByPlateIdAndFeatureIdAndProtocolId(@Argument long plateId, @Argument long featureId, @Argument long protocolId) throws ResultSetNotFoundException, ResultDataNotFoundException, UnresolvableObjectException {
         List<ResultSetDTO> latestResultSets = resultSetService.getLatestResultSetsByPlateId(plateId, Optional.empty(), Optional.of(protocolId));
         ResultSetDTO latestResultSet = latestResultSets.get(0);
 
