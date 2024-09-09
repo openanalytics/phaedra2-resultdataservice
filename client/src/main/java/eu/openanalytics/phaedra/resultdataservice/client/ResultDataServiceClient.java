@@ -39,12 +39,12 @@ public interface ResultDataServiceClient {
 
     ResultSetDTO completeResultDataSet(long resultSetId, StatusCode outcome, List<ErrorDTO> errors, String errorsText) throws ResultSetUnresolvableException;
 
-    ResultDataDTO addResultData(long resultSetId, long featureId, float[] values, StatusCode statusCode, String statusMessage, Integer exitCode) throws ResultDataUnresolvableException;
+    ResultDataDTO addResultData(long resultSetId, long featureId, float[] values, StatusCode statusCode, String statusMessage) throws ResultDataUnresolvableException;
 
     ResultDataDTO getResultData(long resultSetId, long featureId) throws ResultDataUnresolvableException;
 
     ResultFeatureStatDTO createResultFeatureStat(long resultSetId, long featureId, long featureStatId, Optional<Float> value, String statisticName, String welltype,
-                                                 StatusCode statusCode, String statusMessage, Integer exitCode) throws ResultFeatureStatUnresolvableException;
+                                                 StatusCode statusCode, String statusMessage) throws ResultFeatureStatUnresolvableException;
 
     List<ResultFeatureStatDTO> createResultFeatureStats(long resultSetId, List<ResultFeatureStatDTO> resultFeatureStats) throws ResultFeatureStatUnresolvableException;
 

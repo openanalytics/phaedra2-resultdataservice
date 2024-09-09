@@ -20,22 +20,23 @@
  */
 package eu.openanalytics.phaedra.resultdataservice;
 
-import eu.openanalytics.phaedra.resultdataservice.dto.ResultDataDTO;
-import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
-import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
-import eu.openanalytics.phaedra.resultdataservice.support.AbstractIntegrationTest;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashMap;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.HashMap;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import eu.openanalytics.phaedra.resultdataservice.dto.ResultDataDTO;
+import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
+import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
+import eu.openanalytics.phaedra.resultdataservice.support.AbstractIntegrationTest;
 
 @Disabled //TODO: Fix tests
 public class ResultDataIntegrationTest extends AbstractIntegrationTest {
@@ -55,7 +56,6 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
 
         // 2. create simple ResultData
         var input2 = ResultDataDTO.builder()
-            .exitCode(0)
             .statusCode(StatusCode.SUCCESS)
             .statusMessage("Ok")
             .featureId(42L)
@@ -110,7 +110,6 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
 
         // 3. create simple ResultData
         var input3 = ResultDataDTO.builder()
-            .exitCode(0)
             .statusCode(StatusCode.SUCCESS)
             .statusMessage("Ok")
             .featureId(42L)
@@ -136,7 +135,6 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
 
         // 2. create simple ResultData
         var input2 = ResultDataDTO.builder()
-            .exitCode(0)
             .statusCode(StatusCode.SUCCESS)
             .statusMessage("Ok")
             .featureId(42L)
@@ -173,7 +171,6 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
 
         // 2. create simple ResultData
         var input2 = ResultDataDTO.builder()
-            .exitCode(0)
             .statusCode(StatusCode.SUCCESS)
             .statusMessage("Ok")
             .featureId(42L)
@@ -202,7 +199,6 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         // 2. create 25 ResultDatas for ResultSet 1
         for (int i = 1; i <= 25; i++) {
             var input = ResultDataDTO.builder()
-                .exitCode(0)
                 .statusCode(StatusCode.SUCCESS)
                 .statusMessage("Ok")
                 .featureId(42L)
@@ -214,7 +210,6 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         // 3. create 15 ResultDatas for ResultSet 2
         for (int i = 1; i <= 15; i++) {
             var input = ResultDataDTO.builder()
-                .exitCode(0)
                 .statusCode(StatusCode.SUCCESS)
                 .statusMessage("Ok")
                 .featureId(32L)
@@ -226,56 +221,56 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         // 4. query first page of ResultSet 1
         var res4 = performRequest(get("/resultset/1/resultdata"), HttpStatus.OK);
         Assertions.assertEquals("{\"data\":[" +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":1,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":2,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":3,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":4,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":5,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":6,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":7,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":8,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":9,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":10,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":11,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":12,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":13,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":14,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":15,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":16,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":17,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":18,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":19,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":20,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}]," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":1,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":2,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":3,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":4,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":5,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":6,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":7,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":8,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":9,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":10,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":11,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":12,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":13,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":14,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":15,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":16,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":17,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":18,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":19,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":20,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}]," +
             "\"status\":{\"first\":true,\"last\":false,\"totalElements\":25,\"totalPages\":2}}", res4);
 
         // 5. query second page of ResultSet 1
         var res5 = performRequest(get("/resultset/1/resultdata?page=1"), HttpStatus.OK);
         Assertions.assertEquals("{\"data\":[" +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":21,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":22,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":23,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":24,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":25,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}" +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":21,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":22,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":23,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":24,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":25,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}" +
             "],\"status\":{\"first\":false,\"last\":true,\"totalElements\":25,\"totalPages\":2}}", res5);
 
         // 6. query first page of ResultSet 2
         var res6 = performRequest(get("/resultset/2/resultdata"), HttpStatus.OK);
         Assertions.assertEquals("{\"data\":[" +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":32,\"id\":26,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":32,\"id\":27,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":32,\"id\":28,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":32,\"id\":29,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":32,\"id\":30,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":32,\"id\":31,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":32,\"id\":32,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":32,\"id\":33,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":32,\"id\":34,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":32,\"id\":35,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":32,\"id\":36,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":32,\"id\":37,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":32,\"id\":38,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":32,\"id\":39,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":32,\"id\":40,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}" +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":32,\"id\":26,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":32,\"id\":27,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":32,\"id\":28,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":32,\"id\":29,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":32,\"id\":30,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":32,\"id\":31,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":32,\"id\":32,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":32,\"id\":33,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":32,\"id\":34,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":32,\"id\":35,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":32,\"id\":36,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":32,\"id\":37,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":32,\"id\":38,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":32,\"id\":39,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":32,\"id\":40,\"resultSetId\":2,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}" +
             "],\"status\":{\"first\":true,\"last\":true,\"totalElements\":15,\"totalPages\":1}}", res6);
 
         // 7. query first page of ResultSet 2
@@ -285,26 +280,26 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         // 8. query first page of ResultSet 1
         var res8 = performRequest(get("/resultset/1/resultdata?featureId=42"), HttpStatus.OK);
         Assertions.assertEquals("{\"data\":[" +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":1,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":2,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":3,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":4,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":5,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":6,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":7,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":8,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":9,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":10,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":11,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":12,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":13,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":14,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":15,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":16,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":17,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":18,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":19,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
-            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"exitCode\":0,\"featureId\":42,\"id\":20,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}]," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":1,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":2,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":3,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":4,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":5,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":6,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":7,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":8,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":9,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":10,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":11,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":12,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":13,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":14,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":15,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":16,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":17,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":18,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":19,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}," +
+            "{\"createdTimestamp\":\"2042-12-31T23:59:59\",\"featureId\":42,\"id\":20,\"resultSetId\":1,\"statusCode\":\"SUCCESS\",\"statusMessage\":\"Ok\",\"values\":[1.0,2.0,3.0,5.0,8.0]}]," +
             "\"status\":{\"first\":true,\"last\":false,\"totalElements\":25,\"totalPages\":2}}", res8);
 
         // 9. gey by non-existing featureId
@@ -377,7 +372,6 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
             performRequest(post("/resultset", input), HttpStatus.CREATED, ResultSetDTO.class);
 
             var input2 = ResultDataDTO.builder()
-                .exitCode(0)
                 .statusCode(StatusCode.SUCCESS)
                 .statusMessage("Ok")
                 .featureId(42L)
@@ -436,7 +430,6 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         var input2 = ResultDataDTO.builder().build();
         var res2 = performRequest(post("/resultset/1/resultdata", input2), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{" +
-            "\"exitCode\":\"ExitCode is mandatory\"," +
             "\"featureId\":\"FeatureId is mandatory\"," +
             "\"statusCode\":\"StatusCode is mandatory\"," +
             "\"statusMessage\":\"StatusMessage is mandatory\"," +
@@ -448,7 +441,6 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
             .resultSetId(1L)
             .id(10L)
             .createdTimestamp(LocalDateTime.now())
-            .exitCode(0)
             .statusCode(StatusCode.SUCCESS)
             .statusMessage("Ok")
             .featureId(42L)
@@ -462,20 +454,8 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
             "\"resultSetId\":\"ResultSetId must be specified in URL and not repeated in body\"" +
             "},\"status\":\"error\"}", res3);
 
-        // 4. validate exitcode
-        var input4 = ResultDataDTO.builder()
-            .exitCode(260)
-            .statusCode(StatusCode.SUCCESS)
-            .statusMessage("Ok")
-            .featureId(42L)
-            .values(new float[]{1.0F, 2.0F, 3.0F, 5.0F, 8.0F})
-            .build();
-        var res4 = performRequest(post("/resultset/1/resultdata", input4), HttpStatus.BAD_REQUEST);
-        Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"exitCode\":\"ExitCode must be in the range [0-255]\"},\"status\":\"error\"}", res4);
-
-        // 5. too long status message
+        // 4. too long status message
         var input5 = ResultDataDTO.builder()
-            .exitCode(255)
             .statusCode(StatusCode.SUCCESS)
             .statusMessage("a".repeat(260))
             .featureId(42L)
@@ -485,9 +465,8 @@ public class ResultDataIntegrationTest extends AbstractIntegrationTest {
         var res5 = performRequest(post("/resultset/1/resultdata", input5), HttpStatus.BAD_REQUEST);
         Assertions.assertEquals("{\"error\":\"Validation error\",\"malformed_fields\":{\"statusMessage\":\"StatusMessage may only contain 255 characters\"},\"status\":\"error\"}", res5);
 
-        // 6. invalid status message
+        // 5. invalid status message
         var res6 = performRequest(post("/resultset/1/resultdata", new HashMap<>() {{
-            put("exitCode", 10);
             put("statusCode", "INVALID_STATUSCODE");
             put("statusMessage", "test");
             put("featureId", 42L);

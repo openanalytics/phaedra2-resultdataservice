@@ -111,18 +111,16 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
     }
 
     @Override
-    public ResultDataDTO addResultData(long resultSetId, long featureId, float[] values, StatusCode statusCode, String statusMessage, Integer exitCode) throws ResultDataUnresolvableException {
+    public ResultDataDTO addResultData(long resultSetId, long featureId, float[] values, StatusCode statusCode, String statusMessage) throws ResultDataUnresolvableException {
         Objects.requireNonNull(values, "Values may not be null");
         Objects.requireNonNull(statusCode, "StatusCode may not be null");
         Objects.requireNonNull(statusMessage, "StatusMessage may not be null");
-        Objects.requireNonNull(exitCode, "ExitCode may not be null");
 
         var resultData = ResultDataDTO.builder()
             .featureId(featureId)
             .values(values)
             .statusCode(statusCode)
             .statusMessage(statusMessage)
-            .exitCode(exitCode)
             .build();
 
         HttpEntity<?> httpEntity = new HttpEntity<>(resultData, makeHttpHeaders());
@@ -163,7 +161,7 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
     @Override
     public ResultFeatureStatDTO createResultFeatureStat(long resultSetId, long featureId, long featureStatId,
                                                         Optional<Float> value, String statisticName, String welltype,
-                                                        StatusCode statusCode, String statusMessage, Integer exitCode) throws ResultFeatureStatUnresolvableException {
+                                                        StatusCode statusCode, String statusMessage) throws ResultFeatureStatUnresolvableException {
         return createResultFeatureStats(resultSetId,
             List.of(
                 ResultFeatureStatDTO.builder()
@@ -174,7 +172,6 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
                     .welltype(welltype)
                     .statusCode(statusCode)
                     .statusMessage(statusMessage)
-                    .exitCode(exitCode)
                     .build())
         	).get(0);
     }
