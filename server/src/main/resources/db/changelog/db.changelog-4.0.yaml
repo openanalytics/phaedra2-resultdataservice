@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: remove_exitcodes
+      author: fmichielssen
+      changes:
+        - dropColumn:
+            columnName: exit_code
+            tableName: result_data
+        - dropColumn:
+            columnName: exit_code
+            tableName: result_feature_stat
