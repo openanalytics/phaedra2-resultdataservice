@@ -4,14 +4,12 @@ databaseChangeLog:
       author: fmichielssen
       preConditions:
         - onFail: MARK_RAN
-        - not:
-            - columnExists:
-                tableName: result_data
-                columnName: exit_code
-        - not:
-            - columnExists:
-                tableName: result_feature_stat
-                columnName: exit_code
+        - columnExists:
+            tableName: result_data
+            columnName: exit_code
+        - columnExists:
+            tableName: result_feature_stat
+            columnName: exit_code
       changes:
         - dropColumn:
             columnName: exit_code
