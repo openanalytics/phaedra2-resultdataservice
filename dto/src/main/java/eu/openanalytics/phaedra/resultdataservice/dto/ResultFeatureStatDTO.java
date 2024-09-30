@@ -20,8 +20,14 @@
  */
 package eu.openanalytics.phaedra.resultdataservice.dto;
 
-import eu.openanalytics.phaedra.util.dto.validation.OnCreate;
+import java.time.LocalDateTime;
+
+import org.hibernate.validator.constraints.Length;
+
 import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
+import eu.openanalytics.phaedra.util.dto.validation.OnCreate;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,13 +35,6 @@ import lombok.NoArgsConstructor;
 import lombok.Value;
 import lombok.With;
 import lombok.experimental.NonFinal;
-import org.hibernate.validator.constraints.Length;
-
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
-import java.time.LocalDateTime;
 
 @Value
 @Builder(toBuilder = true)
@@ -70,11 +69,6 @@ public class ResultFeatureStatDTO {
     @NotNull(message = "StatusMessage is mandatory", groups = {OnCreate.class})
     @Length(max = 255, message = "StatusMessage may only contain 255 characters", groups = OnCreate.class)
     String statusMessage;
-
-    @NotNull(message = "ExitCode is mandatory", groups = {OnCreate.class})
-    @Min(value = 0, message = "ExitCode must be in the range [0-255]", groups = OnCreate.class)
-    @Max(value = 255, message = "ExitCode must be in the range [0-255]", groups = OnCreate.class)
-    Integer exitCode;
 
     @Null(message = "CreatedTimestamp must be null when creating ResultFeatureSta", groups = {OnCreate.class})
     LocalDateTime createdTimestamp;

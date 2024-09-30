@@ -37,6 +37,7 @@ import java.time.LocalDateTime;
 @NonFinal
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE) // Jackson deserialize compatibility
 public class ErrorDTO {
+	
     LocalDateTime timestamp;
     String exceptionClassName;
     String exceptionMessage;
@@ -49,7 +50,6 @@ public class ErrorDTO {
     String civType;
     String civVariableName;
     String civSource;
-    Integer exitCode;
     String statusMessage;
     Long featureStatId;
     String featureStatName;
@@ -70,9 +70,6 @@ public class ErrorDTO {
         }
         if (getCivType() != null) {
             description.append(String.format(", CivType: [%s], CivSource: [%s], CivVariableName: [%s]", getCivType(), getCivSource(), getCivVariableName()));
-        }
-        if (getExitCode() != null) {
-            description.append(String.format(", ExitCode: [%s]", getExitCode()));
         }
         if (getStatusMessage() != null) {
             description.append(String.format(", StatusMessage: [%s]", getStatusMessage()));
