@@ -23,17 +23,11 @@ package eu.openanalytics.phaedra.resultdataservice.api;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
 import eu.openanalytics.phaedra.resultdataservice.service.ResultSetService;
-import eu.openanalytics.phaedra.util.exceptionhandling.HttpMessageNotReadableExceptionHandler;
-import eu.openanalytics.phaedra.util.exceptionhandling.MethodArgumentNotValidExceptionHandler;
-import eu.openanalytics.phaedra.util.exceptionhandling.MethodArgumentTypeMismatchExceptionHandler;
-import eu.openanalytics.phaedra.util.exceptionhandling.UserVisibleExceptionHandler;
-import org.springframework.graphql.data.method.annotation.Argument;
-import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-
 import java.util.List;
 import java.util.Optional;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.stereotype.Controller;
 
 @Controller
 public class ResultSetGraphQLController {
@@ -45,8 +39,18 @@ public class ResultSetGraphQLController {
     }
 
     @QueryMapping
+    public List<ResultSetDTO> resultSets() {
+        return resultSetService.getResultSets(Optional.empty(), Optional.empty(), Optional.empty());
+    }
+
+    @QueryMapping
     public ResultSetDTO resultSetById(@Argument long resultSetId) throws ResultSetNotFoundException {
         return resultSetService.getResultSetById(resultSetId);
+    }
+
+    @QueryMapping
+    public List<ResultSetDTO> resultSetByIds(@Argument List<Long> resultSetIds) throws ResultSetNotFoundException {
+        return resultSetService.getResultSetByIds(resultSetIds);
     }
 
     @QueryMapping
@@ -55,13 +59,28 @@ public class ResultSetGraphQLController {
     }
 
     @QueryMapping
+    public List<ResultSetDTO> resultSetsByPlateIds(@Argument List<Long> plateIds) throws ResultSetNotFoundException {
+        return resultSetService.getResultSetsByPlateIds(plateIds);
+    }
+
+    @QueryMapping
     public List<ResultSetDTO> resultSetsByProtocolId(@Argument long protocolId) {
         return resultSetService.getResultSets(Optional.of(protocolId), Optional.empty(), Optional.empty());
     }
 
     @QueryMapping
+    public List<ResultSetDTO> resultSetsByProtocolIds(@Argument List<Long> protocolIds) {
+        return resultSetService.getResultSetsByProtocolIds(protocolIds);
+    }
+
+    @QueryMapping
     public List<ResultSetDTO> resultSetsByMeasurementId(@Argument long measurementId) {
         return resultSetService.getResultSets(Optional.empty(), Optional.of(measurementId), Optional.empty());
+    }
+
+    @QueryMapping
+    public List<ResultSetDTO> resultSetsByMeasurementIds(@Argument List<Long> measurementIds) {
+        return resultSetService.getResultSetsByMeasurementIds(measurementIds);
     }
 
     @QueryMapping

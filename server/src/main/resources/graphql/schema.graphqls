@@ -117,9 +117,14 @@ type Query {
     protocolsByExperimentId(experimentId: ID): [ProtocolData]
     featureValuesByPlateIdAndFeatureIdAndProtocolId(plateId: ID, featureId: ID, protocolId: ID): [FeatureValue]
     resultSetById(resultSetId: ID): ResultSetDTO
+    resultSetByIds(resultSetIds: [ID]): [ResultSetDTO]
     resultSetsByPlateId(plateId: ID): [ResultSetDTO]
+    resultSetsByPlateIds(plateIds: [ID]): [ResultSetDTO]
     resultSetsByProtocolId(protocolId: ID): [ResultSetDTO]
+    resultSetsByProtocolIds(protocolIds: [ID]): [ResultSetDTO]
     resultSetsByMeasurementId(measurementId: ID): [ResultSetDTO]
+    resultSetsByMeasurementIds(measurementIds: [ID]): [ResultSetDTO]
+    resultSetsByStatus(status: StatusCode): [ResultSetDTO]
     latestResultSetByPlateId(plateId: ID): ResultSetDTO
     latestResultSetsByPlateIds(plateIds: [ID]): [ResultSetDTO]
     resultSetsByPlateIdAndMeasurementId(plateId: ID, measurementId: ID): [ResultSetDTO]
