@@ -88,7 +88,7 @@ public class ResultDataServiceGraphQLClientImpl implements ResultDataServiceGrap
             resultSetsByPlateId(plateId: %d) {
               %s
             }
-          {
+          }
         """.formatted(plateId, buildGraphQLDocumentBody());
     ResultSetDTO[] results = httpGraphQlClient()
         .document(document)
