@@ -53,8 +53,10 @@ public class ResultDataServiceGraphQLClientImpl implements ResultDataServiceGrap
   @Override
   public ResultSetDTO getResultSet(long resultSetId) {
     String document = """
-          resultSetById(resultSetId: %d) {
-            %s
+          {
+            resultSetById(resultSetId: %d) {
+              %s
+            }
           }
         """.formatted(resultSetId, buildGraphQLDocumentBody());
     return httpGraphQlClient()
@@ -66,8 +68,10 @@ public class ResultDataServiceGraphQLClientImpl implements ResultDataServiceGrap
   @Override
   public List<ResultSetDTO> getResultSets() {
     String document = """
-          resultSets {
-            %s
+          {
+            resultSets {
+              %s
+            }
           }
         """.formatted(buildGraphQLDocumentBody());
     ResultSetDTO[] results = httpGraphQlClient()
@@ -80,9 +84,11 @@ public class ResultDataServiceGraphQLClientImpl implements ResultDataServiceGrap
   @Override
   public List<ResultSetDTO> getResultSetsByPlateId(Long plateId) {
     String document = """
-          resultSetsByPlateId(plateId: %d) {
-            %s
-          }
+          {
+            resultSetsByPlateId(plateId: %d) {
+              %s
+            }
+          {
         """.formatted(plateId, buildGraphQLDocumentBody());
     ResultSetDTO[] results = httpGraphQlClient()
         .document(document)
@@ -94,8 +100,10 @@ public class ResultDataServiceGraphQLClientImpl implements ResultDataServiceGrap
   @Override
   public List<ResultSetDTO> getResultSetsByPlateIds(List<Long> plateIds) {
     String document = """
-          resultSetsByPlateIds(plateIds: %s) {
-            %s
+          {
+            resultSetsByPlateIds(plateIds: %s) {
+              %s
+            }
           }
         """.formatted(plateIds, buildGraphQLDocumentBody());
     ResultSetDTO[] results = httpGraphQlClient()
@@ -108,8 +116,10 @@ public class ResultDataServiceGraphQLClientImpl implements ResultDataServiceGrap
   @Override
   public List<ResultSetDTO> getResultSetsByMeasurementId(Long measurementId) {
     String document = """
-          resultSetsByMeasurementId(measurementId: %d) {
-            %s
+          {
+            resultSetsByMeasurementId(measurementId: %d) {
+              %s
+            }
           }
         """.formatted(measurementId, buildGraphQLDocumentBody());
     ResultSetDTO[] results = httpGraphQlClient()
@@ -122,8 +132,10 @@ public class ResultDataServiceGraphQLClientImpl implements ResultDataServiceGrap
   @Override
   public List<ResultSetDTO> getResultSetsByMeasurementIds(List<Long> measurementIds) {
     String document = """
-          resultSetsByMeasurementIds(measurementIds: %s) {
-            %s
+          {
+            resultSetsByMeasurementIds(measurementIds: %s) {
+              %s
+            }
           }
         """.formatted(measurementIds, buildGraphQLDocumentBody());
     ResultSetDTO[] results = httpGraphQlClient()
@@ -136,8 +148,10 @@ public class ResultDataServiceGraphQLClientImpl implements ResultDataServiceGrap
   @Override
   public List<ResultSetDTO> getResultSetsByProtocolId(Long protocolId) {
     String document = """
-          resultSetsByProtocolId(protocolId: %d) {
-            %s
+          {
+            resultSetsByProtocolId(protocolId: %d) {
+              %s
+            }
           }
         """.formatted(protocolId, buildGraphQLDocumentBody());
     ResultSetDTO[] results = httpGraphQlClient()
@@ -150,8 +164,10 @@ public class ResultDataServiceGraphQLClientImpl implements ResultDataServiceGrap
   @Override
   public List<ResultSetDTO> getResultSetsByProtocolIds(List<Long> protocolIds) {
     String document = """
-          resultSetsByProtocolIds(protocolIds: %s) {
-            %s
+          {
+            resultSetsByProtocolIds(protocolIds: %s) {
+              %s
+            }
           }
         """.formatted(protocolIds, buildGraphQLDocumentBody());
     ResultSetDTO[] results = httpGraphQlClient()
