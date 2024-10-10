@@ -335,8 +335,9 @@ public class ResultSetService {
 
   private List<ResultSetDTO> fetchNLatestResultSets(Integer n, Optional<Long> plateId, Optional<Long> measId,
       Optional<Long> protocolId) {
-    List<ResultSetDTO> results = findResultSets(protocolId, measId, plateId).subList(0, n);
-    return CollectionUtils.isNotEmpty(results) ? results : Collections.emptyList();
+    List<ResultSetDTO> resultSets = findResultSets(protocolId, measId, plateId);
+    int toIndex = Math.min(n, resultSets.size());
+    return CollectionUtils.isNotEmpty(resultSets) ? resultSets.subList(0, toIndex) : Collections.emptyList();
   }
 
   private List<ResultSetDTO> fetchAndMapResultSets(Supplier<List<ResultSet>> fetcher) {
