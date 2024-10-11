@@ -24,23 +24,23 @@ public class CustomResultSetRepositoryImpl implements CustomResultSetRepository 
 
   @Override
   public List<ResultSet> findAllByResultSetFilter(ResultSetFilter filter) {
-    StringJoiner sql = new StringJoiner(" AND ", "SELECT * FROM result_set WHERE 1=1", "");
+    StringBuilder sql = new StringBuilder("select * from result_set where 1=1");
     MapSqlParameterSource parameters = new MapSqlParameterSource();
 
     if (CollectionUtils.isNotEmpty(filter.ids())) {
-     sql.add("id in (:ids)");
+     sql.append(" and id in (:ids)");
      parameters.addValue("ids", filter.ids());
     }
     if (CollectionUtils.isNotEmpty(filter.protocolIds())) {
-      sql.add("protocol_id in (:protocolIds)");
+      sql.append(" and protocol_id in (:protocolIds)");
       parameters.addValue("protocolIds", filter.protocolIds());
     }
     if (CollectionUtils.isNotEmpty(filter.plateIds())) {
-      sql.add("plate_id in (:plateIds)");
+      sql.append(" and plate_id in (:plateIds)");
       parameters.addValue("plateIds", filter.plateIds());
     }
     if (CollectionUtils.isNotEmpty(filter.status())) {
-      sql.add("outcome in (:status)");
+      sql.append(" and outcome in (:status)");
       parameters.addValue("status", filter.status());
     }
 
