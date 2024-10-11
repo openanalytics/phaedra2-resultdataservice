@@ -111,11 +111,22 @@ type ResultDataDTO {
     resultFeatureStats: [ResultFeatureStatDTO]
 }
 
+input ResultSetFilter {
+    ids: [ID]
+    plateIds: [ID]
+    measurementIds: [ID]
+    protocolIds: [ID]
+    status: [StatusCode]
+}
+
 type Query {
     latestPlateResultByPlateId(plateId: ID): PlateResultSetData
     protocolsByPlateId(plateId: ID): [ProtocolData]
     protocolsByExperimentId(experimentId: ID): [ProtocolData]
     featureValuesByPlateIdAndFeatureIdAndProtocolId(plateId: ID, featureId: ID, protocolId: ID): [FeatureValue]
+
+    resultSets(filter: ResultSetFilter): [ResultSetDTO]
+
     resultSetById(resultSetId: ID): ResultSetDTO
     resultSetByIds(resultSetIds: [ID]): [ResultSetDTO]
     resultSetsByPlateId(plateId: ID): [ResultSetDTO]
@@ -125,14 +136,24 @@ type Query {
     resultSetsByMeasurementId(measurementId: ID): [ResultSetDTO]
     resultSetsByMeasurementIds(measurementIds: [ID]): [ResultSetDTO]
     resultSetsByStatus(status: StatusCode): [ResultSetDTO]
+    resultSetsByPlateIdAndMeasurementId(plateId: ID, measurementId: ID): [ResultSetDTO]
+
     latestResultSetByPlateId(plateId: ID): ResultSetDTO
     latestResultSetsByPlateIds(plateIds: [ID]): [ResultSetDTO]
-    resultSetsByPlateIdAndMeasurementId(plateId: ID, measurementId: ID): [ResultSetDTO]
+
+
     resultFeatureStat(resultSetId: ID, resultFeatureStatId: ID): ResultFeatureStatDTO
     resultSetFeatureStats(resultSetId: ID): [ResultFeatureStatDTO]
+
+    resultDataById(resultDataId: ID): ResultDataDTO
     resultDataByResultSetId(resultSetId: ID): [ResultDataDTO]
+    resultDataByFeatureIdAndResultSetId(featureId: ID, resultSetId: ID): ResultDataDTO
+    resultDataByPlateIdAndResultSetId(plateId: ID, resultSetId: ID): [ResultDataDTO]
+    resultDataByPlateIdAndFeatureIdAndResultSetId(plateId: ID, featureId: ID, resultSetId: ID): ResultDataDTO
+    resultDataByPlateIdsAndFeatureIdAndResultSetId(plateIds: [ID], featureId: ID, resultSetId: ID): [ResultDataDTO]
+
     resultDataByResultSetIdAndResultDataId(resultSetId: ID, resultDataId: ID): ResultDataDTO
-    resultDataByResultSetIdAndFeatureId(resultSetId: ID, featureId: ID): ResultDataDTO
+
     resultDataByPlateIdAndProtocolIdAndFeatureId(plateId: ID, protocolId: ID, featureId: ID): [ResultDataDTO]
     featureStatsByResultSetId(resultSetId: ID!, statName: String, wellTypes: [String]): [ResultFeatureStatDTO]
 }

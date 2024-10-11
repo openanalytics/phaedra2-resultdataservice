@@ -25,6 +25,7 @@ import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetAlreadyCompletedException;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
 import eu.openanalytics.phaedra.resultdataservice.model.ResultSet;
+import eu.openanalytics.phaedra.resultdataservice.record.ResultSetFilter;
 import eu.openanalytics.phaedra.resultdataservice.repository.ResultSetRepository;
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -157,6 +158,16 @@ public class ResultSetService {
    */
   public List<ResultSetDTO> getResultSets(Optional<Long> protocolId, Optional<Long> measurementId, Optional<Long> plateId) {
     return findResultSets(protocolId, measurementId, plateId);
+  }
+
+  /**
+   * Fetches and returns a list of ResultSetDTOs based on the specified filters.
+   *
+   * @param resultSetFilter The filter criteria to use for fetching the ResultSets.
+   * @return A list of ResultSetDTOs that match the specified filter criteria.
+   */
+  public List<ResultSetDTO> getResultSets(ResultSetFilter resultSetFilter) {
+    return fetchAndMapResultSets(() -> resultSetRepository.findAllByResultSetFilter(resultSetFilter));
   }
 
   /**

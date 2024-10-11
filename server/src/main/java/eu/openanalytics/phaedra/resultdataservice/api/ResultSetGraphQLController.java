@@ -22,6 +22,7 @@ package eu.openanalytics.phaedra.resultdataservice.api;
 
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
+import eu.openanalytics.phaedra.resultdataservice.record.ResultSetFilter;
 import eu.openanalytics.phaedra.resultdataservice.service.ResultSetService;
 import java.util.List;
 import java.util.Optional;
@@ -39,8 +40,8 @@ public class ResultSetGraphQLController {
     }
 
     @QueryMapping
-    public List<ResultSetDTO> resultSets() {
-        return resultSetService.getResultSets(Optional.empty(), Optional.empty(), Optional.empty());
+    public List<ResultSetDTO> resultSets(@Argument ResultSetFilter filter) {
+        return resultSetService.getResultSets(filter);
     }
 
     @QueryMapping

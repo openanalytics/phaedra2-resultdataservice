@@ -31,7 +31,8 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import java.util.Collection;
 import java.util.List;
 
-public interface ResultSetRepository extends PagingAndSortingRepository<ResultSet, Long>, CrudRepository<ResultSet, Long> {
+public interface ResultSetRepository extends PagingAndSortingRepository<ResultSet, Long>,
+    CrudRepository<ResultSet, Long>, CustomResultSetRepository {
 
     Page<ResultSet> findAllByOutcome(Pageable pageable, ResultSet.StatusCodeHolder outcome);
 
