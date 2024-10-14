@@ -3,7 +3,9 @@ package eu.openanalytics.phaedra.resultdataservice.repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.openanalytics.phaedra.resultdataservice.model.ResultSet;
 import eu.openanalytics.phaedra.resultdataservice.model.ResultSet.ErrorReadingConverter;
+import eu.openanalytics.phaedra.resultdataservice.model.ResultSet.StatusCodeHolder;
 import eu.openanalytics.phaedra.resultdataservice.model.ResultSet.StatusCodeHolderReadingConvertor;
+import eu.openanalytics.phaedra.resultdataservice.model.ResultSet.StatusCodeHolderWritingConvertor;
 import eu.openanalytics.phaedra.resultdataservice.record.ResultSetFilter;
 import java.sql.SQLException;
 import java.util.List;
@@ -45,8 +47,11 @@ public class CustomResultSetRepositoryImpl implements CustomResultSetRepository 
       parameters.addValue("measIds", filter.measurementIds());
     }
     if (CollectionUtils.isNotEmpty(filter.status())) {
+      StatusCodeHolderWritingConvertor statusCodeHolderWritingConvertor = new StatusCodeHolderWritingConvertor();
       sql.append(" and outcome in (:status)");
-      parameters.addValue("status", filter.status().stream().map(statusCode -> statusCode.name()).toList());
+      parameters.addValue("status", filter.status().stream()
+          .map(statusCode -> statusCodeHolderWritingConvertor
+              .convert(new StatusCodeHolder(statusCode))).toList());
     }
 
     return namedParameterJdbcTemplate.query(sql.toString(), parameters, new ResultSetMapper());
