@@ -23,6 +23,7 @@ package eu.openanalytics.phaedra.resultdataservice.client.impl;
 import eu.openanalytics.phaedra.resultdataservice.client.ResultDataServiceGraphQLClient;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
 import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
+import eu.openanalytics.phaedra.resultdataservice.record.ResultSetFilter;
 import eu.openanalytics.phaedra.util.auth.IAuthorizationService;
 import java.util.List;
 import org.springframework.core.env.Environment;
@@ -66,16 +67,17 @@ public class ResultDataServiceGraphQLClientImpl implements ResultDataServiceGrap
   }
 
   @Override
-  public List<ResultSetDTO> getResultSets() {
+  public List<ResultSetDTO> getResultSets(ResultSetFilter filter) {
     String document = """
-          {
-            resultSets {
+          query($filter: ResultSetFilter) {
+            resultSets(filter: $filter)  {
               %s
             }
           }
         """.formatted(buildGraphQLDocumentBody());
     ResultSetDTO[] results = httpGraphQlClient()
         .document(document)
+        .variable("filter", filter)
         .retrieveSync("resultSets")
         .toEntity(ResultSetDTO[].class);
     return List.of(results);

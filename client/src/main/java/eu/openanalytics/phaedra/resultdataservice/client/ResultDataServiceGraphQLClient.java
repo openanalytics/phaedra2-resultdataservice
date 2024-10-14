@@ -22,11 +22,12 @@ package eu.openanalytics.phaedra.resultdataservice.client;
 
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
 import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
+import eu.openanalytics.phaedra.resultdataservice.record.ResultSetFilter;
 import java.util.List;
 
 public interface ResultDataServiceGraphQLClient {
   public ResultSetDTO getResultSet(long resultSetId);
-  public List<ResultSetDTO> getResultSets();
+  public List<ResultSetDTO> getResultSets(ResultSetFilter filter);
   public List<ResultSetDTO> getResultSetsByPlateId(Long plateId);
   public List<ResultSetDTO> getResultSetsByPlateIds(List<Long> plateIds);
   public List<ResultSetDTO> getResultSetsByMeasurementId(Long measurementId);
