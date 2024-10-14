@@ -21,6 +21,8 @@
 package eu.openanalytics.phaedra.resultdataservice.client.config;
 
 
+import eu.openanalytics.phaedra.resultdataservice.client.ResultDataServiceGraphQLClient;
+import eu.openanalytics.phaedra.resultdataservice.client.impl.ResultDataServiceGraphQLClientImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -36,6 +38,11 @@ public class ResultDataServiceClientAutoConfiguration {
     @Bean
     public ResultDataServiceClient resultDataServiceClient(PhaedraRestTemplate phaedraRestTemplate, IAuthorizationService authService, Environment environment) {
         return new HttpResultDataServiceClient(phaedraRestTemplate, authService, environment);
+    }
+
+    @Bean
+    public ResultDataServiceGraphQLClient resultDataServiceGraphQLClient(IAuthorizationService authService, Environment environment) {
+        return new ResultDataServiceGraphQLClientImpl(authService, environment);
     }
 
 }

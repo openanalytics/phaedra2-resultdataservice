@@ -46,6 +46,7 @@ import java.util.List;
 @Value
 @Builder(toBuilder = true)
 @With
+@NoArgsConstructor(force = true)
 @AllArgsConstructor
 @NonFinal
 public class ResultSet {

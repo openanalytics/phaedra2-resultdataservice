@@ -20,6 +20,8 @@
  */
 package eu.openanalytics.phaedra.resultdataservice.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.Date;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,17 +30,16 @@ import lombok.Value;
 import lombok.With;
 import lombok.experimental.NonFinal;
 
-import java.time.LocalDateTime;
-
 @Value
 @Builder
 @With
 @AllArgsConstructor
 @NonFinal
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE) // Jackson deserialize compatibility
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ErrorDTO {
-	
-    LocalDateTime timestamp;
+
+    Date timestamp;
     String exceptionClassName;
     String exceptionMessage;
     String description;
