@@ -10,6 +10,7 @@ import eu.openanalytics.phaedra.resultdataservice.record.ResultSetFilter;
 import java.sql.SQLException;
 import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.postgresql.util.PGobject;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -67,8 +68,8 @@ public class CustomResultSetRepositoryImpl implements CustomResultSetRepository 
           .withProtocolId(rs.getLong("protocol_id"))
           .withPlateId(rs.getLong("plate_id"))
           .withMeasId(rs.getLong("meas_id"))
-          .withExecutionStartTimeStamp(rs.getTimestamp("execution_start_time_stamp").toLocalDateTime())
-          .withExecutionEndTimeStamp(rs.getTimestamp("execution_end_time_stamp").toLocalDateTime())
+          .withExecutionStartTimeStamp(ObjectUtils.isNotEmpty(rs.getTimestamp("execution_start_time_stamp")) ? rs.getTimestamp("execution_start_time_stamp").toLocalDateTime() : null)
+          .withExecutionEndTimeStamp(ObjectUtils.isNotEmpty(rs.getTimestamp("execution_end_time_stamp")) ? rs.getTimestamp("execution_end_time_stamp").toLocalDateTime() : null)
           .withErrors(errorReadingConverter.convert((PGobject) rs.getObject("errors")))
           .withErrorsText(rs.getString("errors_text"))
           .withOutcome(statusCodeHolderReadingConvertor.convert(rs.getString("outcome")));
