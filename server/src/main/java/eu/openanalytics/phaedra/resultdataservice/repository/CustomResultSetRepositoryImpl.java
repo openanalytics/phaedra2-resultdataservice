@@ -40,9 +40,13 @@ public class CustomResultSetRepositoryImpl implements CustomResultSetRepository 
       sql.append(" and plate_id in (:plateIds)");
       parameters.addValue("plateIds", filter.plateIds());
     }
+    if (CollectionUtils.isNotEmpty(filter.measurementIds())) {
+      sql.append(" and meas_id in (:measIds)");
+      parameters.addValue("measIds", filter.measurementIds());
+    }
     if (CollectionUtils.isNotEmpty(filter.status())) {
       sql.append(" and outcome in (:status)");
-      parameters.addValue("status", filter.status());
+      parameters.addValue("status", filter.status().stream().map(statusCode -> statusCode.name()).toList());
     }
 
     return namedParameterJdbcTemplate.query(sql.toString(), parameters, new ResultSetMapper());
