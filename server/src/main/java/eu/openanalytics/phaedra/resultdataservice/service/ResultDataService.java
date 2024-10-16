@@ -27,20 +27,20 @@ import eu.openanalytics.phaedra.resultdataservice.exception.ResultDataNotFoundEx
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetAlreadyCompletedException;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
 import eu.openanalytics.phaedra.resultdataservice.model.ResultData;
+import eu.openanalytics.phaedra.resultdataservice.record.ResultDataFilter;
 import eu.openanalytics.phaedra.resultdataservice.repository.ResultDataRepository;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import javax.sql.DataSource;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Service;
-
-import javax.sql.DataSource;
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ResultDataService {
@@ -114,6 +114,14 @@ public class ResultDataService {
         }
 
         return modelMapper.map(res.get()).build();
+    }
+
+    public List<ResultDataDTO> getResultData(ResultDataFilter filter) {
+        var results = resultDataRepository.findAllByResultDataFilter(filter);
+        if (CollectionUtils.isEmpty(results)) {
+            return List.of();
+        }
+        return results.stream().map(resultData -> modelMapper.map(resultData).build()).toList();
     }
 
     public ResultDataDTO getResultDataByResultSetIdAndFeatureId(long resultSetId, long featureId) throws ResultSetNotFoundException, ResultDataNotFoundException {

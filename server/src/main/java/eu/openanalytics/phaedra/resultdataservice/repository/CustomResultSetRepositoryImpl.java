@@ -28,34 +28,34 @@ public class CustomResultSetRepositoryImpl implements CustomResultSetRepository 
 
   @Override
   public List<ResultSet> findAllByResultSetFilter(ResultSetFilter filter) {
-    StringBuilder sql = new StringBuilder("select * from result_set where 1=1");
-    MapSqlParameterSource parameters = new MapSqlParameterSource();
+    StringBuilder query = new StringBuilder("select * from result_set where 1=1");
+    MapSqlParameterSource params = new MapSqlParameterSource();
 
     if (CollectionUtils.isNotEmpty(filter.ids())) {
-     sql.append(" and id in (:ids)");
-     parameters.addValue("ids", filter.ids());
+     query.append(" and id in (:ids)");
+     params.addValue("ids", filter.ids());
     }
     if (CollectionUtils.isNotEmpty(filter.protocolIds())) {
-      sql.append(" and protocol_id in (:protocolIds)");
-      parameters.addValue("protocolIds", filter.protocolIds());
+      query.append(" and protocol_id in (:protocolIds)");
+      params.addValue("protocolIds", filter.protocolIds());
     }
     if (CollectionUtils.isNotEmpty(filter.plateIds())) {
-      sql.append(" and plate_id in (:plateIds)");
-      parameters.addValue("plateIds", filter.plateIds());
+      query.append(" and plate_id in (:plateIds)");
+      params.addValue("plateIds", filter.plateIds());
     }
     if (CollectionUtils.isNotEmpty(filter.measurementIds())) {
-      sql.append(" and meas_id in (:measIds)");
-      parameters.addValue("measIds", filter.measurementIds());
+      query.append(" and meas_id in (:measIds)");
+      params.addValue("measIds", filter.measurementIds());
     }
     if (CollectionUtils.isNotEmpty(filter.status())) {
       StatusCodeHolderWritingConvertor statusCodeHolderWritingConvertor = new StatusCodeHolderWritingConvertor();
-      sql.append(" and outcome in (:status)");
-      parameters.addValue("status", filter.status().stream()
+      query.append(" and outcome in (:status)");
+      params.addValue("status", filter.status().stream()
           .map(statusCode -> statusCodeHolderWritingConvertor
               .convert(new StatusCodeHolder(statusCode))).toList());
     }
 
-    return namedParameterJdbcTemplate.query(sql.toString(), parameters, new ResultSetMapper());
+    return namedParameterJdbcTemplate.query(query.toString(), params, new ResultSetMapper());
   }
 
   private static class ResultSetMapper implements RowMapper<ResultSet> {

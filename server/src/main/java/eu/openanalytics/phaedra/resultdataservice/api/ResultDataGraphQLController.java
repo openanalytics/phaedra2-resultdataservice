@@ -23,6 +23,7 @@ package eu.openanalytics.phaedra.resultdataservice.api;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultDataDTO;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultDataNotFoundException;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundException;
+import eu.openanalytics.phaedra.resultdataservice.record.ResultDataFilter;
 import eu.openanalytics.phaedra.resultdataservice.service.ResultDataService;
 import eu.openanalytics.phaedra.util.exceptionhandling.HttpMessageNotReadableExceptionHandler;
 import eu.openanalytics.phaedra.util.exceptionhandling.MethodArgumentNotValidExceptionHandler;
@@ -40,6 +41,11 @@ public class ResultDataGraphQLController implements MethodArgumentNotValidExcept
 
     public ResultDataGraphQLController(ResultDataService resultDataService) {
         this.resultDataService = resultDataService;
+    }
+
+    @QueryMapping
+    public List<ResultDataDTO> resultData(@Argument ResultDataFilter filter) {
+        return resultDataService.getResultData(filter);
     }
 
     @QueryMapping
