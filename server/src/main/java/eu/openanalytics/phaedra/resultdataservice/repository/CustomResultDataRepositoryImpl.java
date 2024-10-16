@@ -20,6 +20,8 @@
  */
 package eu.openanalytics.phaedra.resultdataservice.repository;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+
 import eu.openanalytics.phaedra.resultdataservice.model.ResultData;
 import eu.openanalytics.phaedra.resultdataservice.model.ResultSet.StatusCodeHolderReadingConvertor;
 import eu.openanalytics.phaedra.resultdataservice.record.ResultDataFilter;
@@ -79,12 +81,12 @@ public class CustomResultDataRepositoryImpl implements CustomResultDataRepositor
           .withId(rs.getLong("id"))
           .withResultSetId(rs.getLong("result_set_id"))
           .withFeatureId(rs.getLong("feature_id"))
-          .withValues(ArrayUtils.toPrimitive(values));
-//          .withCreatedTimestamp(isNotEmpty(rs.getTimestamp("created_timestamp")) ? rs.getTimestamp("created_timestamp").toLocalDateTime() : null)
-//          .withStatusMessage(rs.getString("status_message"))
-//          .withStatusCode(statusCodeHolderReadingConvertor
-//              .convert(rs.getString("status_code"))
-//              .getStatusCode());
+          .withValues(ArrayUtils.isNotEmpty(values) ? ArrayUtils.toPrimitive(values) : null)
+          .withCreatedTimestamp(isNotEmpty(rs.getTimestamp("created_timestamp")) ? rs.getTimestamp("created_timestamp").toLocalDateTime() : null)
+          .withStatusMessage(rs.getString("status_message"))
+          .withStatusCode(statusCodeHolderReadingConvertor
+              .convert(rs.getString("status_code"))
+              .getStatusCode());
       return resultData;
     }
   }
