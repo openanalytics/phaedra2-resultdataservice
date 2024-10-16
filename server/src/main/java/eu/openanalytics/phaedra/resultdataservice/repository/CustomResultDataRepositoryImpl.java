@@ -76,7 +76,7 @@ public class CustomResultDataRepositoryImpl implements CustomResultDataRepositor
     public ResultData mapRow(java.sql.ResultSet rs, int rowNum) throws SQLException {
       StatusCodeHolderReadingConvertor statusCodeHolderReadingConvertor = new StatusCodeHolderReadingConvertor();
       Array valuesArray = rs.getArray("values");
-      Float[] values = (Float[]) valuesArray.getArray();
+      Float[] values = isNotEmpty(valuesArray) ?  (Float[]) valuesArray.getArray() : new Float[0];
       ResultData resultData = new ResultData()
           .withId(rs.getLong("id"))
           .withResultSetId(rs.getLong("result_set_id"))
