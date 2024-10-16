@@ -58,7 +58,7 @@ public class CustomResultDataRepositoryImpl implements CustomResultDataRepositor
           .withResultSetId(rs.getLong("result_set_id"))
           .withFeatureId(rs.getLong("feature_id"))
           .withValues((float[]) rs.getArray("values").getArray())
-          .withCreatedTimestamp(isNotEmpty(rs.getTimestamp("created_timestamp")) ? rs.getTimestamp("execution_end_time_stamp").toLocalDateTime() : null)
+          .withCreatedTimestamp(isNotEmpty(rs.getTimestamp("created_timestamp")) ? rs.getTimestamp("created_timestamp").toLocalDateTime() : null)
           .withStatusMessage(rs.getString("status_message"))
           .withStatusCode(statusCodeHolderReadingConvertor
               .convert(rs.getString("status_code"))
