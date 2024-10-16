@@ -120,7 +120,6 @@ input ResultSetFilter {
 }
 
 input ResultDataFilter {
-    ids: [ID] = []
     resultDataIds: [ID] = []
     resultSetIds: [ID] = []
     protocolIds: [ID] = []

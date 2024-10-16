@@ -20,14 +20,14 @@
  */
 package eu.openanalytics.phaedra.resultdataservice.repository;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-
 import eu.openanalytics.phaedra.resultdataservice.model.ResultData;
 import eu.openanalytics.phaedra.resultdataservice.model.ResultSet.StatusCodeHolderReadingConvertor;
 import eu.openanalytics.phaedra.resultdataservice.record.ResultDataFilter;
+import java.sql.Array;
 import java.sql.SQLException;
 import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -47,9 +47,9 @@ public class CustomResultDataRepositoryImpl implements CustomResultDataRepositor
     StringBuilder query = new StringBuilder("select * from result_data where 1=1");
     MapSqlParameterSource params = new MapSqlParameterSource();
 
-    if (CollectionUtils.isNotEmpty(filter.ids())) {
-      query.append(" and id in (:ids)");
-      params.addValue("ids", filter.ids());
+    if (CollectionUtils.isNotEmpty(filter.resultDataIds())) {
+      query.append(" and id in (:resultDataIds)");
+      params.addValue("resultDataIds", filter.resultDataIds());
     }
     if (CollectionUtils.isNotEmpty(filter.resultSetIds())) {
       query.append(" and result_set_id in (:resultSetIds)");
@@ -73,11 +73,13 @@ public class CustomResultDataRepositoryImpl implements CustomResultDataRepositor
     @Override
     public ResultData mapRow(java.sql.ResultSet rs, int rowNum) throws SQLException {
       StatusCodeHolderReadingConvertor statusCodeHolderReadingConvertor = new StatusCodeHolderReadingConvertor();
+      Array valuesArray = rs.getArray("values");
+      Float[] values = (Float[]) valuesArray.getArray();
       ResultData resultData = new ResultData()
           .withId(rs.getLong("id"))
           .withResultSetId(rs.getLong("result_set_id"))
-          .withFeatureId(rs.getLong("feature_id"));
-//          .withValues((float[]) rs.getArray("values").getArray());
+          .withFeatureId(rs.getLong("feature_id"))
+          .withValues(ArrayUtils.toPrimitive(values));
 //          .withCreatedTimestamp(isNotEmpty(rs.getTimestamp("created_timestamp")) ? rs.getTimestamp("created_timestamp").toLocalDateTime() : null)
 //          .withStatusMessage(rs.getString("status_message"))
 //          .withStatusCode(statusCodeHolderReadingConvertor
