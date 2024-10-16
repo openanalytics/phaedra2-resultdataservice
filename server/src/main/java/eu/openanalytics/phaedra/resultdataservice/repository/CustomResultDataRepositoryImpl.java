@@ -1,3 +1,23 @@
+/**
+ * Phaedra II
+ *
+ * Copyright (C) 2016-2024 Open Analytics
+ *
+ * ===========================================================================
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the Apache License as published by
+ * The Apache Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * Apache License for more details.
+ *
+ * You should have received a copy of the Apache License
+ * along with this program.  If not, see <http://www.apache.org/licenses/>
+ */
 package eu.openanalytics.phaedra.resultdataservice.repository;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -56,8 +76,8 @@ public class CustomResultDataRepositoryImpl implements CustomResultDataRepositor
       ResultData resultData = new ResultData()
           .withId(rs.getLong("id"))
           .withResultSetId(rs.getLong("result_set_id"))
-          .withFeatureId(rs.getLong("feature_id"))
-          .withValues((float[]) rs.getArray("values").getArray());
+          .withFeatureId(rs.getLong("feature_id"));
+//          .withValues((float[]) rs.getArray("values").getArray());
 //          .withCreatedTimestamp(isNotEmpty(rs.getTimestamp("created_timestamp")) ? rs.getTimestamp("created_timestamp").toLocalDateTime() : null)
 //          .withStatusMessage(rs.getString("status_message"))
 //          .withStatusCode(statusCodeHolderReadingConvertor
