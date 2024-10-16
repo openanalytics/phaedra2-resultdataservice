@@ -1,12 +1,13 @@
 package eu.openanalytics.phaedra.resultdataservice.repository;
 
-import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+
 import eu.openanalytics.phaedra.resultdataservice.model.ResultData;
+import eu.openanalytics.phaedra.resultdataservice.model.ResultSet.StatusCodeHolderReadingConvertor;
 import eu.openanalytics.phaedra.resultdataservice.record.ResultDataFilter;
 import java.sql.SQLException;
 import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -51,14 +52,17 @@ public class CustomResultDataRepositoryImpl implements CustomResultDataRepositor
   private static class ResultDataMapper implements RowMapper<ResultData> {
     @Override
     public ResultData mapRow(java.sql.ResultSet rs, int rowNum) throws SQLException {
+      StatusCodeHolderReadingConvertor statusCodeHolderReadingConvertor = new StatusCodeHolderReadingConvertor();
       ResultData resultData = new ResultData()
           .withId(rs.getLong("id"))
           .withResultSetId(rs.getLong("result_set_id"))
           .withFeatureId(rs.getLong("feature_id"))
           .withValues((float[]) rs.getArray("values").getArray())
-          .withCreatedTimestamp(ObjectUtils.isNotEmpty(rs.getTimestamp("created_timestamp")) ? rs.getTimestamp("execution_end_time_stamp").toLocalDateTime() : null)
+          .withCreatedTimestamp(isNotEmpty(rs.getTimestamp("created_timestamp")) ? rs.getTimestamp("execution_end_time_stamp").toLocalDateTime() : null)
           .withStatusMessage(rs.getString("status_message"))
-          .withStatusCode(rs.getObject("status_code", StatusCode.class));
+          .withStatusCode(statusCodeHolderReadingConvertor
+              .convert(rs.getString("status_code"))
+              .getStatusCode());
       return resultData;
     }
   }
