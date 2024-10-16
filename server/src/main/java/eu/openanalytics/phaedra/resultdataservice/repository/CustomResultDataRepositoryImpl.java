@@ -53,8 +53,8 @@ public class CustomResultDataRepositoryImpl implements CustomResultDataRepositor
     public ResultData mapRow(java.sql.ResultSet rs, int rowNum) throws SQLException {
       ResultData resultData = new ResultData()
           .withId(rs.getLong("id"))
-          .withResultSetId(rs.getLong("protocol_id"))
-          .withFeatureId(rs.getLong("plate_id"))
+          .withResultSetId(rs.getLong("result_set_id"))
+          .withFeatureId(rs.getLong("feature_id"))
           .withValues(rs.getObject("values", float[].class))
           .withCreatedTimestamp(ObjectUtils.isNotEmpty(rs.getTimestamp("created_timestamp")) ? rs.getTimestamp("execution_end_time_stamp").toLocalDateTime() : null)
           .withStatusMessage(rs.getString("status_message"))
