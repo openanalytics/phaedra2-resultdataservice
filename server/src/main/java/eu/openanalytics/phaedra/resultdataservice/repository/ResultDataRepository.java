@@ -31,7 +31,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public interface ResultDataRepository extends PagingAndSortingRepository<ResultData, Long>, CrudRepository<ResultData, Long>, CustomResultDataRepository {
+public interface ResultDataRepository extends PagingAndSortingRepository<ResultData, Long>,
+    CrudRepository<ResultData, Long>, CustomResultDataRepository {
 
     Page<ResultData> findAllByResultSetId(Pageable pageable, long resultSetId);
 

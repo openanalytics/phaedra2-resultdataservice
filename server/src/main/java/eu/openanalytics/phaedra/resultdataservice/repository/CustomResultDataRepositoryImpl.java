@@ -13,11 +13,11 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class CustomResultDataRepositorImpl implements CustomResultDataRepository {
+public class CustomResultDataRepositoryImpl implements CustomResultDataRepository {
 
   private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-  public CustomResultDataRepositorImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+  public CustomResultDataRepositoryImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
     this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
   }
 
