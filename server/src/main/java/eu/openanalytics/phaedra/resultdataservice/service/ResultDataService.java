@@ -20,6 +20,9 @@
  */
 package eu.openanalytics.phaedra.resultdataservice.service;
 
+import eu.openanalytics.phaedra.protocolservice.client.ProtocolServiceClient;
+import eu.openanalytics.phaedra.protocolservice.client.exception.ProtocolUnresolvableException;
+import eu.openanalytics.phaedra.protocolservice.dto.FeatureDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultDataDTO;
 import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
 import eu.openanalytics.phaedra.resultdataservice.exception.InvalidResultSetIdException;
@@ -31,6 +34,7 @@ import eu.openanalytics.phaedra.resultdataservice.record.ResultDataFilter;
 import eu.openanalytics.phaedra.resultdataservice.repository.ResultDataRepository;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -50,16 +54,19 @@ public class ResultDataService {
     private final ResultSetService resultSetService;
 
     private final DataSource dataSource;
+    private final ProtocolServiceClient protocolServiceClient;
     private final Clock clock;
     private final ModelMapper modelMapper;
 
     private static final int DEFAULT_PAGE_SIZE = 20;
 
+
     public ResultDataService(
     		ResultDataRepository resultDataRepository,
     		KafkaProducerService kafkaProducerService,
     		ResultSetService resultSetService,
-    		DataSource dataSource, Clock clock, ModelMapper modelMapper) {
+    		DataSource dataSource, Clock clock, ModelMapper modelMapper,
+        ProtocolServiceClient protocolServiceClient) {
 
         this.resultDataRepository = resultDataRepository;
         this.kafkaProducerService = kafkaProducerService;
@@ -67,6 +74,7 @@ public class ResultDataService {
         this.dataSource = dataSource;
         this.clock = clock;
         this.modelMapper = modelMapper;
+        this.protocolServiceClient = protocolServiceClient;
     }
 
     public ResultDataDTO create(long resultSetId, ResultDataDTO resultDataDTO) throws ResultSetNotFoundException, ResultSetAlreadyCompletedException {
@@ -117,11 +125,27 @@ public class ResultDataService {
     }
 
     public List<ResultDataDTO> getResultData(ResultDataFilter filter) {
-        var results = resultDataRepository.findAllByResultDataFilter(filter);
-        if (CollectionUtils.isEmpty(results)) {
-            return List.of();
+        List<ResultData> results = new ArrayList<>();
+        try {
+            if (CollectionUtils.isNotEmpty(filter.protocolIds())) {
+                List<FeatureDTO> features = protocolServiceClient
+                    .getFeaturesOfProtocols( filter.protocolIds());
+                ResultDataFilter updatedFilter = new ResultDataFilter(
+                    filter.resultDataIds(),
+                    filter.resultSetIds(),
+                    filter.protocolIds(),
+                    features.stream().map(f -> f.getId()).collect(Collectors.toList()));
+                results.addAll(resultDataRepository.findAllByResultDataFilter(updatedFilter));
+            } else {
+                results.addAll(resultDataRepository.findAllByResultDataFilter(filter));
+            }
+        } catch (ProtocolUnresolvableException e) {
+            throw new RuntimeException(e);
+        } finally {
+            return results.stream()
+                .map(resultData -> modelMapper.map(resultData).build())
+                .toList();
         }
-        return results.stream().map(resultData -> modelMapper.map(resultData).build()).toList();
     }
 
     public ResultDataDTO getResultDataByResultSetIdAndFeatureId(long resultSetId, long featureId) throws ResultSetNotFoundException, ResultDataNotFoundException {
