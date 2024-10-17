@@ -117,7 +117,7 @@ input ResultSetFilter {
     measurementIds: [ID] = []
     protocolIds: [ID] = []
     status: [StatusCode] = []
-    mostRecentResultSetOnly: Boolean = FALSE
+    mostRecentResultSetOnly: Boolean = false
 }
 
 input ResultDataFilter {
