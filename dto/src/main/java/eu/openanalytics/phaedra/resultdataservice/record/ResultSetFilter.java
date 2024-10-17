@@ -28,7 +28,7 @@ public record ResultSetFilter(
     List<Long> plateIds,
     List<Long> measurementIds,
     List<Long> protocolIds,
-    List<StatusCode> status
+    List<StatusCode> status,
+    Boolean mostRecentResultSetOnly
 ) {
-
 }

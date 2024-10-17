@@ -20,6 +20,9 @@
  */
 package eu.openanalytics.phaedra.resultdataservice.repository;
 
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.lang3.BooleanUtils.isTrue;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.openanalytics.phaedra.resultdataservice.model.ResultSet;
 import eu.openanalytics.phaedra.resultdataservice.model.ResultSet.ErrorReadingConverter;
@@ -29,7 +32,6 @@ import eu.openanalytics.phaedra.resultdataservice.model.ResultSet.StatusCodeHold
 import eu.openanalytics.phaedra.resultdataservice.record.ResultSetFilter;
 import java.sql.SQLException;
 import java.util.List;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.postgresql.util.PGobject;
 import org.springframework.jdbc.core.RowMapper;
@@ -48,34 +50,66 @@ public class CustomResultSetRepositoryImpl implements CustomResultSetRepository 
 
   @Override
   public List<ResultSet> findAllByResultSetFilter(ResultSetFilter filter) {
-    StringBuilder query = new StringBuilder("select * from result_set where 1=1");
-    MapSqlParameterSource params = new MapSqlParameterSource();
+    String query = buildQuery(filter);
+    MapSqlParameterSource params = buildParameters(filter);
+    return namedParameterJdbcTemplate.query(query, params, new ResultSetMapper());
+  }
 
-    if (CollectionUtils.isNotEmpty(filter.ids())) {
-     query.append(" and id in (:ids)");
-     params.addValue("ids", filter.ids());
+  private String buildQuery(ResultSetFilter filter){
+    StringBuilder queryBuilder = new StringBuilder("select rs.* from result_set rs");
+    if (isTrue(filter.mostRecentResultSetOnly())) {
+      queryBuilder.append(" join (select max(id) as max_id, protocol_id, plate_id, meas_id "
+          + "      from result_set "
+          + "      group by protocol_id, plate_id, meas_id) sub "
+          + "on rs.protocol_id = sub.protocol_id "
+          + "and rs.plate_id = sub.plate_id "
+          + "and rs.meas_id = sub.meas_id "
+          + "and rs.id = sub.max_id");
     }
-    if (CollectionUtils.isNotEmpty(filter.protocolIds())) {
-      query.append(" and protocol_id in (:protocolIds)");
+    queryBuilder.append(" where 1=1");
+    addFilters(queryBuilder, filter);
+    return queryBuilder.toString();
+  }
+
+  private void addFilters(StringBuilder query, ResultSetFilter filter){
+    if (isNotEmpty(filter.ids())) {
+      query.append(" and rs.id in (:ids)");
+    }
+    if (isNotEmpty(filter.protocolIds())) {
+      query.append(" and rs.protocol_id in (:protocolIds)");
+    }
+    if (isNotEmpty(filter.plateIds())) {
+      query.append(" and rs.plate_id in (:plateIds)");
+    }
+    if (isNotEmpty(filter.measurementIds())) {
+      query.append(" and rs.meas_id in (:measIds)");
+    }
+    if (isNotEmpty(filter.status())) {
+      query.append(" and rs.outcome in (:status)");
+    }
+  }
+
+  private MapSqlParameterSource buildParameters(ResultSetFilter filter){
+    MapSqlParameterSource params = new MapSqlParameterSource();
+    if (isNotEmpty(filter.ids())) {
+      params.addValue("ids", filter.ids());
+    }
+    if (isNotEmpty(filter.protocolIds())) {
       params.addValue("protocolIds", filter.protocolIds());
     }
-    if (CollectionUtils.isNotEmpty(filter.plateIds())) {
-      query.append(" and plate_id in (:plateIds)");
+    if (isNotEmpty(filter.plateIds())) {
       params.addValue("plateIds", filter.plateIds());
     }
-    if (CollectionUtils.isNotEmpty(filter.measurementIds())) {
-      query.append(" and meas_id in (:measIds)");
+    if (isNotEmpty(filter.measurementIds())) {
       params.addValue("measIds", filter.measurementIds());
     }
-    if (CollectionUtils.isNotEmpty(filter.status())) {
-      StatusCodeHolderWritingConvertor statusCodeHolderWritingConvertor = new StatusCodeHolderWritingConvertor();
-      query.append(" and outcome in (:status)");
+    if (isNotEmpty(filter.status())) {
+      StatusCodeHolderWritingConvertor statusCodeConvertor = new StatusCodeHolderWritingConvertor();
       params.addValue("status", filter.status().stream()
-          .map(statusCode -> statusCodeHolderWritingConvertor
-              .convert(new StatusCodeHolder(statusCode))).toList());
+          .map(statusCode -> statusCodeConvertor.convert(new StatusCodeHolder(statusCode)))
+          .toList());
     }
-
-    return namedParameterJdbcTemplate.query(query.toString(), params, new ResultSetMapper());
+    return params;
   }
 
   private static class ResultSetMapper implements RowMapper<ResultSet> {

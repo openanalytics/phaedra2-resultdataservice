@@ -112,11 +112,12 @@ type ResultDataDTO {
 }
 
 input ResultSetFilter {
-    ids: [ID]
-    plateIds: [ID]
-    measurementIds: [ID]
-    protocolIds: [ID]
-    status: [StatusCode]
+    ids: [ID] = []
+    plateIds: [ID] = []
+    measurementIds: [ID] = []
+    protocolIds: [ID] = []
+    status: [StatusCode] = []
+    mostRecentResultSetOnly: Boolean = FALSE
 }
 
 input ResultDataFilter {
