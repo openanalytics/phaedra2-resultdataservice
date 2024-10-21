@@ -21,6 +21,13 @@
 package eu.openanalytics.phaedra.resultdataservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -39,6 +46,7 @@ import lombok.experimental.NonFinal;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ErrorDTO {
 
+    @JsonDeserialize(using = DateDeserializer.class)
     Date timestamp;
     String exceptionClassName;
     String exceptionMessage;
@@ -82,5 +90,19 @@ public class ErrorDTO {
             description.append(String.format(", Id of new ResultSet: [%s]", getNewResultSetId()));
         }
         return description.toString();
+    }
+
+    public static class DateDeserializer extends JsonDeserializer<Date> {
+        private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+
+        @Override
+        public Date deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            String date = p.getText();
+            try {
+                return dateFormat.parse(date);
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
