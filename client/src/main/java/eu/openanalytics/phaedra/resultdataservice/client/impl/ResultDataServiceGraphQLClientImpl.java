@@ -28,6 +28,8 @@ import eu.openanalytics.phaedra.resultdataservice.record.ResultDataFilter;
 import eu.openanalytics.phaedra.resultdataservice.record.ResultSetFilter;
 import eu.openanalytics.phaedra.util.auth.IAuthorizationService;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.graphql.client.HttpGraphQlClient;
 import org.springframework.http.HttpHeaders;
@@ -42,6 +44,8 @@ public class ResultDataServiceGraphQLClientImpl implements ResultDataServiceGrap
   private static final String PROP_BASE_URL = "phaedra.resultdata-service.base-url";
   private static final String DEFAULT_BASE_URL = "http://phaedra-resultdata-service:8080/phaedra/resultdata-service";
   private static final int MAX_IN_MEMORY_SIZE = 10 * 1024 * 1024;
+
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
   public ResultDataServiceGraphQLClientImpl(IAuthorizationService authService,
       Environment environment) {
@@ -77,6 +81,9 @@ public class ResultDataServiceGraphQLClientImpl implements ResultDataServiceGrap
             }
           }
         """.formatted(buildResultSetGraphQLDocumentBody());
+
+    logger.info("Document: "  + document);
+
     ResultSetDTO[] results = httpGraphQlClient()
         .document(document)
         .variable("filter", filter)
