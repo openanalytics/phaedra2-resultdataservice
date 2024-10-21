@@ -20,6 +20,8 @@
  */
 package eu.openanalytics.phaedra.resultdataservice.service;
 
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
 import eu.openanalytics.phaedra.protocolservice.client.ProtocolServiceClient;
 import eu.openanalytics.phaedra.protocolservice.client.exception.ProtocolUnresolvableException;
 import eu.openanalytics.phaedra.protocolservice.dto.FeatureDTO;
@@ -37,9 +39,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -127,16 +129,28 @@ public class ResultDataService {
     public List<ResultDataDTO> getResultData(ResultDataFilter filter) {
         List<ResultData> results = new ArrayList<>();
         try {
-            if (CollectionUtils.isNotEmpty(filter.protocolIds())) {
+            // In case protocolId list is not empty, we need to collect all respective featureIds
+            if (isNotEmpty(filter.protocolIds())) {
                 List<FeatureDTO> features = protocolServiceClient
                     .getFeaturesOfProtocols( filter.protocolIds());
+                Set<Long> featureIds = features.stream()
+                    .map(f -> f.getId()).collect(Collectors.toSet());
+                // If filter also contains a non-empty list featureIds, we need to merge them with
+                // featureIds fetched from protocolIds
+                if (isNotEmpty(filter.featureIds())) {
+                    featureIds.addAll(filter.featureIds());
+                }
+                // Create an updated result data filter objects that contains all the features the
+                // client has asked for
                 ResultDataFilter updatedFilter = new ResultDataFilter(
                     filter.resultDataIds(),
                     filter.resultSetIds(),
                     filter.protocolIds(),
-                    features.stream().map(f -> f.getId()).collect(Collectors.toList()));
+                    new ArrayList<>(featureIds)
+                );
                 results.addAll(resultDataRepository.findAllByResultDataFilter(updatedFilter));
             } else {
+                // In case the protocolIds
                 results.addAll(resultDataRepository.findAllByResultDataFilter(filter));
             }
         } catch (ProtocolUnresolvableException e) {
