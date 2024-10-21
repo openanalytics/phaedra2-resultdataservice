@@ -49,17 +49,17 @@ public class ResultDataGraphQLController implements MethodArgumentNotValidExcept
     }
 
     @QueryMapping
-    public List<ResultDataDTO> resultDataByResultSetId(@Argument long resultSetId) throws ResultSetNotFoundException {
+    public List<ResultDataDTO> resultDataByResultSetId(@Argument Long resultSetId) throws ResultSetNotFoundException {
         return resultDataService.getResultDataByResultSetId(resultSetId);
     }
 
     @QueryMapping
-    public ResultDataDTO resultDataByResultSetIdAndResultDataId(@Argument long resultSetId, @Argument long resultDataId) throws ResultSetNotFoundException, ResultDataNotFoundException {
+    public ResultDataDTO resultDataByResultSetIdAndResultDataId(@Argument Long resultSetId, @Argument Long resultDataId) throws ResultSetNotFoundException, ResultDataNotFoundException {
         return resultDataService.getResultData(resultSetId, resultDataId);
     }
 
     @QueryMapping
-    public ResultDataDTO resultDataByResultSetIdAndFeatureId(@Argument long resultSetId, @Argument long featureId) throws ResultSetNotFoundException, ResultDataNotFoundException {
+    public ResultDataDTO resultDataByResultSetIdAndFeatureId(@Argument Long resultSetId, @Argument Long featureId) throws ResultSetNotFoundException, ResultDataNotFoundException {
         return resultDataService.getResultDataByResultSetIdAndFeatureId(resultSetId, featureId);
     }
 
