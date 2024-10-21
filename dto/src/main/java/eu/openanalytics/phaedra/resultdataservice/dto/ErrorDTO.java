@@ -28,6 +28,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.Date;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -93,15 +96,26 @@ public class ErrorDTO {
     }
 
     public static class DateDeserializer extends JsonDeserializer<Date> {
-        private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+        private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+        private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS");
 
         @Override
-        public Date deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            String date = p.getText();
+        public Date deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+            String dateString = jsonParser.getText();
             try {
-                return dateFormat.parse(date);
+                return SIMPLE_DATE_FORMAT.parse(dateString);
             } catch (ParseException e) {
-                throw new RuntimeException(e);
+                return tryParseWithDateTimeFormatter(dateString, DATE_TIME_FORMATTER);
+            }
+        }
+
+        private Date tryParseWithDateTimeFormatter(String dateString, DateTimeFormatter formatter) {
+            try {
+                TemporalAccessor temporalAccessor = formatter.parse(dateString);
+                LocalDateTime localDateTime = LocalDateTime.from(temporalAccessor);
+                return Date.from(localDateTime.atZone(java.time.ZoneId.systemDefault()).toInstant());
+            } catch (Exception ex) {
+                throw new RuntimeException("Failed to parse date: " + dateString, ex);
             }
         }
     }
