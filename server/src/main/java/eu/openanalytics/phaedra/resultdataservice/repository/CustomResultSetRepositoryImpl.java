@@ -34,6 +34,8 @@ import java.sql.SQLException;
 import java.util.List;
 import org.apache.commons.lang3.ObjectUtils;
 import org.postgresql.util.PGobject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -43,6 +45,7 @@ import org.springframework.stereotype.Repository;
 public class CustomResultSetRepositoryImpl implements CustomResultSetRepository {
 
   private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
   public CustomResultSetRepositoryImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
     this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
@@ -50,6 +53,7 @@ public class CustomResultSetRepositoryImpl implements CustomResultSetRepository 
 
   @Override
   public List<ResultSet> findAllByResultSetFilter(ResultSetFilter filter) {
+    if (filter == null) { logger.info("ResultSetFilter is null!! "); }
     String query = buildQuery(filter);
     MapSqlParameterSource params = buildParameters(filter);
     return namedParameterJdbcTemplate.query(query, params, new ResultSetMapper());

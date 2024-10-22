@@ -28,11 +28,4 @@ public record ResultDataFilter(
     List<Long> protocolIds,
     List<Long> featureIds
 ) {
-  public ResultDataFilter {
-    // Ensure the lists are never null
-    resultDataIds = (resultDataIds != null) ? resultDataIds : List.of();
-    resultSetIds = (resultSetIds != null) ? resultSetIds : List.of();
-    protocolIds = (protocolIds != null) ? protocolIds : List.of();
-    featureIds = (featureIds != null) ? featureIds : List.of();
-  }
 }

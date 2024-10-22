@@ -37,6 +37,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 
@@ -49,7 +51,8 @@ public class ResultSetService {
   private final KafkaProducerService kafkaProducerService;
   private final Clock clock;
   private final ModelMapper modelMapper;
-  private final PlateServiceGraphQLClient plateServiceGraphQLClient;
+
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
   public ResultSetService(ResultSetRepository resultSetRepository,
       KafkaProducerService kafkaProducerService, Clock clock, ModelMapper modelMapper,
@@ -58,7 +61,6 @@ public class ResultSetService {
     this.kafkaProducerService = kafkaProducerService;
     this.clock = clock;
     this.modelMapper = modelMapper;
-    this.plateServiceGraphQLClient = plateServiceGraphQLClient;
   }
 
   /**
@@ -173,6 +175,7 @@ public class ResultSetService {
    * @return A list of ResultSetDTOs that match the specified filter criteria.
    */
   public List<ResultSetDTO> getResultSets(ResultSetFilter resultSetFilter) {
+    if (resultSetFilter == null) { logger.info("ResultSetFilter is null!! "); }
     return fetchAndMapResultSets(() -> resultSetRepository.findAllByResultSetFilter(resultSetFilter));
   }
 
