@@ -149,7 +149,6 @@ type Query {
     latestResultSetByPlateId(plateId: ID): ResultSetDTO
     latestResultSetsByPlateIds(plateIds: [ID]): [ResultSetDTO]
 
-
     resultFeatureStat(resultSetId: ID, resultFeatureStatId: ID): ResultFeatureStatDTO
     resultSetFeatureStats(resultSetId: ID): [ResultFeatureStatDTO]
 

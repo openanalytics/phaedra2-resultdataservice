@@ -31,7 +31,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
-import java.util.Date;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -49,8 +49,7 @@ import lombok.experimental.NonFinal;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ErrorDTO {
 
-    @JsonDeserialize(using = DateDeserializer.class)
-    Date timestamp;
+    LocalDateTime timestamp;
     String exceptionClassName;
     String exceptionMessage;
     String description;
@@ -93,30 +92,5 @@ public class ErrorDTO {
             description.append(String.format(", Id of new ResultSet: [%s]", getNewResultSetId()));
         }
         return description.toString();
-    }
-
-    public static class DateDeserializer extends JsonDeserializer<Date> {
-        private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
-        private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS");
-
-        @Override
-        public Date deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
-            String dateString = jsonParser.getText();
-            try {
-                return SIMPLE_DATE_FORMAT.parse(dateString);
-            } catch (ParseException e) {
-                return tryParseWithDateTimeFormatter(dateString, DATE_TIME_FORMATTER);
-            }
-        }
-
-        private Date tryParseWithDateTimeFormatter(String dateString, DateTimeFormatter formatter) {
-            try {
-                TemporalAccessor temporalAccessor = formatter.parse(dateString);
-                LocalDateTime localDateTime = LocalDateTime.from(temporalAccessor);
-                return Date.from(localDateTime.atZone(java.time.ZoneId.systemDefault()).toInstant());
-            } catch (Exception ex) {
-                throw new RuntimeException("Failed to parse date: " + dateString, ex);
-            }
-        }
     }
 }
