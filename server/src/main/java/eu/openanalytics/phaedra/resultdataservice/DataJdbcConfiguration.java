@@ -21,26 +21,25 @@
 package eu.openanalytics.phaedra.resultdataservice;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import eu.openanalytics.phaedra.resultdataservice.model.ResultSet;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jdbc.core.convert.JdbcCustomConversions;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
 import org.springframework.lang.NonNull;
 
-import java.util.List;
-
 @Configuration
 public class DataJdbcConfiguration extends AbstractJdbcConfiguration {
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
+
+    public DataJdbcConfiguration(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     @NonNull
     public JdbcCustomConversions jdbcCustomConversions() {
-        objectMapper.registerModule(new JavaTimeModule());
         return new JdbcCustomConversions(List.of(
             new ResultSet.ErrorReadingConverter(objectMapper),
             new ResultSet.ErrorWritingConvertor(objectMapper),
