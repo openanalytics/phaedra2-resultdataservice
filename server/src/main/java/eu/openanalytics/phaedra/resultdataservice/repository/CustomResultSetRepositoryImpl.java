@@ -128,8 +128,8 @@ public class CustomResultSetRepositoryImpl implements CustomResultSetRepository 
           .withMeasId(rs.getLong("meas_id"))
           .withExecutionStartTimeStamp(ObjectUtils.isNotEmpty(rs.getTimestamp("execution_start_time_stamp")) ? rs.getTimestamp("execution_start_time_stamp").toLocalDateTime() : null)
           .withExecutionEndTimeStamp(ObjectUtils.isNotEmpty(rs.getTimestamp("execution_end_time_stamp")) ? rs.getTimestamp("execution_end_time_stamp").toLocalDateTime() : null)
-          .withErrors(errorReadingConverter.convert((PGobject) rs.getObject("errors")))
-          .withErrorsText(rs.getString("errors_text"))
+//          .withErrors(errorReadingConverter.convert((PGobject) rs.getObject("errors")))
+//          .withErrorsText(rs.getString("errors_text"))
           .withOutcome(statusCodeHolderReadingConvertor.convert(rs.getString("outcome")));
       return resultSet;
     }
