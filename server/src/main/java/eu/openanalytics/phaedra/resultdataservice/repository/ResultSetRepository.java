@@ -31,13 +31,19 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import java.util.Collection;
 import java.util.List;
 
-public interface ResultSetRepository extends PagingAndSortingRepository<ResultSet, Long>, CrudRepository<ResultSet, Long> {
+public interface ResultSetRepository extends PagingAndSortingRepository<ResultSet, Long>,
+    CrudRepository<ResultSet, Long>, CustomResultSetRepository {
 
     Page<ResultSet> findAllByOutcome(Pageable pageable, ResultSet.StatusCodeHolder outcome);
 
     default Page<ResultSet> findAllByOutcome(Pageable pageable, StatusCode outcome) {
         return findAllByOutcome(pageable, new ResultSet.StatusCodeHolder(outcome));
     }
+
+    @Query("SELECT * FROM result_set WHERE id in (:resultIds)")
+    List<ResultSet> findByIds(List<Long> resultIds);
+
+    List<ResultSet> findAll();
 
     @Query("SELECT * FROM result_set WHERE plate_id = :plateId ORDER BY execution_end_time_stamp DESC")
     List<ResultSet> findAllByPlateId(Long plateId);
@@ -48,11 +54,35 @@ public interface ResultSetRepository extends PagingAndSortingRepository<ResultSe
     @Query("SELECT * FROM result_set WHERE protocol_id = :protocolId ORDER BY execution_end_time_stamp DESC")
     List<ResultSet> findAllByProtocolId(Long protocolId);
 
+    @Query("SELECT * FROM result_set WHERE plate_id in (:plateIds) ORDER BY execution_end_time_stamp DESC")
+    List<ResultSet> findAllByPlateIds(List<Long> plateIds);
+
+    @Query("SELECT * FROM result_set WHERE meas_id in (:measurementIds) ORDER BY execution_end_time_stamp DESC")
+    List<ResultSet> findAllByMeasurementIds(List<Long> measurementIds);
+
+    @Query("SELECT * FROM result_set WHERE protocol_id in (:protocolIds) ORDER BY execution_end_time_stamp DESC")
+    List<ResultSet> findAllByProtocolIds(List<Long> protocolIds);
+
     @Query("SELECT * FROM result_set WHERE plate_id = :plateId AND meas_id = :measId ORDER BY execution_end_time_stamp DESC")
     List<ResultSet> findByPlateIdAndMeasId(Long plateId, Long measId);
 
+    @Query("SELECT * FROM result_set WHERE protocol_id = :protocolId AND meas_id = :measurementId AND plate_id = :plateId ORDER BY execution_end_time_stamp DESC")
+    List<ResultSet> findAllByProtocolIdAndMeasurementIdAndPlateId(Long protocolId, Long measurementId, Long plateId);
+
+    @Query("SELECT * FROM result_set WHERE protocol_id = :protocolId AND meas_id = :measurementId ORDER BY execution_end_time_stamp DESC")
+    List<ResultSet> findAllByProtocolIdAndMeasurementId(Long protocolId, Long measurementId);
+
+    @Query("SELECT * FROM result_set WHERE protocol_id = :protocolId AND plate_id = :plateId ORDER BY execution_end_time_stamp DESC")
+    List<ResultSet> findAllByProtocolIdAndPlateId(Long protocolId, Long plateId);
+
+    @Query("SELECT * FROM result_set WHERE meas_id = :measurementId AND plate_id = :plateId ORDER BY execution_end_time_stamp DESC")
+    List<ResultSet> findAllByMeasurementIdAndPlateId(Long measurementId, Long plateId);
+
     @Query("SELECT * FROM result_set WHERE id in (SELECT MAX(id) FROM resultdataservice.result_set WHERE plate_id = :plateId)")
     List<ResultSet> findLatestByPlateId(Long plateId);
+
+    @Query("SELECT * FROM result_set WHERE id in (SELECT MAX(id) FROM resultdataservice.result_set WHERE plate_id in (:plateIds) group by plate_id)")
+    List<ResultSet> findLatestByPlateIds(Collection<Long> plateIds);
 
     @Query("SELECT * FROM result_set WHERE id in (SELECT MAX(id) FROM resultdataservice.result_set WHERE meas_id = :measId)")
     List<ResultSet> findLatestByMeasId(Long measId);
@@ -74,20 +104,5 @@ public interface ResultSetRepository extends PagingAndSortingRepository<ResultSe
 
     @Query("SELECT * FROM result_set ORDER BY execution_start_time_stamp DESC LIMIT :n")
     List<ResultSet> findNMostRecentResultSets(Integer n);
-
-    @Query("SELECT * FROM result_set WHERE id in (SELECT MAX(id) FROM resultdataservice.result_set WHERE plate_id in (:plateIds) group by plate_id)")
-    List<ResultSet> findLatestByPlateIds(Collection<Long> plateIds);
-
-    @Query("SELECT * FROM result_set WHERE protocol_id = :protocolId AND meas_id = :measurementId AND plate_id = :plateId ORDER BY execution_end_time_stamp DESC")
-    List<ResultSet> findAllByProtocolIdAndMeasurementIdAndPlateId(Long protocolId, Long measurementId, Long plateId);
-
-    @Query("SELECT * FROM result_set WHERE protocol_id = :protocolId AND meas_id = :measurementId ORDER BY execution_end_time_stamp DESC")
-    List<ResultSet> findAllByProtocolIdAndMeasurementId(Long protocolId, Long measurementId);
-
-    @Query("SELECT * FROM result_set WHERE protocol_id = :protocolId AND plate_id = :plateId ORDER BY execution_end_time_stamp DESC")
-    List<ResultSet> findAllByProtocolIdAndPlateId(Long protocolId, Long plateId);
-
-    @Query("SELECT * FROM result_set WHERE meas_id = :measurementId AND plate_id = :plateId ORDER BY execution_end_time_stamp DESC")
-    List<ResultSet> findAllByMeasurementIdAndPlateId(Long measurementId, Long plateId);
 }
 
