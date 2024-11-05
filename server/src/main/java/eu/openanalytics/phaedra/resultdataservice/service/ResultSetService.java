@@ -20,6 +20,10 @@
  */
 package eu.openanalytics.phaedra.resultdataservice.service;
 
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
+import eu.openanalytics.phaedra.plateservice.client.PlateServiceClient;
+import eu.openanalytics.phaedra.plateservice.client.PlateServiceGraphQLClient;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
 import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
 import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetAlreadyCompletedException;
@@ -33,7 +37,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
-import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 
@@ -47,8 +52,11 @@ public class ResultSetService {
   private final Clock clock;
   private final ModelMapper modelMapper;
 
+  private final Logger logger = LoggerFactory.getLogger(getClass());
+
   public ResultSetService(ResultSetRepository resultSetRepository,
-      KafkaProducerService kafkaProducerService, Clock clock, ModelMapper modelMapper) {
+      KafkaProducerService kafkaProducerService, Clock clock, ModelMapper modelMapper,
+      PlateServiceClient plateServiceClient, PlateServiceGraphQLClient plateServiceGraphQLClient) {
     this.resultSetRepository = resultSetRepository;
     this.kafkaProducerService = kafkaProducerService;
     this.clock = clock;
@@ -167,6 +175,7 @@ public class ResultSetService {
    * @return A list of ResultSetDTOs that match the specified filter criteria.
    */
   public List<ResultSetDTO> getResultSets(ResultSetFilter resultSetFilter) {
+    if (resultSetFilter == null) { logger.info("ResultSetFilter is null!! "); }
     return fetchAndMapResultSets(() -> resultSetRepository.findAllByResultSetFilter(resultSetFilter));
   }
 
@@ -225,7 +234,7 @@ public class ResultSetService {
   public ResultSetDTO getLatestResultSetByPlateId(Long plateId, Optional<Long> measurementId)
       throws ResultSetNotFoundException {
     List<ResultSetDTO> resultSets = findLatestResultSets(Optional.empty(), measurementId, Optional.of(plateId));
-    return CollectionUtils.isNotEmpty(resultSets) ? resultSets.get(0) : null;
+    return isNotEmpty(resultSets) ? resultSets.get(0) : null;
   }
 
   /**
@@ -348,7 +357,7 @@ public class ResultSetService {
       Optional<Long> protocolId) {
     List<ResultSetDTO> resultSets = findResultSets(protocolId, measId, plateId);
     int toIndex = Math.min(n, resultSets.size());
-    return CollectionUtils.isNotEmpty(resultSets) ? resultSets.subList(0, toIndex) : Collections.emptyList();
+    return isNotEmpty(resultSets) ? resultSets.subList(0, toIndex) : Collections.emptyList();
   }
 
   private List<ResultSetDTO> fetchAndMapResultSets(Supplier<List<ResultSet>> fetcher) {
@@ -357,7 +366,7 @@ public class ResultSetService {
   }
 
   private List<ResultSetDTO> mapResultSetsToDTOs(List<ResultSet> resultSets) {
-    return CollectionUtils.isNotEmpty(resultSets) ? resultSets.stream()
+    return isNotEmpty(resultSets) ? resultSets.stream()
         .map(resultSet -> modelMapper.map(resultSet).build())
         .toList() : Collections.emptyList();
   }

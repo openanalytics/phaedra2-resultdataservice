@@ -118,6 +118,7 @@ public class ResultSet {
         @SneakyThrows
         @Override
         public ErrorHolder convert(PGobject source) {
+            if (source == null) return new ErrorHolder(List.of());
             var res = objectMapper.readValue(source.getValue(), ErrorDTO[].class);
             return new ErrorHolder(Arrays.asList(res));
         }

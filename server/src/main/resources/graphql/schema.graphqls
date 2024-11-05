@@ -112,11 +112,19 @@ type ResultDataDTO {
 }
 
 input ResultSetFilter {
-    ids: [ID]
-    plateIds: [ID]
-    measurementIds: [ID]
-    protocolIds: [ID]
-    status: [StatusCode]
+    ids: [ID] = []
+    plateIds: [ID] = []
+    measurementIds: [ID] = []
+    protocolIds: [ID] = []
+    status: [StatusCode] = []
+    mostRecentResultSetOnly: Boolean = false
+}
+
+input ResultDataFilter {
+    resultDataIds: [ID] = []
+    resultSetIds: [ID] = []
+    protocolIds: [ID] = []
+    featureIds: [ID] = []
 }
 
 type Query {
@@ -141,10 +149,10 @@ type Query {
     latestResultSetByPlateId(plateId: ID): ResultSetDTO
     latestResultSetsByPlateIds(plateIds: [ID]): [ResultSetDTO]
 
-
     resultFeatureStat(resultSetId: ID, resultFeatureStatId: ID): ResultFeatureStatDTO
     resultSetFeatureStats(resultSetId: ID): [ResultFeatureStatDTO]
 
+    resultData(filter: ResultDataFilter) : [ResultDataDTO]
     resultDataById(resultDataId: ID): ResultDataDTO
     resultDataByResultSetId(resultSetId: ID): [ResultDataDTO]
     resultDataByFeatureIdAndResultSetId(featureId: ID, resultSetId: ID): ResultDataDTO

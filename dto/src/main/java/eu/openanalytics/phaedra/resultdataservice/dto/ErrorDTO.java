@@ -21,7 +21,7 @@
 package eu.openanalytics.phaedra.resultdataservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import java.util.Date;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,7 +39,7 @@ import lombok.experimental.NonFinal;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ErrorDTO {
 
-    Date timestamp;
+    LocalDateTime timestamp;
     String exceptionClassName;
     String exceptionMessage;
     String description;

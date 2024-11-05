@@ -26,6 +26,8 @@ import eu.openanalytics.phaedra.resultdataservice.record.ResultSetFilter;
 import eu.openanalytics.phaedra.resultdataservice.service.ResultSetService;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
@@ -34,6 +36,7 @@ import org.springframework.stereotype.Controller;
 public class ResultSetGraphQLController {
 
     private final ResultSetService resultSetService;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public ResultSetGraphQLController(ResultSetService resultSetService) {
         this.resultSetService = resultSetService;
@@ -41,6 +44,7 @@ public class ResultSetGraphQLController {
 
     @QueryMapping
     public List<ResultSetDTO> resultSets(@Argument ResultSetFilter filter) {
+        if (filter == null) logger.info("ResultSetFilter is null");
         return resultSetService.getResultSets(filter);
     }
 
