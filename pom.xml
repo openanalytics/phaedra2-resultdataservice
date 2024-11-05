@@ -11,7 +11,7 @@
 
     <artifactId>phaedra2-resultdataservice</artifactId>
     <name>Phaedra2 Result-Data Service</name>
-    <version>2.3.0</version>
+    <version>2.3.1</version>
 
     <modules>
         <module>dto/</module>
