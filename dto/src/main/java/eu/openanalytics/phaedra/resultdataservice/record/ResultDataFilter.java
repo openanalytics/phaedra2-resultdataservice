@@ -18,12 +18,14 @@
  * You should have received a copy of the Apache License
  * along with this program.  If not, see <http://www.apache.org/licenses/>
  */
-package eu.openanalytics.phaedra.resultdataservice.repository;
+package eu.openanalytics.phaedra.resultdataservice.record;
 
-import eu.openanalytics.phaedra.resultdataservice.model.ResultSet;
-import eu.openanalytics.phaedra.resultdataservice.record.ResultSetFilter;
 import java.util.List;
 
-public interface CustomResultSetRepository {
-  List<ResultSet> findAllByResultSetFilter(ResultSetFilter filter);
+public record ResultDataFilter(
+    List<Long> resultDataIds,
+    List<Long> resultSetIds,
+    List<Long> protocolIds,
+    List<Long> featureIds
+) {
 }

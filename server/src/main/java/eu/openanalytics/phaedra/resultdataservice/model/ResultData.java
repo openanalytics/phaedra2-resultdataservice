@@ -22,6 +22,7 @@ package eu.openanalytics.phaedra.resultdataservice.model;
 
 import java.time.LocalDateTime;
 
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 
 import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
@@ -35,6 +36,7 @@ import lombok.experimental.NonFinal;
 @Builder
 @With
 @AllArgsConstructor
+@NoArgsConstructor(force = true)
 @NonFinal
 public class ResultData {
 

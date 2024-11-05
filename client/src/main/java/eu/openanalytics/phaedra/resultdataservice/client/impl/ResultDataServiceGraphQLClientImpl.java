@@ -21,11 +21,15 @@
 package eu.openanalytics.phaedra.resultdataservice.client.impl;
 
 import eu.openanalytics.phaedra.resultdataservice.client.ResultDataServiceGraphQLClient;
+import eu.openanalytics.phaedra.resultdataservice.dto.ResultDataDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
 import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
+import eu.openanalytics.phaedra.resultdataservice.record.ResultDataFilter;
 import eu.openanalytics.phaedra.resultdataservice.record.ResultSetFilter;
 import eu.openanalytics.phaedra.util.auth.IAuthorizationService;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.graphql.client.HttpGraphQlClient;
 import org.springframework.http.HttpHeaders;
@@ -40,6 +44,8 @@ public class ResultDataServiceGraphQLClientImpl implements ResultDataServiceGrap
   private static final String PROP_BASE_URL = "phaedra.resultdata-service.base-url";
   private static final String DEFAULT_BASE_URL = "http://phaedra-resultdata-service:8080/phaedra/resultdata-service";
   private static final int MAX_IN_MEMORY_SIZE = 10 * 1024 * 1024;
+
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
   public ResultDataServiceGraphQLClientImpl(IAuthorizationService authService,
       Environment environment) {
@@ -59,7 +65,7 @@ public class ResultDataServiceGraphQLClientImpl implements ResultDataServiceGrap
               %s
             }
           }
-        """.formatted(resultSetId, buildGraphQLDocumentBody());
+        """.formatted(resultSetId, buildResultSetGraphQLDocumentBody());
     return httpGraphQlClient()
         .document(document)
         .retrieveSync("resultSetById")
@@ -74,7 +80,10 @@ public class ResultDataServiceGraphQLClientImpl implements ResultDataServiceGrap
               %s
             }
           }
-        """.formatted(buildGraphQLDocumentBody());
+        """.formatted(buildResultSetGraphQLDocumentBody());
+
+    logger.info("Document: "  + document);
+
     ResultSetDTO[] results = httpGraphQlClient()
         .document(document)
         .variable("filter", filter)
@@ -91,7 +100,7 @@ public class ResultDataServiceGraphQLClientImpl implements ResultDataServiceGrap
               %s
             }
           }
-        """.formatted(plateId, buildGraphQLDocumentBody());
+        """.formatted(plateId, buildResultSetGraphQLDocumentBody());
     ResultSetDTO[] results = httpGraphQlClient()
         .document(document)
         .retrieveSync("resultSetsByPlateId")
@@ -107,7 +116,7 @@ public class ResultDataServiceGraphQLClientImpl implements ResultDataServiceGrap
               %s
             }
           }
-        """.formatted(plateIds, buildGraphQLDocumentBody());
+        """.formatted(plateIds, buildResultSetGraphQLDocumentBody());
     ResultSetDTO[] results = httpGraphQlClient()
         .document(document)
         .retrieveSync("resultSetsByPlateIds")
@@ -123,7 +132,7 @@ public class ResultDataServiceGraphQLClientImpl implements ResultDataServiceGrap
               %s
             }
           }
-        """.formatted(measurementId, buildGraphQLDocumentBody());
+        """.formatted(measurementId, buildResultSetGraphQLDocumentBody());
     ResultSetDTO[] results = httpGraphQlClient()
         .document(document)
         .retrieveSync("resultSetsByMeasurementId")
@@ -139,7 +148,7 @@ public class ResultDataServiceGraphQLClientImpl implements ResultDataServiceGrap
               %s
             }
           }
-        """.formatted(measurementIds, buildGraphQLDocumentBody());
+        """.formatted(measurementIds, buildResultSetGraphQLDocumentBody());
     ResultSetDTO[] results = httpGraphQlClient()
         .document(document)
         .retrieveSync("resultSetsByMeasurementIds")
@@ -155,7 +164,7 @@ public class ResultDataServiceGraphQLClientImpl implements ResultDataServiceGrap
               %s
             }
           }
-        """.formatted(protocolId, buildGraphQLDocumentBody());
+        """.formatted(protocolId, buildResultSetGraphQLDocumentBody());
     ResultSetDTO[] results = httpGraphQlClient()
         .document(document)
         .retrieveSync("resultSetsByProtocolId")
@@ -171,11 +180,28 @@ public class ResultDataServiceGraphQLClientImpl implements ResultDataServiceGrap
               %s
             }
           }
-        """.formatted(protocolIds, buildGraphQLDocumentBody());
+        """.formatted(protocolIds, buildResultSetGraphQLDocumentBody());
     ResultSetDTO[] results = httpGraphQlClient()
         .document(document)
         .retrieveSync("resultSetsByProtocolIds")
         .toEntity(ResultSetDTO[].class);
+    return List.of(results);
+  }
+
+  @Override
+  public List<ResultDataDTO> getResultData(ResultDataFilter filter) {
+    String document = """
+          query($filter: ResultDataFilter) {
+            resultData(filter: $filter)  {
+              %s
+            }
+          }
+        """.formatted(buildResultDataGraphQLDocumentBody());
+    ResultDataDTO[] results = httpGraphQlClient()
+        .document(document)
+        .variable("filter", filter)
+        .retrieveSync("resultData")
+        .toEntity(ResultDataDTO[].class);
     return List.of(results);
   }
 
@@ -191,7 +217,7 @@ public class ResultDataServiceGraphQLClientImpl implements ResultDataServiceGrap
     return List.of();
   }
 
-  private String buildGraphQLDocumentBody() {
+  private String buildResultSetGraphQLDocumentBody() {
     return """
           id
           protocolId
@@ -220,6 +246,19 @@ public class ResultDataServiceGraphQLClientImpl implements ResultDataServiceGrap
             newResultSetId
           }
           errorsText
+        """;
+  }
+
+  private String buildResultDataGraphQLDocumentBody() {
+    return """
+          id
+          resultSetId
+          featureId
+          values
+          statusCode
+          statusMessage
+          exitCode
+          createdTimestamp
         """;
   }
 

@@ -20,8 +20,10 @@
  */
 package eu.openanalytics.phaedra.resultdataservice.client;
 
+import eu.openanalytics.phaedra.resultdataservice.dto.ResultDataDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultSetDTO;
 import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
+import eu.openanalytics.phaedra.resultdataservice.record.ResultDataFilter;
 import eu.openanalytics.phaedra.resultdataservice.record.ResultSetFilter;
 import java.util.List;
 
@@ -36,4 +38,7 @@ public interface ResultDataServiceGraphQLClient {
   public List<ResultSetDTO> getResultSetsByProtocolIds(List<Long> protocolIds);
   public List<ResultSetDTO> getResultSetsByStatus(StatusCode outcome);
   public List<ResultSetDTO> getResultSetsByStatus(List<StatusCode> outcomes);
+
+  public List<ResultDataDTO> getResultData(ResultDataFilter filter);
+
 }
