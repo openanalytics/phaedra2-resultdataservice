@@ -1,0 +1,93 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: sberberovic
+      changes:
+        - createTable:
+            tableName: curve
+            schemaName: resultdataservice
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: substance_name
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: substance_type
+                  type: varchar
+                  constraints:
+                    nullable: true
+              - column:
+                  name: result_set_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: protocol_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: feature_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: plate_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: fit_date
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: varchar
+                  constraints:
+                    nullable: true
+              - column:
+                  name: x_axis_labels
+                  type: float4[]
+                  constraints:
+                    nullable: true
+              - column:
+                  name: wells
+                  type: bigint[]
+                  constraints:
+                    nullable: true
+              - column:
+                  name: feature_values
+                  type: float4[]
+                  constraints:
+                    nullable: true
+              - column:
+                  name: well_concentrations
+                  type: float4[]
+                  constraints:
+                    nullable: true
+              - column:
+                  name: plot_dose_data
+                  type: float4[]
+                  constraints:
+                    nullable: true
+              - column:
+                  name: plot_prediction_data
+                  type: float4[]
+                  constraints:
+                    nullable: true
+              - column:
+                  name: weights
+                  type: float4[]
+                  constraints:
+                    nullable: true
+      rollback:
+        - dropTable: curve
