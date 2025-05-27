@@ -73,29 +73,4 @@ public class CurveDTO {
     private float[] plotPredictionData;
     private float[] weights;
     private List<CurveOutputParamDTO> curveProperties;
-//    @JsonProperty(value = "pic50")
-//    private String pIC50;
-//    @JsonProperty(value = "pic50Censor")
-//    private String pIC50Censor;
-//    @JsonProperty(value = "pic50StdErr")
-//    private String pIC50StdErr;
-//    @JsonProperty(value = "emax")
-//    private Float eMax;
-//    @JsonProperty(value = "emin")
-//    private Float eMin;
-//    @JsonProperty(value = "emaxConc")
-//    private Float eMaxConc;
-//    @JsonProperty(value = "eminConc")
-//    private Float eMinConc;
-//    @JsonProperty(value = "pic20")
-//    private Float pIC20;
-//    @JsonProperty(value = "pic80")
-//    private Float pIC80;
-//    private Float slope;
-//    private Float bottom;
-//    private Float top;
-//    private Float slopeLowerCI;
-//    private Float slopeUpperCI;
-//    private Float residualVariance;
-//    private String warning;
 }

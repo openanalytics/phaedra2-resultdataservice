@@ -20,14 +20,20 @@
  */
 package eu.openanalytics.phaedra.resultdataservice.service;
 
-import static eu.openanalytics.phaedra.resultdataservice.config.KafkaConfig.GROUP_ID;
+import static eu.openanalytics.phaedra.resultdataservice.config.KafkaConfig.CURVE_DATA_GROUP_ID;
+import static eu.openanalytics.phaedra.resultdataservice.config.KafkaConfig.EVENT_SAVE_CURVE;
+import static eu.openanalytics.phaedra.resultdataservice.config.KafkaConfig.RESULT_DATA_GROUP_ID;
+import static eu.openanalytics.phaedra.resultdataservice.config.KafkaConfig.TOPIC_CURVEDATA;
 import static eu.openanalytics.phaedra.resultdataservice.config.KafkaConfig.TOPIC_RESULTDATA;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 
+import eu.openanalytics.phaedra.resultdataservice.dto.CurveDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultDataDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultFeatureStatDTO;
 import eu.openanalytics.phaedra.resultdataservice.exception.DuplicateResultFeatureStatException;
@@ -37,25 +43,60 @@ import eu.openanalytics.phaedra.resultdataservice.exception.ResultSetNotFoundExc
 @Service
 public class KafkaConsumerService {
 
-    private final ResultDataService resultDataService;
-    private final FeatureStatService featureStatService;
+  private static final String LOG_EVENT_RECEIVED = "Event received to save {} for resultSet {}, feature {}";
+  private static final String LOG_CURVE_CREATED = "Event received to create curve for substance {} and featureId {}";
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+  private final ResultDataService resultDataService;
+  private final FeatureStatService featureStatService;
+  private final CurveService curveService;
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public KafkaConsumerService(ResultDataService resultDataService, FeatureStatService featureStatService) {
-        this.resultDataService = resultDataService;
-        this.featureStatService = featureStatService;
+  public KafkaConsumerService(ResultDataService resultDataService,
+      FeatureStatService featureStatService,
+      CurveService curveService) {
+    this.resultDataService = resultDataService;
+    this.featureStatService = featureStatService;
+    this.curveService = curveService;
+  }
+
+  @KafkaListener(topics = TOPIC_RESULTDATA, groupId = RESULT_DATA_GROUP_ID + "_resData",
+      filter = "saveResultDataEventFilter")
+  public void handleResultDataEvent(ResultDataDTO resultDataDTO)
+      throws ResultSetNotFoundException, ResultSetAlreadyCompletedException {
+    logResultDataEvent(resultDataDTO);
+    resultDataService.create(resultDataDTO.getResultSetId(), resultDataDTO);
+  }
+
+  @KafkaListener(topics = TOPIC_RESULTDATA, groupId = RESULT_DATA_GROUP_ID + "_resStats",
+      filter = "saveResultStatsEventFilter")
+  public void handleResultStatsEvent(ResultFeatureStatDTO featureStatDTO)
+      throws ResultSetNotFoundException, DuplicateResultFeatureStatException, ResultSetAlreadyCompletedException {
+    logFeatureStatsEvent(featureStatDTO);
+    featureStatService.create(featureStatDTO.getResultSetId(), featureStatDTO);
+  }
+
+  @KafkaListener(topics = TOPIC_CURVEDATA, groupId = CURVE_DATA_GROUP_ID)
+  public void handleCurveDataEvent(CurveDTO curveDTO,
+      @Header(KafkaHeaders.RECEIVED_KEY) String msgKey) {
+    if (!EVENT_SAVE_CURVE.equalsIgnoreCase(msgKey)) {
+      return;
     }
+    logCurveEvent(curveDTO);
+    curveService.createCurve(curveDTO);
+  }
 
-    @KafkaListener(topics = TOPIC_RESULTDATA, groupId = GROUP_ID + "_resData", filter = "saveResultDataEventFilter")
-    public void onSaveResultDataEvent(ResultDataDTO resultDataDTO) throws ResultSetNotFoundException, ResultSetAlreadyCompletedException {
-    	logger.info(String.format("Event received to save resultData for resultSet %d, feature %d", resultDataDTO.getResultSetId(), resultDataDTO.getFeatureId()));
-        resultDataService.create(resultDataDTO.getResultSetId(), resultDataDTO);
-    }
+  private void logResultDataEvent(ResultDataDTO resultDataDTO) {
+    logger.info(LOG_EVENT_RECEIVED, "resultData",
+        resultDataDTO.getResultSetId(), resultDataDTO.getFeatureId());
+  }
 
-    @KafkaListener(topics = TOPIC_RESULTDATA, groupId = GROUP_ID + "_resStats", filter = "saveResultStatsEventFilter")
-    public void onSaveResultStatsEvent(ResultFeatureStatDTO featureStatDTO) throws ResultSetNotFoundException, DuplicateResultFeatureStatException, ResultSetAlreadyCompletedException {
-    	logger.info(String.format("Event received to save featureStats for resultSet %d, feature %d, stat %s", featureStatDTO.getResultSetId(), featureStatDTO.getFeatureId(), featureStatDTO.getStatisticName()));
-        featureStatService.create(featureStatDTO.getResultSetId(), featureStatDTO);
-    }
+  private void logFeatureStatsEvent(ResultFeatureStatDTO featureStatDTO) {
+    logger.info(LOG_EVENT_RECEIVED + ", stat {}", "featureStats",
+        featureStatDTO.getResultSetId(), featureStatDTO.getFeatureId(),
+        featureStatDTO.getStatisticName());
+  }
+
+  private void logCurveEvent(CurveDTO curveDTO) {
+    logger.info(LOG_CURVE_CREATED, curveDTO.getSubstanceName(), curveDTO.getFeatureId());
+  }
 }

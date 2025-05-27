@@ -29,7 +29,8 @@ import org.springframework.kafka.listener.adapter.RecordFilterStrategy;
 @EnableKafka
 public class KafkaConfig {
 
-  public static final String GROUP_ID = "resultdata-service";
+  public static final String RESULT_DATA_GROUP_ID = "resultdata-service";
+  public static final String CURVE_DATA_GROUP_ID = "curvedata-service";
 
   // Topics
   public static final String TOPIC_RESULTDATA = "resultdata";
