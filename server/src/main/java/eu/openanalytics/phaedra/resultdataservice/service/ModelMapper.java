@@ -20,6 +20,10 @@
  */
 package eu.openanalytics.phaedra.resultdataservice.service;
 
+import eu.openanalytics.phaedra.resultdataservice.dto.CurveDTO;
+import eu.openanalytics.phaedra.resultdataservice.dto.CurveOutputParamDTO;
+import eu.openanalytics.phaedra.resultdataservice.model.Curve;
+import eu.openanalytics.phaedra.resultdataservice.model.CurveOutputParameter;
 import java.util.List;
 
 import org.modelmapper.Conditions;
@@ -44,7 +48,7 @@ public class ModelMapper {
     public ModelMapper() {
         modelMapper.getConfiguration().setDestinationNamingConvention(NamingConventions.builder());
         modelMapper.getConfiguration().setDestinationNameTransformer(NameTransformers.builder());
-        
+
         modelMapper.createTypeMap(ResultDataDTO.class, ResultData.ResultDataBuilder.class)
             .setPropertyCondition(Conditions.isNotNull());
 
@@ -129,5 +133,77 @@ public class ModelMapper {
 
     public ResultFeatureStatDTO.ResultFeatureStatDTOBuilder map(ResultFeatureStat resultFeatureStat) {
         return modelMapper.map(resultFeatureStat, ResultFeatureStatDTO.ResultFeatureStatDTOBuilder.class);
+    }
+
+    /**
+     * Maps a {@link CurveDTO} to a {@link Curve}.
+     */
+    public Curve map(CurveDTO curveDTO) {
+        Curve curve = new Curve();
+        curve.setId(curveDTO.getId());
+        curve.setSubstanceName(curveDTO.getSubstanceName());
+        curve.setSubstanceType(curveDTO.getSubstanceType());
+        curve.setPlateId(curveDTO.getPlateId());
+        curve.setFeatureId(curveDTO.getFeatureId());
+        curve.setProtocolId(curveDTO.getProtocolId());
+        curve.setResultSetId(curveDTO.getResultSetId());
+        curve.setFitDate(curveDTO.getFitDate());
+        curve.setVersion(curveDTO.getVersion());
+        curve.setXAxisLabels(curveDTO.getXAxisLabels());
+        curve.setPlotDoseData(curveDTO.getPlotDoseData());
+        curve.setPlotPredictionData(curveDTO.getPlotPredictionData());
+        curve.setWells(curveDTO.getWells());
+        curve.setFeatureValues(curveDTO.getFeatureValues());
+        curve.setWellConcentrations(curveDTO.getWellConcentrations());
+        curve.setWeights(curveDTO.getWeights());
+        return curve;
+    }
+
+    /**
+     * Maps a {@link Curve} to a {@link CurveDTO}.
+     */
+    public CurveDTO map(Curve curve) {
+        return CurveDTO.builder()
+            .id(curve.getId())
+            .substanceName(curve.getSubstanceName())
+            .substanceType(curve.getSubstanceType())
+            .plateId(curve.getPlateId())
+            .featureId(curve.getFeatureId())
+            .protocolId(curve.getProtocolId())
+            .resultSetId(curve.getResultSetId())
+            .fitDate(curve.getFitDate())
+            .version(curve.getVersion())
+            .xAxisLabels(curve.getXAxisLabels())
+            .plotDoseData(curve.getPlotDoseData())
+            .plotPredictionData(curve.getPlotPredictionData())
+            .wells(curve.getWells())
+            .featureValues(curve.getFeatureValues())
+            .wellConcentrations(curve.getWellConcentrations())
+            .weights(curve.getWeights())
+            .build();
+    }
+
+    /**
+     * Maps a {@link CurveOutputParamDTO} to a {@link CurveOutputParameter}.
+     */
+    public CurveOutputParameter map(CurveOutputParamDTO curveOutputParamDTO) {
+        CurveOutputParameter curveOutputParameter = new CurveOutputParameter();
+        curveOutputParameter.setCurveId(curveOutputParamDTO.getCurveId());
+        curveOutputParameter.setName(curveOutputParamDTO.getName());
+        curveOutputParameter.setNumericValue(curveOutputParamDTO.getNumericValue());
+        curveOutputParameter.setStringValue(curveOutputParamDTO.getStringValue());
+        return curveOutputParameter;
+    }
+
+    /**
+     * Maps a {@link CurveOutputParameter} to a {@link CurveOutputParamDTO}.
+     */
+    public CurveOutputParamDTO map(CurveOutputParameter curveOutputParameter) {
+        return CurveOutputParamDTO.builder()
+            .curveId(curveOutputParameter.getCurveId())
+            .name(curveOutputParameter.getName())
+            .numericValue(curveOutputParameter.getNumericValue())
+            .stringValue(curveOutputParameter.getStringValue())
+            .build();
     }
 }

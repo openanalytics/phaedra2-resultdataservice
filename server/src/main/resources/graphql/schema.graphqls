@@ -53,18 +53,6 @@ enum StatusCode {
     FAILURE
 }
 
-type ResultSetDTO {
-    id: ID
-    protocolId: ID
-    plateId: ID
-    measId: ID
-    executionStartTimeStamp: Date
-    executionEndTimeStamp: Date
-    outcome: StatusCode
-    errors: [ErrorDTO]
-    errorsText: String
-}
-
 type ErrorDTO {
     timestamp: Date
     exceptionClassName: String
@@ -83,6 +71,18 @@ type ErrorDTO {
     featureStatId: ID
     featureStatName: String
     newResultSetId: ID
+}
+
+type ResultSetDTO {
+    id: ID
+    protocolId: ID
+    plateId: ID
+    measId: ID
+    executionStartTimeStamp: Date
+    executionEndTimeStamp: Date
+    outcome: StatusCode
+    errors: [ErrorDTO]
+    errorsText: String
 }
 
 type ResultFeatureStatDTO {
@@ -127,6 +127,40 @@ input ResultDataFilter {
     featureIds: [ID] = []
 }
 
+type CurveInputParamDTO {
+    curveId: ID
+    name: String
+    stringValue: String
+    numericValue: FloatNaN
+}
+
+type CurveOutputParamDTO {
+    curveId: ID
+    name: String
+    stringValue: String
+    numericValue: FloatNaN
+}
+
+type CurveDTO {
+    id: ID
+    plateId: ID
+    protocolId: ID
+    featureId: ID
+    resultSetId: ID
+    substanceName: String
+    substanceType: String
+    fitDate: Date
+    version: String
+    wells: [ID]
+    wellConcentrations: [Float]
+    featureValues: [Float]
+    xAxisLabels: [Float]
+    plotDoseData: [Float]
+    plotPredictionData: [Float]
+    weights: [Float]
+    curveProperties: [CurvePropertyDTO]
+}
+
 type Query {
     latestPlateResultByPlateId(plateId: ID): PlateResultSetData
     protocolsByPlateId(plateId: ID): [ProtocolData]
@@ -164,4 +198,13 @@ type Query {
 
     resultDataByPlateIdAndProtocolIdAndFeatureId(plateId: ID, protocolId: ID, featureId: ID): [ResultDataDTO]
     featureStatsByResultSetId(resultSetId: ID!, statName: String, wellTypes: [String]): [ResultFeatureStatDTO]
+
+    getCurveById(curveId: ID): CurveDTO
+    getCurvesByPlateId(plateId: ID): [CurveDTO]
+    getCurvesByPlateIds(plateIds: [ID]): [CurveDTO]
+    getCurvesBySubstanceName(substanceName: String): [CurveDTO]
+    getCurvesBySubstanceType(substanceType: String): [CurveDTO]
+    getCurvesByFeatureId(featureId: ID): [CurveDTO]
+    getCurvesThatIncludesWellId(wellId: ID): [CurveDTO]
+    getCurvesByWellIds(wellIds: [ID], resultSetId: ID): [CurveDTO]
 }
