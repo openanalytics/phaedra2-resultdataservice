@@ -72,5 +72,5 @@ public class CurveDTO {
     private float[] plotDoseData;
     private float[] plotPredictionData;
     private float[] weights;
-    private List<CurveOutputParamDTO> curveProperties;
+    private List<CurveOutputParamDTO> curveOutputParameters;
 }

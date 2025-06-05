@@ -46,8 +46,8 @@ public class CurveService {
     Curve curve = modelMapper.map(curveDTO);
     Curve created = curveRepository.save(curve);
 
-    if (CollectionUtils.isNotEmpty(curveDTO.getCurveProperties())) {
-      curveDTO.getCurveProperties().forEach(curveOutputParamDTO -> {
+    if (CollectionUtils.isNotEmpty(curveDTO.getCurveOutputParameters())) {
+      curveDTO.getCurveOutputParameters().forEach(curveOutputParamDTO -> {
         CurveOutputParameter curveOutputParameter = modelMapper.map(
             curveOutputParamDTO.withCurveId(created.getId()));
         curvePropertyRepository.save(curveOutputParameter);
@@ -59,7 +59,7 @@ public class CurveService {
         .stream().map(modelMapper::map).toList();
     logger.info(String.format("A new curve for %s and featureId %d has been created!",
         curveDTO.getSubstanceName(), curveDTO.getFeatureId()));
-    return curveDTO.withId(created.getId()).withCurveProperties(curveProperties);
+    return curveDTO.withId(created.getId()).withCurveOutputParameters(curveProperties);
   }
 
   public CurveDTO getCurveById(Long curveId) {
@@ -130,7 +130,7 @@ public class CurveService {
   private CurveDTO toCurveDTOWithProperties(Curve curve) {
     List<CurveOutputParameter> curveProperties = curvePropertyRepository.findCurvePropertyByCurveId(curve.getId());
     return modelMapper.map(curve)
-        .withCurveProperties(curveProperties.stream()
+        .withCurveOutputParameters(curveProperties.stream()
             .map(modelMapper::map)
             .toList());
   }
