@@ -75,12 +75,8 @@ public class KafkaConsumerService {
     featureStatService.create(featureStatDTO.getResultSetId(), featureStatDTO);
   }
 
-  @KafkaListener(topics = TOPIC_CURVEDATA, groupId = CURVE_DATA_GROUP_ID)
-  public void handleCurveDataEvent(CurveDTO curveDTO,
-      @Header(KafkaHeaders.RECEIVED_KEY) String msgKey) {
-    if (!EVENT_SAVE_CURVE.equalsIgnoreCase(msgKey)) {
-      return;
-    }
+  @KafkaListener(topics = TOPIC_CURVEDATA, groupId = CURVE_DATA_GROUP_ID, filter = "saveCurveEventFilter")
+  public void handleCurveDataEvent(CurveDTO curveDTO) {
     logCurveEvent(curveDTO);
     curveService.createCurve(curveDTO);
   }

@@ -21,9 +21,11 @@
 package eu.openanalytics.phaedra.resultdataservice.client;
 
 
+import eu.openanalytics.phaedra.resultdataservice.client.exception.CurveUnresolvedException;
 import eu.openanalytics.phaedra.resultdataservice.client.exception.ResultDataUnresolvableException;
 import eu.openanalytics.phaedra.resultdataservice.client.exception.ResultFeatureStatUnresolvableException;
 import eu.openanalytics.phaedra.resultdataservice.client.exception.ResultSetUnresolvableException;
+import eu.openanalytics.phaedra.resultdataservice.dto.CurveDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ErrorDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultDataDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.ResultFeatureStatDTO;
@@ -69,4 +71,8 @@ public interface ResultDataServiceClient {
     List<ResultFeatureStatDTO> getLatestResultFeatureStatsForPlateId(long plateId) throws ResultFeatureStatUnresolvableException;
 
     List<ResultFeatureStatDTO> getLatestResultFeatureStatsForPlateIdAndFeatureId(long plateId, long featureId) throws ResultFeatureStatUnresolvableException;
+
+    CurveDTO createNewCurve(String substanceName, Long plateId, Long protocolId, Long featureId, Long resultSetId) throws CurveUnresolvedException;
+
+    CurveDTO createNewCurve(String substanceName, Long plateId, Long protocolId, Long featureId, Long resultSetId, float[] dose, float[] prediction) throws CurveUnresolvedException;
 }
