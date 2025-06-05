@@ -37,6 +37,7 @@ databaseChangeLog:
         - addForeignKeyConstraint:
             constraintName: curve_id_foreign_key
             baseTableName: curve_input_parameter
+            baseColumnNames: curve_id
             referencedTableName: curve
             referencedColumnNames: id
             onDelete: CASCADE
