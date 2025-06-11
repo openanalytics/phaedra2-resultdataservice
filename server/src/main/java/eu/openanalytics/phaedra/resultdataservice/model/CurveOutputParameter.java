@@ -21,10 +21,13 @@ package eu.openanalytics.phaedra.resultdataservice.model;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.annotation.Id;
 
 @Data
 @NoArgsConstructor
-public class CurveOutputParameter extends CurveParameter {
+public class CurveOutputParameter {
+  @Id
+  private Long id;
   @Column("curve_id")
   private Long curveId;
   @Column("name")
