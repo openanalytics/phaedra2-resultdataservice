@@ -22,7 +22,7 @@ import eu.openanalytics.phaedra.resultdataservice.dto.CurveDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.CurveOutputParamDTO;
 import eu.openanalytics.phaedra.resultdataservice.model.Curve;
 import eu.openanalytics.phaedra.resultdataservice.model.CurveOutputParameter;
-import eu.openanalytics.phaedra.resultdataservice.repository.CurvePropertyRepository;
+import eu.openanalytics.phaedra.resultdataservice.repository.CurveOutputParameterRepository;
 import eu.openanalytics.phaedra.resultdataservice.repository.CurveRepository;
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +38,7 @@ public class CurveService {
 
   private final ModelMapper modelMapper;
   private final CurveRepository curveRepository;
-  private final CurvePropertyRepository curvePropertyRepository;
+  private final CurveOutputParameterRepository curveOutputParameterRepository;
 
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -54,11 +54,11 @@ public class CurveService {
         curveOutputParameter.setName(curveOutputParamDTO.getName());
         curveOutputParameter.setNumericValue(curveOutputParamDTO.getNumericValue());
         curveOutputParameter.setStringValue(curveOutputParamDTO.getStringValue());
-        curvePropertyRepository.save(curveOutputParameter);
+        curveOutputParameterRepository.save(curveOutputParameter);
       });
     }
 
-    List<CurveOutputParamDTO> curveProperties = curvePropertyRepository.findCurvePropertyByCurveId(
+    List<CurveOutputParamDTO> curveProperties = curveOutputParameterRepository.findCurveOutputParametersByCurveId(
             created.getId())
         .stream().map(modelMapper::map).toList();
     logger.info(String.format("A new curve for %s and featureId %d has been created!",
@@ -132,7 +132,7 @@ public class CurveService {
   }
 
   private CurveDTO toCurveDTOWithProperties(Curve curve) {
-    List<CurveOutputParameter> curveProperties = curvePropertyRepository.findCurvePropertyByCurveId(curve.getId());
+    List<CurveOutputParameter> curveProperties = curveOutputParameterRepository.findCurveOutputParametersByCurveId(curve.getId());
     return modelMapper.map(curve)
         .withCurveProperties(curveProperties.stream()
             .map(modelMapper::map)

@@ -7,8 +7,8 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CurvePropertyRepository extends CrudRepository<CurveOutputParameter, Long> {
+public interface CurveOutputParameterRepository extends CrudRepository<CurveOutputParameter, Long> {
 
-  @Query("select * from curve_property where curve_id = :curveId")
-  List<CurveOutputParameter> findCurvePropertyByCurveId(Long curveId);
+  @Query("select * from curve_output_parameter where curve_id = :curveId")
+  List<CurveOutputParameter> findCurveOutputParametersByCurveId(Long curveId);
 }
