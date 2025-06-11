@@ -48,12 +48,13 @@ public class CurveService {
 
     if (CollectionUtils.isNotEmpty(curveDTO.getCurveProperties())) {
       curveDTO.getCurveProperties().forEach(curveOutputParamDTO -> {
-          CurveOutputParameter curveOutputParameter = new CurveOutputParameter();
-          curveOutputParameter.setCurveId(created.getId());
-          curveOutputParameter.setName(curveOutputParamDTO.getName());
-          curveOutputParameter.setNumericValue(curveOutputParamDTO.getNumericValue());
-          curveOutputParameter.setStringValue(curveOutputParamDTO.getStringValue());
-          curvePropertyRepository.save(curveOutputParameter);
+        logger.info(String.format("Saving curve property %s for curve %d", curveOutputParamDTO.getName(), created.getId()));
+        CurveOutputParameter curveOutputParameter = new CurveOutputParameter();
+        curveOutputParameter.setCurveId(created.getId());
+        curveOutputParameter.setName(curveOutputParamDTO.getName());
+        curveOutputParameter.setNumericValue(curveOutputParamDTO.getNumericValue());
+        curveOutputParameter.setStringValue(curveOutputParamDTO.getStringValue());
+        curvePropertyRepository.save(curveOutputParameter);
       });
     }
 
