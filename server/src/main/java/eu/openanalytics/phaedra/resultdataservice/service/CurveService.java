@@ -46,8 +46,8 @@ public class CurveService {
     Curve curve = modelMapper.map(curveDTO);
     Curve created = curveRepository.save(curve);
 
-    if (CollectionUtils.isNotEmpty(curveDTO.getCurveProperties())) {
-      curveDTO.getCurveProperties().forEach(curveOutputParamDTO -> {
+    if (CollectionUtils.isNotEmpty(curveDTO.getCurveOutputParameters())) {
+      curveDTO.getCurveOutputParameters().forEach(curveOutputParamDTO -> {
         logger.info(String.format("Saving curve property %s for curve %d", curveOutputParamDTO.getName(), created.getId()));
         CurveOutputParameter curveOutputParameter = new CurveOutputParameter();
         curveOutputParameter.setCurveId(created.getId());
@@ -58,83 +58,83 @@ public class CurveService {
       });
     }
 
-    List<CurveOutputParamDTO> curveProperties = curveOutputParameterRepository.findCurveOutputParametersByCurveId(
+    List<CurveOutputParamDTO> curveOutputParameters = curveOutputParameterRepository.findCurveOutputParametersByCurveId(
             created.getId())
         .stream().map(modelMapper::map).toList();
     logger.info(String.format("A new curve for %s and featureId %d has been created!",
         curveDTO.getSubstanceName(), curveDTO.getFeatureId()));
-    return curveDTO.withId(created.getId()).withCurveProperties(curveProperties);
+    return curveDTO.withId(created.getId()).withCurveOutputParameters(curveOutputParameters);
   }
 
   public CurveDTO getCurveById(Long curveId) {
     return curveRepository.findById(curveId)
-        .map(this::toCurveDTOWithProperties)
+        .map(this::toCurveDTOWithCurveOutputParameters)
         .orElse(null);
   }
 
   public List<CurveDTO> getCurveByPlateId(Long plateId) {
     return curveRepository.findCurveByPlateId(plateId).stream()
-        .map(this::toCurveDTOWithProperties)
+        .map(this::toCurveDTOWithCurveOutputParameters)
         .toList();
   }
 
   public List<CurveDTO> getLatestCurveByPlateId(Long plateId) {
     return curveRepository.findLatestCurvesByPlateId(plateId).stream()
-        .map(this::toCurveDTOWithProperties)
+        .map(this::toCurveDTOWithCurveOutputParameters)
         .toList();
   }
 
   public List<CurveDTO> getLatestCurveByPlateIds(List<Long> plateIds) {
     return curveRepository.findLatestCurvesByPlateIdIn(plateIds).stream()
-        .map(this::toCurveDTOWithProperties)
+        .map(this::toCurveDTOWithCurveOutputParameters)
         .toList();
   }
 
   public List<CurveDTO> getAllCurves() {
     return ((List<Curve>) curveRepository.findAll()).stream()
-        .map(this::toCurveDTOWithProperties)
+        .map(this::toCurveDTOWithCurveOutputParameters)
         .toList();
   }
 
   public List<CurveDTO> getCurvesBySubstanceName(String substanceName) {
     return curveRepository.findCurvesBySubstanceName(substanceName).stream()
-        .map(this::toCurveDTOWithProperties).
+        .map(this::toCurveDTOWithCurveOutputParameters).
         toList();
   }
 
   public List<CurveDTO> getCurvesBySubstanceType(String substanceType) {
     return curveRepository.findCurvesBySubstanceType(substanceType).stream()
-        .map(this::toCurveDTOWithProperties)
+        .map(this::toCurveDTOWithCurveOutputParameters)
         .toList();
   }
 
   public List<CurveDTO> getCurvesByFeatureId(long featureId) {
     return curveRepository.findCurvesByFeatureId(featureId).stream()
-        .map(this::toCurveDTOWithProperties)
+        .map(this::toCurveDTOWithCurveOutputParameters)
         .toList();
   }
 
   public List<CurveDTO> getCurvesThatIncludesWellId(long wellId) {
     return curveRepository.findCurvesThatIncludesWellId(wellId).stream()
-        .map(this::toCurveDTOWithProperties)
+        .map(this::toCurveDTOWithCurveOutputParameters)
         .toList();
   }
 
   public List<CurveDTO> getCurvesByWellIds(List<Long> wellIds, Optional<Long> resultSetId) {
     if (resultSetId.isPresent()) {
       return curveRepository.findCurvesByWellIdsAndResultSetId(wellIds, resultSetId.get()).stream()
-          .map(this::toCurveDTOWithProperties)
+          .map(this::toCurveDTOWithCurveOutputParameters)
           .toList();
     }
     return curveRepository.findLatestCurvesByWellIds(wellIds).stream()
-        .map(this::toCurveDTOWithProperties)
+        .map(this::toCurveDTOWithCurveOutputParameters)
         .toList();
   }
 
-  private CurveDTO toCurveDTOWithProperties(Curve curve) {
+  private CurveDTO toCurveDTOWithCurveOutputParameters(Curve curve) {
     List<CurveOutputParameter> curveProperties = curveOutputParameterRepository.findCurveOutputParametersByCurveId(curve.getId());
     return modelMapper.map(curve)
-        .withCurveProperties(curveProperties.stream()
+        .withCurveOutputParameters(curveProperties.stream()
             .map(modelMapper::map)
             .toList());
   }
