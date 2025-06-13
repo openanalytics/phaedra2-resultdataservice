@@ -25,9 +25,9 @@ import eu.openanalytics.phaedra.resultdataservice.enumeration.StatusCode;
 public class UrlFactory {
 
 	private static final int PAGE_SIZE = 100;
-	
+
     private String baseURL;
-    
+
     public UrlFactory(String baseURL) {
     	this.baseURL = baseURL;
 	}
@@ -90,5 +90,9 @@ public class UrlFactory {
 
     public String resultFeatureStatByFeatureStatId(long resultSetId, long featureStatId) {
         return String.format("%s/resultsets/%s/resultfeaturestats/%s", baseURL, resultSetId, featureStatId);
+    }
+
+    public String curve() {
+        return String.format("%s/curves", baseURL);
     }
 }
