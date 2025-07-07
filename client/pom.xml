@@ -5,7 +5,7 @@
     <parent>
         <groupId>eu.openanalytics.phaedra</groupId>
         <artifactId>phaedra2-resultdataservice</artifactId>
-        <version>2.8.0-SNAPSHOT</version>
+        <version>2.8.0</version>
     </parent>
 
     <artifactId>phaedra2-resultdataservice-client</artifactId>
@@ -15,7 +15,7 @@
         <dependency>
             <groupId>eu.openanalytics.phaedra</groupId>
             <artifactId>phaedra2-resultdataservice-dto</artifactId>
-            <version>2.8.0-SNAPSHOT</version>
+            <version>2.8.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
