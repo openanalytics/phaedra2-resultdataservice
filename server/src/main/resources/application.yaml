@@ -20,5 +20,7 @@ spring:
   jackson:
     serialization:
       indent_output: true
+  liquibase:
+    enabled: false
 
 

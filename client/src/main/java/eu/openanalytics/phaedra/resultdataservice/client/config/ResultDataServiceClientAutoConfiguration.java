@@ -1,7 +1,7 @@
 /**
  * Phaedra II
  *
- * Copyright (C) 2016-2024 Open Analytics
+ * Copyright (C) 2016-2025 Open Analytics
  *
  * ===========================================================================
  *
@@ -21,16 +21,15 @@
 package eu.openanalytics.phaedra.resultdataservice.client.config;
 
 
+import eu.openanalytics.phaedra.resultdataservice.client.ResultDataServiceClient;
 import eu.openanalytics.phaedra.resultdataservice.client.ResultDataServiceGraphQLClient;
+import eu.openanalytics.phaedra.resultdataservice.client.impl.HttpResultDataServiceClient;
 import eu.openanalytics.phaedra.resultdataservice.client.impl.ResultDataServiceGraphQLClientImpl;
+import eu.openanalytics.phaedra.util.PhaedraRestTemplate;
+import eu.openanalytics.phaedra.util.auth.IAuthorizationService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-
-import eu.openanalytics.phaedra.resultdataservice.client.ResultDataServiceClient;
-import eu.openanalytics.phaedra.resultdataservice.client.impl.HttpResultDataServiceClient;
-import eu.openanalytics.phaedra.util.PhaedraRestTemplate;
-import eu.openanalytics.phaedra.util.auth.IAuthorizationService;
 
 @Configuration
 public class ResultDataServiceClientAutoConfiguration {
@@ -44,5 +43,4 @@ public class ResultDataServiceClientAutoConfiguration {
     public ResultDataServiceGraphQLClient resultDataServiceGraphQLClient(IAuthorizationService authService, Environment environment) {
         return new ResultDataServiceGraphQLClientImpl(authService, environment);
     }
-
 }

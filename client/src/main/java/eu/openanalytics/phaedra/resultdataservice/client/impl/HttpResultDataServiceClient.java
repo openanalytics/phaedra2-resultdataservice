@@ -1,7 +1,7 @@
 /**
  * Phaedra II
  *
- * Copyright (C) 2016-2024 Open Analytics
+ * Copyright (C) 2016-2025 Open Analytics
  *
  * ===========================================================================
  *
@@ -20,8 +20,11 @@
  */
 package eu.openanalytics.phaedra.resultdataservice.client.impl;
 
+import eu.openanalytics.phaedra.resultdataservice.client.exception.CurveUnresolvedException;
+import eu.openanalytics.phaedra.resultdataservice.dto.CurveDTO;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -376,6 +379,60 @@ public class HttpResultDataServiceClient implements ResultDataServiceClient {
         }
 
         return result;
+    }
+
+    @Override
+    public CurveDTO createNewCurve(String substanceName, Long plateId, Long protocolId, Long featureId, Long resultSetId) throws CurveUnresolvedException {
+        var curveDTO = CurveDTO.builder()
+            .substanceName(substanceName)
+            .plateId(plateId)
+            .protocolId(protocolId)
+            .featureId(featureId)
+            .resultSetId(resultSetId)
+            .fitDate(new Date())
+            .version("0.0.1")
+            .build();
+
+        HttpEntity<?> httpEntity = new HttpEntity<>(curveDTO, makeHttpHeaders());
+        try {
+            var response = restTemplate.postForObject(urlFactory.curve(), httpEntity, CurveDTO.class);
+            if (response == null) {
+                throw new CurveUnresolvedException("Curve could not be converted");
+            }
+            return response;
+        } catch (HttpClientErrorException ex) {
+            throw new CurveUnresolvedException("Error while creating Curve", ex);
+        } catch (HttpServerErrorException ex) {
+            throw new CurveUnresolvedException("Server Error while creating Curve", ex);
+        }
+    }
+
+    @Override
+    public CurveDTO createNewCurve(String substanceName, Long plateId, Long protocolId, Long featureId, Long resultSetId, float[] dose, float[] prediction) throws CurveUnresolvedException {
+        var curveDTO = CurveDTO.builder()
+            .substanceName(substanceName)
+            .plateId(plateId)
+            .protocolId(protocolId)
+            .featureId(featureId)
+            .resultSetId(resultSetId)
+            .fitDate(new Date())
+            .version("0.0.1")
+            .plotDoseData(dose)
+            .plotPredictionData(prediction)
+            .build();
+
+        HttpEntity<?> httpEntity = new HttpEntity<>(curveDTO, makeHttpHeaders());
+        try {
+            var response = restTemplate.postForObject(urlFactory.curve(), httpEntity, CurveDTO.class);
+            if (response == null) {
+                throw new CurveUnresolvedException("Curve could not be converted");
+            }
+            return response;
+        } catch (HttpClientErrorException ex) {
+            throw new CurveUnresolvedException("Error while creating Curve", ex);
+        } catch (HttpServerErrorException ex) {
+            throw new CurveUnresolvedException("Server Error while creating Curve", ex);
+        }
     }
 
     private HttpHeaders makeHttpHeaders() {

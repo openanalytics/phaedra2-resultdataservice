@@ -1,0 +1,48 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: sberberovic
+      changes:
+        - createTable:
+            tableName: curve_input_parameter
+            schemaName: resultdataservice
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: curve_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: numeric_value
+                  type: float4
+                  constraints:
+                    nullable: true
+              - column:
+                  name: string_value
+                  type: varchar
+                  constraints:
+                    nullable: true
+        - addForeignKeyConstraint:
+            constraintName: curve_id_foreign_key
+            baseTableName: curve_input_parameter
+            baseColumnNames: curve_id
+            referencedTableName: curve
+            referencedColumnNames: id
+            onDelete: CASCADE
+            validate: true
+      rollback:
+        - dropAllForeignKeyConstraints:
+            baseTableName: curve_input_parameter
+        - dropTable: curve_input_parameter
