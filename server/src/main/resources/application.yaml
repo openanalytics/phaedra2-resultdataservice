@@ -17,6 +17,7 @@ spring:
   graphql:
     graphiql:
       enabled: true
+      path: /graphiql
   jackson:
     serialization:
       indent_output: true
