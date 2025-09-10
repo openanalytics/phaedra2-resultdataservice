@@ -1,10 +1,19 @@
 package eu.openanalytics.phaedra.resultdataservice.dto;
 
-import lombok.Data;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.Value;
+import lombok.With;
+import lombok.experimental.NonFinal;
 
-@Data
-@NoArgsConstructor
+@Value
+@Builder
+@With
+@AllArgsConstructor
+@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE) // Jackson deserialize compatibility
+@NonFinal
 public class CurveInputParamDTO {
   Long curveId;
   String name;

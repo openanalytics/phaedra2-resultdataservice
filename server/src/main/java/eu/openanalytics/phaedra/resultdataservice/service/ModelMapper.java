@@ -21,8 +21,10 @@
 package eu.openanalytics.phaedra.resultdataservice.service;
 
 import eu.openanalytics.phaedra.resultdataservice.dto.CurveDTO;
+import eu.openanalytics.phaedra.resultdataservice.dto.CurveInputParamDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.CurveOutputParamDTO;
 import eu.openanalytics.phaedra.resultdataservice.model.Curve;
+import eu.openanalytics.phaedra.resultdataservice.model.CurveInputParameter;
 import eu.openanalytics.phaedra.resultdataservice.model.CurveOutputParameter;
 import java.util.List;
 
@@ -204,6 +206,19 @@ public class ModelMapper {
             .name(curveOutputParameter.getName())
             .numericValue(curveOutputParameter.getNumericValue())
             .stringValue(curveOutputParameter.getStringValue())
+            .build();
+    }
+
+    /**
+     *
+     * Maps a {@link CurveInputParameter} to a {@link CurveInputParamDTO}.
+     */
+    public CurveInputParamDTO map(CurveInputParameter curveInputParameter) {
+        return CurveInputParamDTO.builder()
+            .curveId(curveInputParameter.getCurveId())
+            .name(curveInputParameter.getName())
+            .numericValue(curveInputParameter.getNumericValue())
+            .stringValue(curveInputParameter.getStringValue())
             .build();
     }
 }
