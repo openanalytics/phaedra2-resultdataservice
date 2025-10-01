@@ -158,6 +158,7 @@ type CurveDTO {
     plotDoseData: [Float]
     plotPredictionData: [Float]
     weights: [Float]
+    inputParameters: [CurveInputParamDTO]
     curveOutputParameters: [CurveOutputParamDTO]
 }
 

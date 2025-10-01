@@ -19,9 +19,12 @@
 package eu.openanalytics.phaedra.resultdataservice.service;
 
 import eu.openanalytics.phaedra.resultdataservice.dto.CurveDTO;
+import eu.openanalytics.phaedra.resultdataservice.dto.CurveInputParamDTO;
 import eu.openanalytics.phaedra.resultdataservice.dto.CurveOutputParamDTO;
 import eu.openanalytics.phaedra.resultdataservice.model.Curve;
+import eu.openanalytics.phaedra.resultdataservice.model.CurveInputParameter;
 import eu.openanalytics.phaedra.resultdataservice.model.CurveOutputParameter;
+import eu.openanalytics.phaedra.resultdataservice.repository.CurveInputParameterRepository;
 import eu.openanalytics.phaedra.resultdataservice.repository.CurveOutputParameterRepository;
 import eu.openanalytics.phaedra.resultdataservice.repository.CurveRepository;
 import java.util.List;
@@ -39,6 +42,7 @@ public class CurveService {
   private final ModelMapper modelMapper;
   private final CurveRepository curveRepository;
   private final CurveOutputParameterRepository curveOutputParameterRepository;
+  private final CurveInputParameterRepository curveInputParameterRepository;
 
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -46,9 +50,21 @@ public class CurveService {
     Curve curve = modelMapper.map(curveDTO);
     Curve created = curveRepository.save(curve);
 
+    if (CollectionUtils.isNotEmpty(curveDTO.getInputParameters())) {
+      curveDTO.getInputParameters().forEach(curveInputParamDTO -> {
+        logger.info("Saving curve input parameter {} for curve {}", curveInputParamDTO.getName(), created.getId());
+        CurveInputParameter curveInputParameter = new CurveInputParameter();
+        curveInputParameter.setCurveId(created.getId());
+        curveInputParameter.setName(curveInputParamDTO.getName());
+        curveInputParameter.setStringValue(curveInputParamDTO.getStringValue());
+        curveInputParameter.setNumericValue(curveInputParamDTO.getNumericValue());
+        curveInputParameterRepository.save(curveInputParameter);
+      });
+    }
+
     if (CollectionUtils.isNotEmpty(curveDTO.getCurveOutputParameters())) {
       curveDTO.getCurveOutputParameters().forEach(curveOutputParamDTO -> {
-        logger.info(String.format("Saving curve property %s for curve %d", curveOutputParamDTO.getName(), created.getId()));
+        logger.info("Saving curve output parameter {} for curve {}", curveOutputParamDTO.getName(), created.getId());
         CurveOutputParameter curveOutputParameter = new CurveOutputParameter();
         curveOutputParameter.setCurveId(created.getId());
         curveOutputParameter.setName(curveOutputParamDTO.getName());
@@ -58,85 +74,91 @@ public class CurveService {
       });
     }
 
-    List<CurveOutputParamDTO> curveOutputParameters = curveOutputParameterRepository.findCurveOutputParametersByCurveId(
-            created.getId())
-        .stream().map(modelMapper::map).toList();
-    logger.info(String.format("A new curve for %s and featureId %d has been created!",
-        curveDTO.getSubstanceName(), curveDTO.getFeatureId()));
-    return curveDTO.withId(created.getId()).withCurveOutputParameters(curveOutputParameters);
+    List<CurveOutputParamDTO> curveOutputParameters = curveOutputParameterRepository.findCurveOutputParametersByCurveId(created.getId())
+        .stream()
+        .map(modelMapper::map)
+        .toList();
+    List<CurveInputParamDTO> curveInputParameters = curveInputParameterRepository.findCurveInputParametersByCurveId(created.getId())
+        .stream()
+        .map(modelMapper::map)
+        .toList();
+    logger.info("A new curve for {} and featureId {} has been created!", curveDTO.getSubstanceName(), curveDTO.getFeatureId());
+    return curveDTO.withId(created.getId())
+        .withCurveOutputParameters(curveOutputParameters)
+        .withInputParameters(curveInputParameters);
   }
 
   public CurveDTO getCurveById(Long curveId) {
     return curveRepository.findById(curveId)
-        .map(this::toCurveDTOWithCurveOutputParameters)
+        .map(this::addCurveParameters)
         .orElse(null);
   }
 
   public List<CurveDTO> getCurveByPlateId(Long plateId) {
     return curveRepository.findCurveByPlateId(plateId).stream()
-        .map(this::toCurveDTOWithCurveOutputParameters)
+        .map(this::addCurveParameters)
         .toList();
   }
 
   public List<CurveDTO> getLatestCurveByPlateId(Long plateId) {
     return curveRepository.findLatestCurvesByPlateId(plateId).stream()
-        .map(this::toCurveDTOWithCurveOutputParameters)
+        .map(this::addCurveParameters)
         .toList();
   }
 
   public List<CurveDTO> getLatestCurveByPlateIds(List<Long> plateIds) {
     return curveRepository.findLatestCurvesByPlateIdIn(plateIds).stream()
-        .map(this::toCurveDTOWithCurveOutputParameters)
+        .map(this::addCurveParameters)
         .toList();
   }
 
   public List<CurveDTO> getAllCurves() {
     return ((List<Curve>) curveRepository.findAll()).stream()
-        .map(this::toCurveDTOWithCurveOutputParameters)
+        .map(this::addCurveParameters)
         .toList();
   }
 
   public List<CurveDTO> getCurvesBySubstanceName(String substanceName) {
     return curveRepository.findCurvesBySubstanceName(substanceName).stream()
-        .map(this::toCurveDTOWithCurveOutputParameters).
+        .map(this::addCurveParameters).
         toList();
   }
 
   public List<CurveDTO> getCurvesBySubstanceType(String substanceType) {
     return curveRepository.findCurvesBySubstanceType(substanceType).stream()
-        .map(this::toCurveDTOWithCurveOutputParameters)
+        .map(this::addCurveParameters)
         .toList();
   }
 
   public List<CurveDTO> getCurvesByFeatureId(long featureId) {
     return curveRepository.findCurvesByFeatureId(featureId).stream()
-        .map(this::toCurveDTOWithCurveOutputParameters)
+        .map(this::addCurveParameters)
         .toList();
   }
 
   public List<CurveDTO> getCurvesThatIncludesWellId(long wellId) {
     return curveRepository.findCurvesThatIncludesWellId(wellId).stream()
-        .map(this::toCurveDTOWithCurveOutputParameters)
+        .map(this::addCurveParameters)
         .toList();
   }
 
   public List<CurveDTO> getCurvesByWellIds(List<Long> wellIds, Optional<Long> resultSetId) {
     if (resultSetId.isPresent()) {
       return curveRepository.findCurvesByWellIdsAndResultSetId(wellIds, resultSetId.get()).stream()
-          .map(this::toCurveDTOWithCurveOutputParameters)
+          .map(this::addCurveParameters)
           .toList();
     }
     return curveRepository.findLatestCurvesByWellIds(wellIds).stream()
-        .map(this::toCurveDTOWithCurveOutputParameters)
+        .map(this::addCurveParameters)
         .toList();
   }
 
-  private CurveDTO toCurveDTOWithCurveOutputParameters(Curve curve) {
-    List<CurveOutputParameter> curveProperties = curveOutputParameterRepository.findCurveOutputParametersByCurveId(curve.getId());
+  private CurveDTO addCurveParameters(Curve curve) {
+    List<CurveOutputParameter> curveOutputParameters = curveOutputParameterRepository.findCurveOutputParametersByCurveId(curve.getId());
+    List<CurveInputParameter> curveInputParameters = curveInputParameterRepository.findCurveInputParametersByCurveId(curve.getId());
     return modelMapper.map(curve)
-        .withCurveOutputParameters(curveProperties.stream()
-            .map(modelMapper::map)
-            .toList());
+        .withCurveOutputParameters(curveOutputParameters.stream().map(modelMapper::map).toList())
+        .withInputParameters(curveInputParameters.stream().map(modelMapper::map).toList());
   }
 
   public CurveDTO updateCurve(CurveDTO curveDTO) {
